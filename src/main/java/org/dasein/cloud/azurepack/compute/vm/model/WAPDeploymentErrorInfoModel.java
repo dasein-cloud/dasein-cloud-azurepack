@@ -1,187 +1,221 @@
 package org.dasein.cloud.azurepack.compute.vm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by vmunthiu on 3/4/2015.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WAPDeploymentErrorInfoModel {
-    private String CloudProblem;
-    private String Code;
-    private String DetailedCode;
-    private String DetailedErrorCode;
-    private String DetailedSource;
-    private String DisplayableErrorCode;
-    private String ErrorCodeString;
-    private String ErrorType;
-    private String ExceptionDetails;
-    private String IsConditionallyTerminating;
-    private String IsDeploymentBlocker;
-    private String IsMomAlert;
-    private String IsSuccess;
-    private String IsTerminating;
-    private String MessageParameters;
-    private String MomAlertSeverity;
-    private String Problem;
-    private String RecommendedAction;
-    private String RecommendedActionCLI;
-    private String ShowDetailedError;
+    @JsonProperty("odata.type")
+    private String odataType = "VMM.ErrorInfo";
+    @JsonProperty("CloudProblem")
+    private String cloudProblem;
+    @JsonProperty("Code")
+    private String code;
+    @JsonProperty("DetailedCode")
+    private String detailedCode;
+    @JsonProperty("DetailedErrorCode")
+    private String detailedErrorCode;
+    @JsonProperty("DetailedSource")
+    private String detailedSource;
+    @JsonProperty("DisplayableErrorCode")
+    private String displayableErrorCode;
+    @JsonProperty("ErrorCodeString")
+    private String errorCodeString;
+    @JsonProperty("ErrorType")
+    private String errorType;
+    @JsonProperty("ExceptionDetails")
+    private String exceptionDetails;
+    @JsonProperty("IsConditionallyTerminating")
+    private String isConditionallyTerminating;
+    @JsonProperty("IsDeploymentBlocker")
+    private String isDeploymentBlocker;
+    @JsonProperty("IsMomAlert")
+    private String isMomAlert;
+    @JsonProperty("IsSuccess")
+    private String isSuccess;
+    @JsonProperty("IsTerminating")
+    private String isTerminating;
+    @JsonProperty("MessageParameters")
+    private String messageParameters;
+    @JsonProperty("MomAlertSeverity")
+    private String momAlertSeverity;
+    @JsonProperty("Problem")
+    private String problem;
+    @JsonProperty("RecommendedAction")
+    private String recommendedAction;
+    @JsonProperty("RecommendedActionCLI")
+    private String recommendedActionCLI;
+    @JsonProperty("ShowDetailedError")
+    private String showDetailedError;
+
+    public String getOdataType() {
+        return odataType;
+    }
+
+    public void setOdataType(String odataType) {
+        this.odataType = odataType;
+    }
 
     public String getCloudProblem() {
-        return CloudProblem;
+        return cloudProblem;
     }
 
     public void setCloudProblem(String cloudProblem) {
-        CloudProblem = cloudProblem;
+        this.cloudProblem = cloudProblem;
     }
 
     public String getCode() {
-        return Code;
+        return code;
     }
 
     public void setCode(String code) {
-        Code = code;
+        this.code = code;
     }
 
     public String getDetailedCode() {
-        return DetailedCode;
+        return detailedCode;
     }
 
     public void setDetailedCode(String detailedCode) {
-        DetailedCode = detailedCode;
+        this.detailedCode = detailedCode;
     }
 
     public String getDetailedErrorCode() {
-        return DetailedErrorCode;
+        return detailedErrorCode;
     }
 
     public void setDetailedErrorCode(String detailedErrorCode) {
-        DetailedErrorCode = detailedErrorCode;
+        this.detailedErrorCode = detailedErrorCode;
     }
 
     public String getDetailedSource() {
-        return DetailedSource;
+        return detailedSource;
     }
 
     public void setDetailedSource(String detailedSource) {
-        DetailedSource = detailedSource;
+        this.detailedSource = detailedSource;
     }
 
     public String getDisplayableErrorCode() {
-        return DisplayableErrorCode;
+        return displayableErrorCode;
     }
 
     public void setDisplayableErrorCode(String displayableErrorCode) {
-        DisplayableErrorCode = displayableErrorCode;
+        this.displayableErrorCode = displayableErrorCode;
     }
 
     public String getErrorCodeString() {
-        return ErrorCodeString;
+        return errorCodeString;
     }
 
     public void setErrorCodeString(String errorCodeString) {
-        ErrorCodeString = errorCodeString;
+        this.errorCodeString = errorCodeString;
     }
 
     public String getErrorType() {
-        return ErrorType;
+        return errorType;
     }
 
     public void setErrorType(String errorType) {
-        ErrorType = errorType;
+        this.errorType = errorType;
     }
 
     public String getExceptionDetails() {
-        return ExceptionDetails;
+        return exceptionDetails;
     }
 
     public void setExceptionDetails(String exceptionDetails) {
-        ExceptionDetails = exceptionDetails;
+        this.exceptionDetails = exceptionDetails;
     }
 
     public String getIsConditionallyTerminating() {
-        return IsConditionallyTerminating;
+        return isConditionallyTerminating;
     }
 
     public void setIsConditionallyTerminating(String isConditionallyTerminating) {
-        IsConditionallyTerminating = isConditionallyTerminating;
+        this.isConditionallyTerminating = isConditionallyTerminating;
     }
 
     public String getIsDeploymentBlocker() {
-        return IsDeploymentBlocker;
+        return isDeploymentBlocker;
     }
 
     public void setIsDeploymentBlocker(String isDeploymentBlocker) {
-        IsDeploymentBlocker = isDeploymentBlocker;
+        this.isDeploymentBlocker = isDeploymentBlocker;
     }
 
     public String getIsMomAlert() {
-        return IsMomAlert;
+        return isMomAlert;
     }
 
     public void setIsMomAlert(String isMomAlert) {
-        IsMomAlert = isMomAlert;
+        this.isMomAlert = isMomAlert;
     }
 
     public String getIsSuccess() {
-        return IsSuccess;
+        return isSuccess;
     }
 
     public void setIsSuccess(String isSuccess) {
-        IsSuccess = isSuccess;
+        this.isSuccess = isSuccess;
     }
 
     public String getIsTerminating() {
-        return IsTerminating;
+        return isTerminating;
     }
 
     public void setIsTerminating(String isTerminating) {
-        IsTerminating = isTerminating;
+        this.isTerminating = isTerminating;
     }
 
     public String getMessageParameters() {
-        return MessageParameters;
+        return messageParameters;
     }
 
     public void setMessageParameters(String messageParameters) {
-        MessageParameters = messageParameters;
+        this.messageParameters = messageParameters;
     }
 
     public String getMomAlertSeverity() {
-        return MomAlertSeverity;
+        return momAlertSeverity;
     }
 
     public void setMomAlertSeverity(String momAlertSeverity) {
-        MomAlertSeverity = momAlertSeverity;
+        this.momAlertSeverity = momAlertSeverity;
     }
 
     public String getProblem() {
-        return Problem;
+        return problem;
     }
 
     public void setProblem(String problem) {
-        Problem = problem;
+        this.problem = problem;
     }
 
     public String getRecommendedAction() {
-        return RecommendedAction;
+        return recommendedAction;
     }
 
     public void setRecommendedAction(String recommendedAction) {
-        RecommendedAction = recommendedAction;
+        this.recommendedAction = recommendedAction;
     }
 
     public String getRecommendedActionCLI() {
-        return RecommendedActionCLI;
+        return recommendedActionCLI;
     }
 
     public void setRecommendedActionCLI(String recommendedActionCLI) {
-        RecommendedActionCLI = recommendedActionCLI;
+        this.recommendedActionCLI = recommendedActionCLI;
     }
 
     public String getShowDetailedError() {
-        return ShowDetailedError;
+        return showDetailedError;
     }
 
     public void setShowDetailedError(String showDetailedError) {
-        ShowDetailedError = showDetailedError;
+        this.showDetailedError = showDetailedError;
     }
 }

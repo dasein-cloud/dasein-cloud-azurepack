@@ -70,7 +70,7 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
             @Override
             public void execute(Object input) {
                 WAPVhdModel vhd = (WAPVhdModel) input;
-                MachineImage image = MachineImage.getInstance(vhd.getOwner().getRoleID(), regionId, vhd.getID(),ImageClass.MACHINE,MachineImageState.ACTIVE,vhd.getName(),vhd.getDescription(),Architecture.I64, vhd.getOperatingSystemInstance().getOSType().contains("windows") ? Platform.WINDOWS : Platform.UNIX);
+                MachineImage image = MachineImage.getInstance(vhd.getOwner().getRoleID(), regionId, vhd.getId(),ImageClass.MACHINE,MachineImageState.ACTIVE,vhd.getName(),vhd.getDescription(),Architecture.I64, vhd.getOperatingSystemInstance().getOsType().toLowerCase().contains("windows") ? Platform.WINDOWS : Platform.UNIX);
                 if(options.matches(image)) {
                     images.add(image);
                 }

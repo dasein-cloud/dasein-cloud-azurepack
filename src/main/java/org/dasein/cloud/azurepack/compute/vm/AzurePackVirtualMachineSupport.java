@@ -26,7 +26,9 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
 
     public AzurePackVirtualMachineSupport(@Nonnull AzurePackCloud provider) {
         super(provider);
-        this.provider = provider; }
+        this.provider = provider;
+    }
+
     @Nonnull
     @Override
     public VirtualMachineCapabilities getCapabilities() throws InternalException, CloudException {
@@ -41,11 +43,24 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
     @Nonnull
     @Override
     public VirtualMachine launch(@Nonnull VMLaunchOptions withLaunchOptions) throws CloudException, InternalException {
+        MachineImage image = provider.getComputeServices().getImageSupport().getImage(withLaunchOptions.getMachineImageId());
+        if(image == null)
+            throw new InternalException("Invalid machine image id");
+
         WAPVirtualMachineModel virtualMachineModel = new WAPVirtualMachineModel();
         virtualMachineModel.setName(withLaunchOptions.getFriendlyName());
         virtualMachineModel.setVirtualHardDiskId(withLaunchOptions.getMachineImageId());
         virtualMachineModel.setCloudId(provider.getContext().getRegionId());
         virtualMachineModel.setStampId(withLaunchOptions.getDataCenterId());
+        virtualMachineModel.setStartVM("True");
+        if(withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
+            virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
+            if (image.getPlatform().isWindows()) {
+                virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("root") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("admin") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("administrator") ? "dasein" : withLaunchOptions.getBootstrapUser()));
+            } else {
+                virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equals("root") ? "dasein" : withLaunchOptions.getBootstrapUser()));
+            }
+        }
 
         HttpUriRequest createRequest = new AzurePackVMRequests(provider).createVirtualMachine(virtualMachineModel).build();
         return new AzurePackRequester(provider, createRequest).withJsonProcessor(new DriverToCoreMapper<WAPVirtualMachineModel, VirtualMachine>() {
@@ -70,7 +85,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
     public void terminate(@Nonnull String vmId, String explanation) throws InternalException, CloudException {
         VirtualMachine virtualMachine = getVirtualMachine(vmId);
         if(virtualMachine == null)
-            throw new CloudException("Virtual machine does not exisit");
+            throw new CloudException("Virtual machine does not exist");
 
         HttpUriRequest deleteRequest = new AzurePackVMRequests(provider).deleteVirtualMachine(virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId()).build();
         new AzurePackRequester(provider, deleteRequest).execute();
@@ -113,12 +128,21 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
 
     private VirtualMachine virtualMachineFrom(WAPVirtualMachineModel virtualMachineModel){
         VirtualMachine virtualMachine = new VirtualMachine();
-        virtualMachine.setProviderVirtualMachineId(virtualMachineModel.getID());
+        virtualMachine.setProviderVirtualMachineId(virtualMachineModel.getId());
         virtualMachine.setProviderRegionId(virtualMachineModel.getCloudId());
         virtualMachine.setProviderDataCenterId(virtualMachineModel.getStampId());
         virtualMachine.setName(virtualMachineModel.getName());
+        virtualMachine.setCurrentState(getVmState(virtualMachineModel.getStatusString()));
 
         return virtualMachine;
+    }
+
+    private VmState getVmState(String state){
+        try {
+            return VmState.valueOf(state.toUpperCase());
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private void updateVMState(String vmId, String operation) throws InternalException, CloudException {

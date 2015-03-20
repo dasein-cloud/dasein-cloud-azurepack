@@ -1,5 +1,7 @@
 package org.dasein.cloud.azurepack.compute.image.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dasein.cloud.azurepack.model.WAPOperatingSystemInstance;
 import org.dasein.cloud.azurepack.model.WAPUserModel;
 
@@ -10,347 +12,386 @@ import java.util.List;
  *
  **/
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WAPVhdModel {
-    private String Accessibility;
-    private String AddedTime;
-    private String Description;
-    private String Directory;
-    private String Enabled;
-    private String ID;
-    private String JobGroupId;
-    private String MaximumSize;
-    private String ModifiedTime;
-    private String Name;
-    private WAPUserModel Owner;
-    private String OwnerSid;
-    private String ParentDiskId;
-    private String SharePath;
-    private String Size;
-    private String State;
-    private String VHDType;
-    private String VMId;
-    private String TemplateId;
-    private String StampId;
-    private String FamilyName;
-    private String Release;
-    private String CloudId;
-    private String HostVolumeId;
-    private String IsOrphaned;
-    private String IsResourceGroup;
-    private String LibraryGroup;
-    private String LibraryShareId;
-    private String Location;
-    private String Namespace;
-    private String ReleaseTime;
-    private String SANCopyCapable;
-    private String Type;
-    private String VirtualizationPlatform;
-    private String OperatingSystem;
-    private WAPOperatingSystemInstance OperatingSystemInstance;
-    private String OperatingSystemId;
-    private List<String> Tag;
+    @JsonProperty("Accessibility")
+    private String accessibility;
+    @JsonProperty("AddedTime")
+    private String addedTime;
+    @JsonProperty("Description")
+    private String description;
+    @JsonProperty("Directory")
+    private String directory;
+    @JsonProperty("Enabled")
+    private String enabled;
+    @JsonProperty("ID")
+    private String id;
+    @JsonProperty("JobGroupId")
+    private String jobGroupId;
+    @JsonProperty("MaximumSize")
+    private String maximumSize;
+    @JsonProperty("ModifiedTime")
+    private String modifiedTime;
+    @JsonProperty("Name")
+    private String name;
+    @JsonProperty("Owner")
+    private WAPUserModel owner;
+    @JsonProperty("OwnerSid")
+    private String ownerSid;
+    @JsonProperty("ParentDiskId")
+    private String parentDiskId;
+    @JsonProperty("SharePath")
+    private String sharePath;
+    @JsonProperty("Size")
+    private String size;
+    @JsonProperty("State")
+    private String state;
+    @JsonProperty("VHDType")
+    private String vhdType;
+    @JsonProperty("VMId")
+    private String vmId;
+    @JsonProperty("TemplateId")
+    private String templateId;
+    @JsonProperty("StampId")
+    private String stampId;
+    @JsonProperty("FamilyName")
+    private String familyName;
+    @JsonProperty("Release")
+    private String release;
+    @JsonProperty("CloudId")
+    private String cloudId;
+    @JsonProperty("HostVolumeId")
+    private String hostVolumeId;
+    @JsonProperty("IsOrphaned")
+    private String isOrphaned;
+    @JsonProperty("IsResourceGroup")
+    private String isResourceGroup;
+    @JsonProperty("LibraryGroup")
+    private String libraryGroup;
+    @JsonProperty("LibraryShareId")
+    private String libraryShareId;
+    @JsonProperty("Location")
+    private String location;
+    @JsonProperty("Namespace")
+    private String namespace;
+    @JsonProperty("ReleaseTime")
+    private String releaseTime;
+    @JsonProperty("SANCopyCapable")
+    private String sanCopyCapable;
+    @JsonProperty("Type")
+    private String type;
+    @JsonProperty("VirtualizationPlatform")
+    private String virtualizationPlatform;
+    @JsonProperty("OperatingSystem")
+    private String operatingSystem;
+    @JsonProperty("OperatingSystemInstance")
+    private WAPOperatingSystemInstance operatingSystemInstance;
+    @JsonProperty("OperatingSystemId")
+    private String operatingSystemId;
+    @JsonProperty("Tag")
+    private List<String> tag;
 
     public String getAccessibility() {
-        return Accessibility;
+        return accessibility;
     }
 
     public void setAccessibility(String accessibility) {
-        Accessibility = accessibility;
+        this.accessibility = accessibility;
     }
 
     public String getAddedTime() {
-        return AddedTime;
+        return addedTime;
     }
 
     public void setAddedTime(String addedTime) {
-        AddedTime = addedTime;
+        this.addedTime = addedTime;
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
     public String getDirectory() {
-        return Directory;
+        return directory;
     }
 
     public void setDirectory(String directory) {
-        Directory = directory;
+        this.directory = directory;
     }
 
     public String getEnabled() {
-        return Enabled;
+        return enabled;
     }
 
     public void setEnabled(String enabled) {
-        Enabled = enabled;
+        this.enabled = enabled;
     }
 
-    public String getID() {
-        return ID;
+    public String getId() {
+        return id;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getJobGroupId() {
-        return JobGroupId;
+        return jobGroupId;
     }
 
     public void setJobGroupId(String jobGroupId) {
-        JobGroupId = jobGroupId;
+        this.jobGroupId = jobGroupId;
     }
 
     public String getMaximumSize() {
-        return MaximumSize;
+        return maximumSize;
     }
 
     public void setMaximumSize(String maximumSize) {
-        MaximumSize = maximumSize;
+        this.maximumSize = maximumSize;
     }
 
     public String getModifiedTime() {
-        return ModifiedTime;
+        return modifiedTime;
     }
 
     public void setModifiedTime(String modifiedTime) {
-        ModifiedTime = modifiedTime;
+        this.modifiedTime = modifiedTime;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public WAPUserModel getOwner() {
-        return Owner;
+        return owner;
     }
 
     public void setOwner(WAPUserModel owner) {
-        Owner = owner;
+        this.owner = owner;
     }
 
     public String getOwnerSid() {
-        return OwnerSid;
+        return ownerSid;
     }
 
     public void setOwnerSid(String ownerSid) {
-        OwnerSid = ownerSid;
+        this.ownerSid = ownerSid;
     }
 
     public String getParentDiskId() {
-        return ParentDiskId;
+        return parentDiskId;
     }
 
     public void setParentDiskId(String parentDiskId) {
-        ParentDiskId = parentDiskId;
+        this.parentDiskId = parentDiskId;
     }
 
     public String getSharePath() {
-        return SharePath;
+        return sharePath;
     }
 
     public void setSharePath(String sharePath) {
-        SharePath = sharePath;
+        this.sharePath = sharePath;
     }
 
     public String getSize() {
-        return Size;
+        return size;
     }
 
     public void setSize(String size) {
-        Size = size;
+        this.size = size;
     }
 
     public String getState() {
-        return State;
+        return state;
     }
 
     public void setState(String state) {
-        State = state;
+        this.state = state;
     }
 
-    public String getVHDType() {
-        return VHDType;
+    public String getVhdType() {
+        return vhdType;
     }
 
-    public void setVHDType(String VHDType) {
-        this.VHDType = VHDType;
+    public void setVhdType(String vhdType) {
+        this.vhdType = vhdType;
     }
 
-    public String getVMId() {
-        return VMId;
+    public String getVmId() {
+        return vmId;
     }
 
-    public void setVMId(String VMId) {
-        this.VMId = VMId;
+    public void setVmId(String vmId) {
+        this.vmId = vmId;
     }
 
     public String getTemplateId() {
-        return TemplateId;
+        return templateId;
     }
 
     public void setTemplateId(String templateId) {
-        TemplateId = templateId;
+        this.templateId = templateId;
     }
 
     public String getStampId() {
-        return StampId;
+        return stampId;
     }
 
     public void setStampId(String stampId) {
-        StampId = stampId;
+        this.stampId = stampId;
     }
 
     public String getFamilyName() {
-        return FamilyName;
+        return familyName;
     }
 
     public void setFamilyName(String familyName) {
-        FamilyName = familyName;
+        this.familyName = familyName;
     }
 
     public String getRelease() {
-        return Release;
+        return release;
     }
 
     public void setRelease(String release) {
-        Release = release;
+        this.release = release;
     }
 
     public String getCloudId() {
-        return CloudId;
+        return cloudId;
     }
 
     public void setCloudId(String cloudId) {
-        CloudId = cloudId;
+        this.cloudId = cloudId;
     }
 
     public String getHostVolumeId() {
-        return HostVolumeId;
+        return hostVolumeId;
     }
 
     public void setHostVolumeId(String hostVolumeId) {
-        HostVolumeId = hostVolumeId;
+        this.hostVolumeId = hostVolumeId;
     }
 
     public String getIsOrphaned() {
-        return IsOrphaned;
+        return isOrphaned;
     }
 
     public void setIsOrphaned(String isOrphaned) {
-        IsOrphaned = isOrphaned;
+        this.isOrphaned = isOrphaned;
     }
 
     public String getIsResourceGroup() {
-        return IsResourceGroup;
+        return isResourceGroup;
     }
 
     public void setIsResourceGroup(String isResourceGroup) {
-        IsResourceGroup = isResourceGroup;
+        this.isResourceGroup = isResourceGroup;
     }
 
     public String getLibraryGroup() {
-        return LibraryGroup;
+        return libraryGroup;
     }
 
     public void setLibraryGroup(String libraryGroup) {
-        LibraryGroup = libraryGroup;
+        this.libraryGroup = libraryGroup;
     }
 
     public String getLibraryShareId() {
-        return LibraryShareId;
+        return libraryShareId;
     }
 
     public void setLibraryShareId(String libraryShareId) {
-        LibraryShareId = libraryShareId;
+        this.libraryShareId = libraryShareId;
     }
 
     public String getLocation() {
-        return Location;
+        return location;
     }
 
     public void setLocation(String location) {
-        Location = location;
+        this.location = location;
     }
 
     public String getNamespace() {
-        return Namespace;
+        return namespace;
     }
 
     public void setNamespace(String namespace) {
-        Namespace = namespace;
+        this.namespace = namespace;
     }
 
     public String getReleaseTime() {
-        return ReleaseTime;
+        return releaseTime;
     }
 
     public void setReleaseTime(String releaseTime) {
-        ReleaseTime = releaseTime;
+        this.releaseTime = releaseTime;
     }
 
-    public String getSANCopyCapable() {
-        return SANCopyCapable;
+    public String getSanCopyCapable() {
+        return sanCopyCapable;
     }
 
-    public void setSANCopyCapable(String SANCopyCapable) {
-        this.SANCopyCapable = SANCopyCapable;
+    public void setSanCopyCapable(String sanCopyCapable) {
+        this.sanCopyCapable = sanCopyCapable;
     }
 
     public String getType() {
-        return Type;
+        return type;
     }
 
     public void setType(String type) {
-        Type = type;
+        this.type = type;
     }
 
     public String getVirtualizationPlatform() {
-        return VirtualizationPlatform;
+        return virtualizationPlatform;
     }
 
     public void setVirtualizationPlatform(String virtualizationPlatform) {
-        VirtualizationPlatform = virtualizationPlatform;
+        this.virtualizationPlatform = virtualizationPlatform;
     }
 
     public String getOperatingSystem() {
-        return OperatingSystem;
+        return operatingSystem;
     }
 
     public void setOperatingSystem(String operatingSystem) {
-        OperatingSystem = operatingSystem;
+        this.operatingSystem = operatingSystem;
     }
 
     public WAPOperatingSystemInstance getOperatingSystemInstance() {
-        return OperatingSystemInstance;
+        return operatingSystemInstance;
     }
 
     public void setOperatingSystemInstance(WAPOperatingSystemInstance operatingSystemInstance) {
-        OperatingSystemInstance = operatingSystemInstance;
+        this.operatingSystemInstance = operatingSystemInstance;
     }
 
     public String getOperatingSystemId() {
-        return OperatingSystemId;
+        return operatingSystemId;
     }
 
     public void setOperatingSystemId(String operatingSystemId) {
-        OperatingSystemId = operatingSystemId;
+        this.operatingSystemId = operatingSystemId;
     }
 
     public List<String> getTag() {
-        return Tag;
+        return tag;
     }
 
     public void setTag(List<String> tag) {
-        Tag = tag;
+        this.tag = tag;
     }
 }

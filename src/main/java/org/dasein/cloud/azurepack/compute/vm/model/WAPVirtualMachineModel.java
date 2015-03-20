@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dasein.cloud.azurepack.model.WAPOperatingSystemInstance;
 import org.dasein.cloud.azurepack.model.WAPUserModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,1183 +14,1334 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WAPVirtualMachineModel {
     @JsonProperty("odata.type")
-    private String OdataType = "VMM.VirtualMachine";
+    private String odataType = "VMM.VirtualMachine";
     @JsonProperty("odata.metadata")
-    private String OdataMetadata;
+    private String odataMetadata = null;
     @JsonProperty("AddedTime")
-    private String AddedTime;
+    private String addedTime = null;
     @JsonProperty("Agent")
-    private String Agent;
-    private String AllocatedGPU;
-    private String BackupEnabled;
-    private String BlockLiveMigrationIfHostBusy;
-    private String CanVMConnect;
-    private String CheckpointLocation;
+    private String agent = null;
+    @JsonProperty("AllocatedGPU")
+    private String allocatedGPU = null;
+    @JsonProperty("BackupEnabled")
+    private String backupEnabled = null;
+    @JsonProperty("BlockLiveMigrationIfHostBusy")
+    private String blockLiveMigrationIfHostBusy = null;
+    @JsonProperty("CanVMConnect")
+    private String canVMConnect = null;
+    @JsonProperty("CheckpointLocation")
+    private String checkpointLocation = null;
     @JsonProperty("CloudId")
-    private String CloudId;
-    private String ComputerName;
-    private String ComputerTierId;
-    private String CostCenter;
-    private String CPUCount;
-    private String CPUMax;
-    private String CPUReserve;
-    private String CPUType;
-    private String CPUUtilization;
-    private String CreationSource;
-    private String CreationTime;
-    private String DataExchangeEnabled;
-    private String DelayStart;
-    private String DeployPath;
-    private String Description;
-    private String DiskIO;
-    private String Dismiss;
-    private String DynamicMemoryDemandMB;
-    private String Enabled;
-    private String ExcludeFromPRO;
-    private String ExpectedCPUUtilization;
-    private String FailedJobID;
-    private String HasPassthroughDisk;
-    private String HasSavedState;
-    private String HasVMAdditions;
-    private String HeartbeatEnabled;
-    private String HighlyAvailable;
+    private String cloudId = null;
+    @JsonProperty("ComputerName")
+    private String computerName = null;
+    @JsonProperty("ComputerTierId")
+    private String computerTierId = null;
+    @JsonProperty("CostCenter")
+    private String costCenter = null;
+    @JsonProperty("CPUCount")
+    private String cpuCount = null;
+    @JsonProperty("CPUMax")
+    private String cpuMax = null;
+    @JsonProperty("CPUReserve")
+    private String cpuReserve = null;
+    @JsonProperty("CPUType")
+    private String cpuType = null;
+    @JsonProperty("CPUUtilization")
+    private String cpuUtilization = null;
+    @JsonProperty("CreationSource")
+    private String creationSource = null;
+    @JsonProperty("CreationTime")
+    private String creationTime = null;
+    @JsonProperty("DataExchangeEnabled")
+    private String dataExchangeEnabled = null;
+    @JsonProperty("DelayStart")
+    private String delayStart = null;
+    @JsonProperty("DeployPath")
+    private String deployPath = null;
+    @JsonProperty("Description")
+    private String description = null;
+    @JsonProperty("DiskIO")
+    private String diskIO = null;
+    @JsonProperty("Dismiss")
+    private String dismiss = null;
+    @JsonProperty("DynamicMemoryDemandMB")
+    private String dynamicMemoryDemandMB = null;
+    @JsonProperty("Enabled")
+    private String enabled = null;
+    @JsonProperty("ExcludeFromPRO")
+    private String excludeFromPRO = null;
+    @JsonProperty("ExpectedCPUUtilization")
+    private String expectedCPUUtilization = null;
+    @JsonProperty("FailedJobID")
+    private String failedJobID = null;
+    @JsonProperty("HasPassthroughDisk")
+    private String hasPassthroughDisk = null;
+    @JsonProperty("HasSavedState")
+    private String hasSavedState = null;
+    @JsonProperty("HasVMAdditions")
+    private String hasVMAdditions = null;
+    @JsonProperty("HeartbeatEnabled")
+    private String heartbeatEnabled = null;
+    @JsonProperty("HighlyAvailable")
+    private String highlyAvailable = null;
     @JsonProperty("ID")
-    private String ID;
-    private String IsFaultTolerant;
-    private String IsHighlyAvailable;
-    private String IsUndergoingLiveMigration;
-    private String LastRestoredCheckpointId;
-    private String LibraryGroup;
-    private String LimitCPUForMigration;
-    private String LimitCPUFunctionality;
-    private String VMNetworkAssignments;
-    private String Location;
-    private String MarkedAsTemplate;
-    private String Memory;
-    private String DynamicMemoryEnabled;
-    private String DynamicMemoryMinimumMB;
-    private String DynamicMemoryMaximumMB;
-    private String MemoryAssignedMB;
-    private String MemoryAvailablePercentage;
-    private String ModifiedTime;
-    private String MostRecentTaskId;
+    private String id = "00000000-0000-0000-0000-000000000000";
+    @JsonProperty("IsFaultTolerant")
+    private String isFaultTolerant = null;
+    @JsonProperty("IsHighlyAvailable")
+    private String isHighlyAvailable = null;
+    @JsonProperty("IsUndergoingLiveMigration")
+    private String isUndergoingLiveMigration = null;
+    @JsonProperty("LastRestoredCheckpointId")
+    private String lastRestoredCheckpointId = null;
+    @JsonProperty("LibraryGroup")
+    private String libraryGroup = null;
+    @JsonProperty("LimitCPUForMigration")
+    private String limitCPUForMigration = null;
+    @JsonProperty("LimitCPUFunctionality")
+    private String limitCPUFunctionality = null;
+    @JsonProperty("VMNetworkAssignments@odata.type")
+    private String vmNetworkAssignmentsODataType = "Collection(VMM.VMNetworkAssignment)";
+    @JsonProperty("VMNetworkAssignments")
+    private List<String> vmNetworkAssignments = new ArrayList<String>();
+    @JsonProperty("Location")
+    private String location = null;
+    @JsonProperty("MarkedAsTemplate")
+    private String markedAsTemplate = null;
+    @JsonProperty("Memory")
+    private String memory = null;
+    @JsonProperty("DynamicMemoryEnabled")
+    private String dynamicMemoryEnabled = null;
+    @JsonProperty("DynamicMemoryMinimumMB")
+    private String dynamicMemoryMinimumMB = null;
+    @JsonProperty("DynamicMemoryMaximumMB")
+    private String dynamicMemoryMaximumMB = null;
+    @JsonProperty("MemoryAssignedMB")
+    private String memoryAssignedMB = null;
+    @JsonProperty("MemoryAvailablePercentage")
+    private String memoryAvailablePercentage = null;
+    @JsonProperty("ModifiedTime")
+    private String modifiedTime = null;
+    @JsonProperty("MostRecentTaskId")
+    private String mostRecentTaskId = null;
     @JsonProperty("Name")
-    private String Name;
-    private String NetworkUtilization;
-    private String NumLock;
-    private String OperatingSystem;
-    private WAPOperatingSystemInstance OperatingSystemInstance;
-    private String OperatingSystemShutdownEnabled;
-    private String Operation;
-    private WAPUserModel Owner;
-    private List<String> GrantedToList;;
-    private String Path;
-    private String PerfCPUUtilization;
-    private String PerfDiskBytesRead;
-    private String PerfDiskBytesWrite;
-    private String PerfNetworkBytesRead;
-    private String PerfNetworkBytesWrite;
-    private String CPURelativeWeight;
-    private String Retry;
-    private String RunGuestAccount;
-    private String ServiceDeploymentErrorMessage;
-    private String ServiceId;
-    private String SharePath;
-    private String SourceObjectType;
-    private String StartAction;
-    private String StartVM;
-    private String Status;
+    private String name = null;
+    @JsonProperty("NetworkUtilization")
+    private String networkUtilization = null;
+    @JsonProperty("NumLock")
+    private String numLock = null;
+    @JsonProperty("OperatingSystem")
+    private String operatingSystem = null;
+    @JsonProperty("OperatingSystemInstance")
+    private WAPOperatingSystemInstance operatingSystemInstance = new WAPOperatingSystemInstance();
+    @JsonProperty("OperatingSystemShutdownEnabled")
+    private String operatingSystemShutdownEnabled = null;
+    @JsonProperty("Operation")
+    private String operation = null;
+    @JsonProperty("Owner")
+    private WAPUserModel owner = new WAPUserModel();
+    @JsonProperty("GrantedToList@odata.type")
+    private String grantedToListOdataType = "Collection(VMM.UserAndRole)";
+    @JsonProperty("GrantedToList")
+    private List<String> grantedToList = new ArrayList<String>();
+    @JsonProperty("Path")
+    private String path = null;
+    @JsonProperty("PerfCPUUtilization")
+    private String perfCPUUtilization = null;
+    @JsonProperty("PerfDiskBytesRead")
+    private String perfDiskBytesRead = null;
+    @JsonProperty("PerfDiskBytesWrite")
+    private String perfDiskBytesWrite = null;
+    @JsonProperty("PerfNetworkBytesRead")
+    private String perfNetworkBytesRead = null;
+    @JsonProperty("PerfNetworkBytesWrite")
+    private String perfNetworkBytesWrite = null;
+    @JsonProperty("CPURelativeWeight")
+    private String cpuRelativeWeight = null;
+    @JsonProperty("Retry")
+    private String retry = null;
+    @JsonProperty("RunGuestAccount")
+    private String runGuestAccount = null;
+    @JsonProperty("ServiceDeploymentErrorMessage")
+    private String serviceDeploymentErrorMessage = null;
+    @JsonProperty("ServiceId")
+    private String serviceId = null;
+    @JsonProperty("SharePath")
+    private String sharePath = null;
+    @JsonProperty("SourceObjectType")
+    private String sourceObjectType = null;
+    @JsonProperty("StartAction")
+    private String startAction = null;
+    @JsonProperty("StartVM")
+    private String startVM = null;
+    @JsonProperty("Status")
+    private String status = null;
     @JsonProperty("StatusString")
-    private String StatusString;
-    private String StopAction;
-    private String Tag;
-    private String TimeSynchronizationEnabled;
-    private String TotalSize;
-    private String Undo;
-    private String UndoDisksEnabled;
-    private String UpgradeDomain;
-    private String UseCluster;
-    private String UseLAN;
-    private String VirtualHardDiskId;
-    private String VirtualizationPlatform;
-    private String CapabilityProfile;
-    private String VMBaseConfigurationId;
+    private String statusString = null;
+    @JsonProperty("StopAction")
+    private String stopAction = null;
+    @JsonProperty("Tag")
+    private String tag = null;
+    @JsonProperty("TimeSynchronizationEnabled")
+    private String timeSynchronizationEnabled = null;
+    @JsonProperty("TotalSize")
+    private String totalSize = null;
+    @JsonProperty("Undo")
+    private String undo = null;
+    @JsonProperty("UndoDisksEnabled")
+    private String undoDisksEnabled = null;
+    @JsonProperty("UpgradeDomain")
+    private String upgradeDomain = null;
+    @JsonProperty("UseCluster")
+    private String useCluster = null;
+    @JsonProperty("UseLAN")
+    private String useLAN = null;
+    @JsonProperty("VirtualHardDiskId")
+    private String virtualHardDiskId = null;
+    @JsonProperty("VirtualizationPlatform")
+    private String virtualizationPlatform = null;
+    @JsonProperty("CapabilityProfile")
+    private String capabilityProfile = null;
+    @JsonProperty("VMBaseConfigurationId")
+    private String vmBaseConfigurationId = null;
     //VMConnection@odata.mediaContentType: "application/x-rdp"
-    private String VMConfigResource;
-    private String VMCPath;
-    private String VMHostName;
-    private String VMId;
+    @JsonProperty("VMConfigResource")
+    private String vmConfigResource = null;
+    @JsonProperty("VMCPath")
+    private String vmCPath = null;
+    @JsonProperty("VMHostName")
+    private String vmHostName = null;
+    @JsonProperty("VMId")
+    private String vmId = null;
     @JsonProperty("StampId")
-    private String StampId;
-    private String VMResource;
-    private String VMResourceGroup;
-    private String VirtualMachineState;
-    private String VMTemplateId;
-    private String HardwareProfileId;
-    private String BlockDynamicOptimization;
-    private String CPULimitForMigration;
-    private String CPULimitFunctionality;
-    private String Domain;
-    private String DynamicMemoryBufferPercentage;
-    private String FullName;
-    private String MemoryWeight;
-    private String OrganizationName;
-    private String DelayStartSeconds;
-    private String ProductKey;
-    private String WorkGroup;
-    private String TimeZone;
-    private String RunAsAccountUserName;
-    private String UserName;
-    private String Password;
-    private String LocalAdminRunAsAccountName;
-    private String LocalAdminUserName;
-    private String LocalAdminPassword;
-    private String LinuxDomainName;
-    private String LinuxAdministratorSSHKey;
-    private String LinuxAdministratorSSHKeyString;
-    private String CloudVMRoleName;
-    private String Generation;
-    private WAPDeploymentErrorInfoModel DeploymentErrorInfo;
-    private List<String> NewVirtualNetworkAdapterInput;
-    private String IsRecoveryVM;
-
-    public String getAddedTime() {
-        return AddedTime;
-    }
-
-    public void setAddedTime(String addedTime) {
-        AddedTime = addedTime;
-    }
-
-    public String getAgent() {
-        return Agent;
-    }
-
-    public void setAgent(String agent) {
-        Agent = agent;
-    }
-
-    public String getAllocatedGPU() {
-        return AllocatedGPU;
-    }
-
-    public void setAllocatedGPU(String allocatedGPU) {
-        AllocatedGPU = allocatedGPU;
-    }
-
-    public String getBackupEnabled() {
-        return BackupEnabled;
-    }
-
-    public void setBackupEnabled(String backupEnabled) {
-        BackupEnabled = backupEnabled;
-    }
-
-    public String getBlockLiveMigrationIfHostBusy() {
-        return BlockLiveMigrationIfHostBusy;
-    }
-
-    public void setBlockLiveMigrationIfHostBusy(String blockLiveMigrationIfHostBusy) {
-        BlockLiveMigrationIfHostBusy = blockLiveMigrationIfHostBusy;
-    }
-
-    public String getCanVMConnect() {
-        return CanVMConnect;
-    }
-
-    public void setCanVMConnect(String canVMConnect) {
-        CanVMConnect = canVMConnect;
-    }
-
-    public String getCheckpointLocation() {
-        return CheckpointLocation;
-    }
-
-    public void setCheckpointLocation(String checkpointLocation) {
-        CheckpointLocation = checkpointLocation;
-    }
-
-    public String getCloudId() {
-        return CloudId;
-    }
-
-    public void setCloudId(String cloudId) {
-        CloudId = cloudId;
-    }
-
-    public String getComputerName() {
-        return ComputerName;
-    }
-
-    public void setComputerName(String computerName) {
-        ComputerName = computerName;
-    }
-
-    public String getComputerTierId() {
-        return ComputerTierId;
-    }
-
-    public void setComputerTierId(String computerTierId) {
-        ComputerTierId = computerTierId;
-    }
-
-    public String getCostCenter() {
-        return CostCenter;
-    }
-
-    public void setCostCenter(String costCenter) {
-        CostCenter = costCenter;
-    }
-
-    public String getCPUCount() {
-        return CPUCount;
-    }
-
-    public void setCPUCount(String CPUCount) {
-        this.CPUCount = CPUCount;
-    }
-
-    public String getCPUMax() {
-        return CPUMax;
-    }
-
-    public void setCPUMax(String CPUMax) {
-        this.CPUMax = CPUMax;
-    }
-
-    public String getCPUReserve() {
-        return CPUReserve;
-    }
-
-    public void setCPUReserve(String CPUReserve) {
-        this.CPUReserve = CPUReserve;
-    }
-
-    public String getCPUType() {
-        return CPUType;
-    }
-
-    public void setCPUType(String CPUType) {
-        this.CPUType = CPUType;
-    }
-
-    public String getCPUUtilization() {
-        return CPUUtilization;
-    }
-
-    public void setCPUUtilization(String CPUUtilization) {
-        this.CPUUtilization = CPUUtilization;
-    }
-
-    public String getCreationSource() {
-        return CreationSource;
-    }
-
-    public void setCreationSource(String creationSource) {
-        CreationSource = creationSource;
-    }
-
-    public String getCreationTime() {
-        return CreationTime;
-    }
-
-    public void setCreationTime(String creationTime) {
-        CreationTime = creationTime;
-    }
-
-    public String getDataExchangeEnabled() {
-        return DataExchangeEnabled;
-    }
-
-    public void setDataExchangeEnabled(String dataExchangeEnabled) {
-        DataExchangeEnabled = dataExchangeEnabled;
-    }
-
-    public String getDelayStart() {
-        return DelayStart;
-    }
-
-    public void setDelayStart(String delayStart) {
-        DelayStart = delayStart;
-    }
-
-    public String getDeployPath() {
-        return DeployPath;
-    }
-
-    public void setDeployPath(String deployPath) {
-        DeployPath = deployPath;
-    }
-
-    public String getDescription() {
-        return Description;
-    }
-
-    public void setDescription(String description) {
-        Description = description;
-    }
-
-    public String getDiskIO() {
-        return DiskIO;
-    }
-
-    public void setDiskIO(String diskIO) {
-        DiskIO = diskIO;
-    }
-
-    public String getDismiss() {
-        return Dismiss;
-    }
-
-    public void setDismiss(String dismiss) {
-        Dismiss = dismiss;
-    }
-
-    public String getDynamicMemoryDemandMB() {
-        return DynamicMemoryDemandMB;
-    }
-
-    public void setDynamicMemoryDemandMB(String dynamicMemoryDemandMB) {
-        DynamicMemoryDemandMB = dynamicMemoryDemandMB;
-    }
-
-    public String getEnabled() {
-        return Enabled;
-    }
-
-    public void setEnabled(String enabled) {
-        Enabled = enabled;
-    }
-
-    public String getExcludeFromPRO() {
-        return ExcludeFromPRO;
-    }
-
-    public void setExcludeFromPRO(String excludeFromPRO) {
-        ExcludeFromPRO = excludeFromPRO;
-    }
-
-    public String getExpectedCPUUtilization() {
-        return ExpectedCPUUtilization;
-    }
-
-    public void setExpectedCPUUtilization(String expectedCPUUtilization) {
-        ExpectedCPUUtilization = expectedCPUUtilization;
-    }
-
-    public String getFailedJobID() {
-        return FailedJobID;
-    }
-
-    public void setFailedJobID(String failedJobID) {
-        FailedJobID = failedJobID;
-    }
-
-    public String getHasPassthroughDisk() {
-        return HasPassthroughDisk;
-    }
-
-    public void setHasPassthroughDisk(String hasPassthroughDisk) {
-        HasPassthroughDisk = hasPassthroughDisk;
-    }
-
-    public String getHasSavedState() {
-        return HasSavedState;
-    }
-
-    public void setHasSavedState(String hasSavedState) {
-        HasSavedState = hasSavedState;
-    }
-
-    public String getHasVMAdditions() {
-        return HasVMAdditions;
-    }
-
-    public void setHasVMAdditions(String hasVMAdditions) {
-        HasVMAdditions = hasVMAdditions;
-    }
-
-    public String getHeartbeatEnabled() {
-        return HeartbeatEnabled;
-    }
-
-    public void setHeartbeatEnabled(String heartbeatEnabled) {
-        HeartbeatEnabled = heartbeatEnabled;
-    }
-
-    public String getHighlyAvailable() {
-        return HighlyAvailable;
-    }
-
-    public void setHighlyAvailable(String highlyAvailable) {
-        HighlyAvailable = highlyAvailable;
-    }
-
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
-    public String getIsFaultTolerant() {
-        return IsFaultTolerant;
-    }
-
-    public void setIsFaultTolerant(String isFaultTolerant) {
-        IsFaultTolerant = isFaultTolerant;
-    }
-
-    public String getIsHighlyAvailable() {
-        return IsHighlyAvailable;
-    }
-
-    public void setIsHighlyAvailable(String isHighlyAvailable) {
-        IsHighlyAvailable = isHighlyAvailable;
-    }
-
-    public String getIsUndergoingLiveMigration() {
-        return IsUndergoingLiveMigration;
-    }
-
-    public void setIsUndergoingLiveMigration(String isUndergoingLiveMigration) {
-        IsUndergoingLiveMigration = isUndergoingLiveMigration;
-    }
-
-    public String getLastRestoredCheckpointId() {
-        return LastRestoredCheckpointId;
-    }
-
-    public void setLastRestoredCheckpointId(String lastRestoredCheckpointId) {
-        LastRestoredCheckpointId = lastRestoredCheckpointId;
-    }
-
-    public String getLibraryGroup() {
-        return LibraryGroup;
-    }
-
-    public void setLibraryGroup(String libraryGroup) {
-        LibraryGroup = libraryGroup;
-    }
-
-    public String getLimitCPUForMigration() {
-        return LimitCPUForMigration;
-    }
-
-    public void setLimitCPUForMigration(String limitCPUForMigration) {
-        LimitCPUForMigration = limitCPUForMigration;
-    }
-
-    public String getLimitCPUFunctionality() {
-        return LimitCPUFunctionality;
-    }
-
-    public void setLimitCPUFunctionality(String limitCPUFunctionality) {
-        LimitCPUFunctionality = limitCPUFunctionality;
-    }
-
-    public String getVMNetworkAssignments() {
-        return VMNetworkAssignments;
-    }
-
-    public void setVMNetworkAssignments(String VMNetworkAssignments) {
-        this.VMNetworkAssignments = VMNetworkAssignments;
-    }
-
-    public String getLocation() {
-        return Location;
-    }
-
-    public void setLocation(String location) {
-        Location = location;
-    }
-
-    public String getMarkedAsTemplate() {
-        return MarkedAsTemplate;
-    }
-
-    public void setMarkedAsTemplate(String markedAsTemplate) {
-        MarkedAsTemplate = markedAsTemplate;
-    }
-
-    public String getMemory() {
-        return Memory;
-    }
-
-    public void setMemory(String memory) {
-        Memory = memory;
-    }
-
-    public String getDynamicMemoryEnabled() {
-        return DynamicMemoryEnabled;
-    }
-
-    public void setDynamicMemoryEnabled(String dynamicMemoryEnabled) {
-        DynamicMemoryEnabled = dynamicMemoryEnabled;
-    }
-
-    public String getDynamicMemoryMinimumMB() {
-        return DynamicMemoryMinimumMB;
-    }
-
-    public void setDynamicMemoryMinimumMB(String dynamicMemoryMinimumMB) {
-        DynamicMemoryMinimumMB = dynamicMemoryMinimumMB;
-    }
-
-    public String getDynamicMemoryMaximumMB() {
-        return DynamicMemoryMaximumMB;
-    }
-
-    public void setDynamicMemoryMaximumMB(String dynamicMemoryMaximumMB) {
-        DynamicMemoryMaximumMB = dynamicMemoryMaximumMB;
-    }
-
-    public String getMemoryAssignedMB() {
-        return MemoryAssignedMB;
-    }
-
-    public void setMemoryAssignedMB(String memoryAssignedMB) {
-        MemoryAssignedMB = memoryAssignedMB;
-    }
-
-    public String getMemoryAvailablePercentage() {
-        return MemoryAvailablePercentage;
-    }
-
-    public void setMemoryAvailablePercentage(String memoryAvailablePercentage) {
-        MemoryAvailablePercentage = memoryAvailablePercentage;
-    }
-
-    public String getModifiedTime() {
-        return ModifiedTime;
-    }
-
-    public void setModifiedTime(String modifiedTime) {
-        ModifiedTime = modifiedTime;
-    }
-
-    public String getMostRecentTaskId() {
-        return MostRecentTaskId;
-    }
-
-    public void setMostRecentTaskId(String mostRecentTaskId) {
-        MostRecentTaskId = mostRecentTaskId;
-    }
-
-    public String getName() {
-        return Name;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
-
-    public String getNetworkUtilization() {
-        return NetworkUtilization;
-    }
-
-    public void setNetworkUtilization(String networkUtilization) {
-        NetworkUtilization = networkUtilization;
-    }
-
-    public String getNumLock() {
-        return NumLock;
-    }
-
-    public void setNumLock(String numLock) {
-        NumLock = numLock;
-    }
-
-    public String getOperatingSystem() {
-        return OperatingSystem;
-    }
-
-    public void setOperatingSystem(String operatingSystem) {
-        OperatingSystem = operatingSystem;
-    }
-
-    public WAPOperatingSystemInstance getOperatingSystemInstance() {
-        return OperatingSystemInstance;
-    }
-
-    public void setOperatingSystemInstance(WAPOperatingSystemInstance operatingSystemInstance) {
-        OperatingSystemInstance = operatingSystemInstance;
-    }
-
-    public String getOperatingSystemShutdownEnabled() {
-        return OperatingSystemShutdownEnabled;
-    }
-
-    public void setOperatingSystemShutdownEnabled(String operatingSystemShutdownEnabled) {
-        OperatingSystemShutdownEnabled = operatingSystemShutdownEnabled;
-    }
-
-    public String getOperation() {
-        return Operation;
-    }
-
-    public void setOperation(String operation) {
-        Operation = operation;
-    }
-
-    public WAPUserModel getOwner() {
-        return Owner;
-    }
-
-    public void setOwner(WAPUserModel owner) {
-        Owner = owner;
-    }
-
-    public List<String> getGrantedToList() {
-        return GrantedToList;
-    }
-
-    public void setGrantedToList(List<String> grantedToList) {
-        GrantedToList = grantedToList;
-    }
-
-    public String getPath() {
-        return Path;
-    }
-
-    public void setPath(String path) {
-        Path = path;
-    }
-
-    public String getPerfCPUUtilization() {
-        return PerfCPUUtilization;
-    }
-
-    public void setPerfCPUUtilization(String perfCPUUtilization) {
-        PerfCPUUtilization = perfCPUUtilization;
-    }
-
-    public String getPerfDiskBytesRead() {
-        return PerfDiskBytesRead;
-    }
-
-    public void setPerfDiskBytesRead(String perfDiskBytesRead) {
-        PerfDiskBytesRead = perfDiskBytesRead;
-    }
-
-    public String getPerfDiskBytesWrite() {
-        return PerfDiskBytesWrite;
-    }
-
-    public void setPerfDiskBytesWrite(String perfDiskBytesWrite) {
-        PerfDiskBytesWrite = perfDiskBytesWrite;
-    }
-
-    public String getPerfNetworkBytesRead() {
-        return PerfNetworkBytesRead;
-    }
-
-    public void setPerfNetworkBytesRead(String perfNetworkBytesRead) {
-        PerfNetworkBytesRead = perfNetworkBytesRead;
-    }
-
-    public String getPerfNetworkBytesWrite() {
-        return PerfNetworkBytesWrite;
-    }
-
-    public void setPerfNetworkBytesWrite(String perfNetworkBytesWrite) {
-        PerfNetworkBytesWrite = perfNetworkBytesWrite;
-    }
-
-    public String getCPURelativeWeight() {
-        return CPURelativeWeight;
-    }
-
-    public void setCPURelativeWeight(String CPURelativeWeight) {
-        this.CPURelativeWeight = CPURelativeWeight;
-    }
-
-    public String getRetry() {
-        return Retry;
-    }
-
-    public void setRetry(String retry) {
-        Retry = retry;
-    }
-
-    public String getRunGuestAccount() {
-        return RunGuestAccount;
-    }
-
-    public void setRunGuestAccount(String runGuestAccount) {
-        RunGuestAccount = runGuestAccount;
-    }
-
-    public String getServiceDeploymentErrorMessage() {
-        return ServiceDeploymentErrorMessage;
-    }
-
-    public void setServiceDeploymentErrorMessage(String serviceDeploymentErrorMessage) {
-        ServiceDeploymentErrorMessage = serviceDeploymentErrorMessage;
-    }
-
-    public String getServiceId() {
-        return ServiceId;
-    }
-
-    public void setServiceId(String serviceId) {
-        ServiceId = serviceId;
-    }
-
-    public String getSharePath() {
-        return SharePath;
-    }
-
-    public void setSharePath(String sharePath) {
-        SharePath = sharePath;
-    }
-
-    public String getSourceObjectType() {
-        return SourceObjectType;
-    }
-
-    public void setSourceObjectType(String sourceObjectType) {
-        SourceObjectType = sourceObjectType;
-    }
-
-    public String getStartAction() {
-        return StartAction;
-    }
-
-    public void setStartAction(String startAction) {
-        StartAction = startAction;
-    }
-
-    public String getStartVM() {
-        return StartVM;
-    }
-
-    public void setStartVM(String startVM) {
-        StartVM = startVM;
-    }
-
-    public String getStatus() {
-        return Status;
-    }
-
-    public void setStatus(String status) {
-        Status = status;
-    }
-
-    public String getStatusString() {
-        return StatusString;
-    }
-
-    public void setStatusString(String statusString) {
-        StatusString = statusString;
-    }
-
-    public String getStopAction() {
-        return StopAction;
-    }
-
-    public void setStopAction(String stopAction) {
-        StopAction = stopAction;
-    }
-
-    public String getTag() {
-        return Tag;
-    }
-
-    public void setTag(String tag) {
-        Tag = tag;
-    }
-
-    public String getTimeSynchronizationEnabled() {
-        return TimeSynchronizationEnabled;
-    }
-
-    public void setTimeSynchronizationEnabled(String timeSynchronizationEnabled) {
-        TimeSynchronizationEnabled = timeSynchronizationEnabled;
-    }
-
-    public String getTotalSize() {
-        return TotalSize;
-    }
-
-    public void setTotalSize(String totalSize) {
-        TotalSize = totalSize;
-    }
-
-    public String getUndo() {
-        return Undo;
-    }
-
-    public void setUndo(String undo) {
-        Undo = undo;
-    }
-
-    public String getUndoDisksEnabled() {
-        return UndoDisksEnabled;
-    }
-
-    public void setUndoDisksEnabled(String undoDisksEnabled) {
-        UndoDisksEnabled = undoDisksEnabled;
-    }
-
-    public String getUpgradeDomain() {
-        return UpgradeDomain;
-    }
-
-    public void setUpgradeDomain(String upgradeDomain) {
-        UpgradeDomain = upgradeDomain;
-    }
-
-    public String getUseCluster() {
-        return UseCluster;
-    }
-
-    public void setUseCluster(String useCluster) {
-        UseCluster = useCluster;
-    }
-
-    public String getUseLAN() {
-        return UseLAN;
-    }
-
-    public void setUseLAN(String useLAN) {
-        UseLAN = useLAN;
-    }
-
-    public String getVirtualHardDiskId() {
-        return VirtualHardDiskId;
-    }
-
-    public void setVirtualHardDiskId(String virtualHardDiskId) {
-        VirtualHardDiskId = virtualHardDiskId;
-    }
-
-    public String getVirtualizationPlatform() {
-        return VirtualizationPlatform;
-    }
-
-    public void setVirtualizationPlatform(String virtualizationPlatform) {
-        VirtualizationPlatform = virtualizationPlatform;
-    }
-
-    public String getCapabilityProfile() {
-        return CapabilityProfile;
-    }
-
-    public void setCapabilityProfile(String capabilityProfile) {
-        CapabilityProfile = capabilityProfile;
-    }
-
-    public String getVMBaseConfigurationId() {
-        return VMBaseConfigurationId;
-    }
-
-    public void setVMBaseConfigurationId(String VMBaseConfigurationId) {
-        this.VMBaseConfigurationId = VMBaseConfigurationId;
-    }
-
-    public String getVMConfigResource() {
-        return VMConfigResource;
-    }
-
-    public void setVMConfigResource(String VMConfigResource) {
-        this.VMConfigResource = VMConfigResource;
-    }
-
-    public String getVMCPath() {
-        return VMCPath;
-    }
-
-    public void setVMCPath(String VMCPath) {
-        this.VMCPath = VMCPath;
-    }
-
-    public String getVMHostName() {
-        return VMHostName;
-    }
-
-    public void setVMHostName(String VMHostName) {
-        this.VMHostName = VMHostName;
-    }
-
-    public String getVMId() {
-        return VMId;
-    }
-
-    public void setVMId(String VMId) {
-        this.VMId = VMId;
-    }
-
-    public String getStampId() {
-        return StampId;
-    }
-
-    public void setStampId(String stampId) {
-        StampId = stampId;
-    }
-
-    public String getVMResource() {
-        return VMResource;
-    }
-
-    public void setVMResource(String VMResource) {
-        this.VMResource = VMResource;
-    }
-
-    public String getVMResourceGroup() {
-        return VMResourceGroup;
-    }
-
-    public void setVMResourceGroup(String VMResourceGroup) {
-        this.VMResourceGroup = VMResourceGroup;
-    }
-
-    public String getVirtualMachineState() {
-        return VirtualMachineState;
-    }
-
-    public void setVirtualMachineState(String virtualMachineState) {
-        VirtualMachineState = virtualMachineState;
-    }
-
-    public String getVMTemplateId() {
-        return VMTemplateId;
-    }
-
-    public void setVMTemplateId(String VMTemplateId) {
-        this.VMTemplateId = VMTemplateId;
-    }
-
-    public String getHardwareProfileId() {
-        return HardwareProfileId;
-    }
-
-    public void setHardwareProfileId(String hardwareProfileId) {
-        HardwareProfileId = hardwareProfileId;
-    }
-
-    public String getBlockDynamicOptimization() {
-        return BlockDynamicOptimization;
-    }
-
-    public void setBlockDynamicOptimization(String blockDynamicOptimization) {
-        BlockDynamicOptimization = blockDynamicOptimization;
-    }
-
-    public String getCPULimitForMigration() {
-        return CPULimitForMigration;
-    }
-
-    public void setCPULimitForMigration(String CPULimitForMigration) {
-        this.CPULimitForMigration = CPULimitForMigration;
-    }
-
-    public String getCPULimitFunctionality() {
-        return CPULimitFunctionality;
-    }
-
-    public void setCPULimitFunctionality(String CPULimitFunctionality) {
-        this.CPULimitFunctionality = CPULimitFunctionality;
-    }
-
-    public String getDomain() {
-        return Domain;
-    }
-
-    public void setDomain(String domain) {
-        Domain = domain;
-    }
-
-    public String getDynamicMemoryBufferPercentage() {
-        return DynamicMemoryBufferPercentage;
-    }
-
-    public void setDynamicMemoryBufferPercentage(String dynamicMemoryBufferPercentage) {
-        DynamicMemoryBufferPercentage = dynamicMemoryBufferPercentage;
-    }
-
-    public String getFullName() {
-        return FullName;
-    }
-
-    public void setFullName(String fullName) {
-        FullName = fullName;
-    }
-
-    public String getMemoryWeight() {
-        return MemoryWeight;
-    }
-
-    public void setMemoryWeight(String memoryWeight) {
-        MemoryWeight = memoryWeight;
-    }
-
-    public String getOrganizationName() {
-        return OrganizationName;
-    }
-
-    public void setOrganizationName(String organizationName) {
-        OrganizationName = organizationName;
-    }
-
-    public String getDelayStartSeconds() {
-        return DelayStartSeconds;
-    }
-
-    public void setDelayStartSeconds(String delayStartSeconds) {
-        DelayStartSeconds = delayStartSeconds;
-    }
-
-    public String getProductKey() {
-        return ProductKey;
-    }
-
-    public void setProductKey(String productKey) {
-        ProductKey = productKey;
-    }
-
-    public String getWorkGroup() {
-        return WorkGroup;
-    }
-
-    public void setWorkGroup(String workGroup) {
-        WorkGroup = workGroup;
-    }
-
-    public String getTimeZone() {
-        return TimeZone;
-    }
-
-    public void setTimeZone(String timeZone) {
-        TimeZone = timeZone;
-    }
-
-    public String getRunAsAccountUserName() {
-        return RunAsAccountUserName;
-    }
-
-    public void setRunAsAccountUserName(String runAsAccountUserName) {
-        RunAsAccountUserName = runAsAccountUserName;
-    }
-
-    public String getUserName() {
-        return UserName;
-    }
-
-    public void setUserName(String userName) {
-        UserName = userName;
-    }
-
-    public String getPassword() {
-        return Password;
-    }
-
-    public void setPassword(String password) {
-        Password = password;
-    }
-
-    public String getLocalAdminRunAsAccountName() {
-        return LocalAdminRunAsAccountName;
-    }
-
-    public void setLocalAdminRunAsAccountName(String localAdminRunAsAccountName) {
-        LocalAdminRunAsAccountName = localAdminRunAsAccountName;
-    }
-
-    public String getLocalAdminUserName() {
-        return LocalAdminUserName;
-    }
-
-    public void setLocalAdminUserName(String localAdminUserName) {
-        LocalAdminUserName = localAdminUserName;
-    }
-
-    public String getLocalAdminPassword() {
-        return LocalAdminPassword;
-    }
-
-    public void setLocalAdminPassword(String localAdminPassword) {
-        LocalAdminPassword = localAdminPassword;
-    }
-
-    public String getLinuxDomainName() {
-        return LinuxDomainName;
-    }
-
-    public void setLinuxDomainName(String linuxDomainName) {
-        LinuxDomainName = linuxDomainName;
-    }
-
-    public String getLinuxAdministratorSSHKey() {
-        return LinuxAdministratorSSHKey;
-    }
-
-    public void setLinuxAdministratorSSHKey(String linuxAdministratorSSHKey) {
-        LinuxAdministratorSSHKey = linuxAdministratorSSHKey;
-    }
-
-    public String getLinuxAdministratorSSHKeyString() {
-        return LinuxAdministratorSSHKeyString;
-    }
-
-    public void setLinuxAdministratorSSHKeyString(String linuxAdministratorSSHKeyString) {
-        LinuxAdministratorSSHKeyString = linuxAdministratorSSHKeyString;
-    }
-
-    public String getCloudVMRoleName() {
-        return CloudVMRoleName;
-    }
-
-    public void setCloudVMRoleName(String cloudVMRoleName) {
-        CloudVMRoleName = cloudVMRoleName;
-    }
-
-    public String getGeneration() {
-        return Generation;
-    }
-
-    public void setGeneration(String generation) {
-        Generation = generation;
-    }
-
-    public WAPDeploymentErrorInfoModel getDeploymentErrorInfo() {
-        return DeploymentErrorInfo;
-    }
-
-    public void setDeploymentErrorInfo(WAPDeploymentErrorInfoModel deploymentErrorInfo) {
-        DeploymentErrorInfo = deploymentErrorInfo;
-    }
-
-    public List<String> getNewVirtualNetworkAdapterInput() {
-        return NewVirtualNetworkAdapterInput;
-    }
-
-    public void setNewVirtualNetworkAdapterInput(List<String> newVirtualNetworkAdapterInput) {
-        NewVirtualNetworkAdapterInput = newVirtualNetworkAdapterInput;
-    }
-
-    public String getIsRecoveryVM() {
-        return IsRecoveryVM;
-    }
-
-    public void setIsRecoveryVM(String isRecoveryVM) {
-        IsRecoveryVM = isRecoveryVM;
-    }
+    private String stampId = null;
+    @JsonProperty("VMResource")
+    private String vmResource = null;
+    @JsonProperty("VMResourceGroup")
+    private String vmResourceGroup = null;
+    @JsonProperty("VirtualMachineState")
+    private String virtualMachineState = null;
+    @JsonProperty("VMTemplateId")
+    private String vmTemplateId = null;
+    @JsonProperty("HardwareProfileId")
+    private String hardwareProfileId = null;
+    @JsonProperty("BlockDynamicOptimization")
+    private String blockDynamicOptimization = null;
+    @JsonProperty("CPULimitForMigration")
+    private String cpuLimitForMigration = null;
+    @JsonProperty("CPULimitFunctionality")
+    private String cpuLimitFunctionality = null;
+    @JsonProperty("Domain")
+    private String domain = null;
+    @JsonProperty("DynamicMemoryBufferPercentage")
+    private String dynamicMemoryBufferPercentage = null;
+    @JsonProperty("FullName")
+    private String fullName = null;
+    @JsonProperty("MemoryWeight")
+    private String memoryWeight = null;
+    @JsonProperty("OrganizationName")
+    private String organizationName = null;
+    @JsonProperty("DelayStartSeconds")
+    private String delayStartSeconds = null;
+    @JsonProperty("ProductKey")
+    private String productKey = null;
+    @JsonProperty("WorkGroup")
+    private String workGroup = null;
+    @JsonProperty("TimeZone")
+    private String timeZone = null;
+    @JsonProperty("RunAsAccountUserName")
+    private String runAsAccountUserName = null;
+    @JsonProperty("UserName")
+    private String userName = null;
+    @JsonProperty("Password")
+    private String password = null;
+    @JsonProperty("LocalAdminRunAsAccountName")
+    private String localAdminRunAsAccountName = null;
+    @JsonProperty("LocalAdminUserName")
+    private String localAdminUserName = null;
+    @JsonProperty("LocalAdminPassword")
+    private String localAdminPassword = null;
+    @JsonProperty("LinuxDomainName")
+    private String linuxDomainName = null;
+    @JsonProperty("LinuxAdministratorSSHKey")
+    private String linuxAdministratorSSHKey = null;
+    @JsonProperty("LinuxAdministratorSSHKeyString")
+    private String linuxAdministratorSSHKeyString = null;
+    @JsonProperty("CloudVMRoleName")
+    private String cloudVMRoleName = null;
+    @JsonProperty("Generation")
+    private String generation = null;
+    @JsonProperty("DeploymentErrorInfo")
+    private WAPDeploymentErrorInfoModel deploymentErrorInfo = new WAPDeploymentErrorInfoModel();
+    @JsonProperty("NewVirtualNetworkAdapterInput@odata.type")
+    private String newVirtualNetworkAdapterInputODataType = "Collection(VMM.NewVMVirtualNetworkAdapterInput)";
+    @JsonProperty("NewVirtualNetworkAdapterInput")
+    private List<String> newVirtualNetworkAdapterInput = new ArrayList<String>();
+    @JsonProperty("IsRecoveryVM")
+    private String isRecoveryVM = null;
 
     public String getOdataType() {
-        return OdataType;
+        return odataType;
     }
 
     public void setOdataType(String odataType) {
-        OdataType = odataType;
+        this.odataType = odataType;
     }
 
     public String getOdataMetadata() {
-        return OdataMetadata;
+        return odataMetadata;
     }
 
     public void setOdataMetadata(String odataMetadata) {
-        OdataMetadata = odataMetadata;
+        this.odataMetadata = odataMetadata;
+    }
+
+    public String getAddedTime() {
+        return addedTime;
+    }
+
+    public void setAddedTime(String addedTime) {
+        this.addedTime = addedTime;
+    }
+
+    public String getAgent() {
+        return agent;
+    }
+
+    public void setAgent(String agent) {
+        this.agent = agent;
+    }
+
+    public String getAllocatedGPU() {
+        return allocatedGPU;
+    }
+
+    public void setAllocatedGPU(String allocatedGPU) {
+        this.allocatedGPU = allocatedGPU;
+    }
+
+    public String getBackupEnabled() {
+        return backupEnabled;
+    }
+
+    public void setBackupEnabled(String backupEnabled) {
+        this.backupEnabled = backupEnabled;
+    }
+
+    public String getBlockLiveMigrationIfHostBusy() {
+        return blockLiveMigrationIfHostBusy;
+    }
+
+    public void setBlockLiveMigrationIfHostBusy(String blockLiveMigrationIfHostBusy) {
+        this.blockLiveMigrationIfHostBusy = blockLiveMigrationIfHostBusy;
+    }
+
+    public String getCanVMConnect() {
+        return canVMConnect;
+    }
+
+    public void setCanVMConnect(String canVMConnect) {
+        this.canVMConnect = canVMConnect;
+    }
+
+    public String getCheckpointLocation() {
+        return checkpointLocation;
+    }
+
+    public void setCheckpointLocation(String checkpointLocation) {
+        this.checkpointLocation = checkpointLocation;
+    }
+
+    public String getCloudId() {
+        return cloudId;
+    }
+
+    public void setCloudId(String cloudId) {
+        this.cloudId = cloudId;
+    }
+
+    public String getComputerName() {
+        return computerName;
+    }
+
+    public void setComputerName(String computerName) {
+        this.computerName = computerName;
+    }
+
+    public String getComputerTierId() {
+        return computerTierId;
+    }
+
+    public void setComputerTierId(String computerTierId) {
+        this.computerTierId = computerTierId;
+    }
+
+    public String getCostCenter() {
+        return costCenter;
+    }
+
+    public void setCostCenter(String costCenter) {
+        this.costCenter = costCenter;
+    }
+
+    public String getCpuCount() {
+        return cpuCount;
+    }
+
+    public void setCpuCount(String cpuCount) {
+        this.cpuCount = cpuCount;
+    }
+
+    public String getCpuMax() {
+        return cpuMax;
+    }
+
+    public void setCpuMax(String cpuMax) {
+        this.cpuMax = cpuMax;
+    }
+
+    public String getCpuReserve() {
+        return cpuReserve;
+    }
+
+    public void setCpuReserve(String cpuReserve) {
+        this.cpuReserve = cpuReserve;
+    }
+
+    public String getCpuType() {
+        return cpuType;
+    }
+
+    public void setCpuType(String cpuType) {
+        this.cpuType = cpuType;
+    }
+
+    public String getCpuUtilization() {
+        return cpuUtilization;
+    }
+
+    public void setCpuUtilization(String cpuUtilization) {
+        this.cpuUtilization = cpuUtilization;
+    }
+
+    public String getCreationSource() {
+        return creationSource;
+    }
+
+    public void setCreationSource(String creationSource) {
+        this.creationSource = creationSource;
+    }
+
+    public String getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(String creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public String getDataExchangeEnabled() {
+        return dataExchangeEnabled;
+    }
+
+    public void setDataExchangeEnabled(String dataExchangeEnabled) {
+        this.dataExchangeEnabled = dataExchangeEnabled;
+    }
+
+    public String getDelayStart() {
+        return delayStart;
+    }
+
+    public void setDelayStart(String delayStart) {
+        this.delayStart = delayStart;
+    }
+
+    public String getDeployPath() {
+        return deployPath;
+    }
+
+    public void setDeployPath(String deployPath) {
+        this.deployPath = deployPath;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDiskIO() {
+        return diskIO;
+    }
+
+    public void setDiskIO(String diskIO) {
+        this.diskIO = diskIO;
+    }
+
+    public String getDismiss() {
+        return dismiss;
+    }
+
+    public void setDismiss(String dismiss) {
+        this.dismiss = dismiss;
+    }
+
+    public String getDynamicMemoryDemandMB() {
+        return dynamicMemoryDemandMB;
+    }
+
+    public void setDynamicMemoryDemandMB(String dynamicMemoryDemandMB) {
+        this.dynamicMemoryDemandMB = dynamicMemoryDemandMB;
+    }
+
+    public String getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(String enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getExcludeFromPRO() {
+        return excludeFromPRO;
+    }
+
+    public void setExcludeFromPRO(String excludeFromPRO) {
+        this.excludeFromPRO = excludeFromPRO;
+    }
+
+    public String getExpectedCPUUtilization() {
+        return expectedCPUUtilization;
+    }
+
+    public void setExpectedCPUUtilization(String expectedCPUUtilization) {
+        this.expectedCPUUtilization = expectedCPUUtilization;
+    }
+
+    public String getFailedJobID() {
+        return failedJobID;
+    }
+
+    public void setFailedJobID(String failedJobID) {
+        this.failedJobID = failedJobID;
+    }
+
+    public String getHasPassthroughDisk() {
+        return hasPassthroughDisk;
+    }
+
+    public void setHasPassthroughDisk(String hasPassthroughDisk) {
+        this.hasPassthroughDisk = hasPassthroughDisk;
+    }
+
+    public String getHasSavedState() {
+        return hasSavedState;
+    }
+
+    public void setHasSavedState(String hasSavedState) {
+        this.hasSavedState = hasSavedState;
+    }
+
+    public String getHasVMAdditions() {
+        return hasVMAdditions;
+    }
+
+    public void setHasVMAdditions(String hasVMAdditions) {
+        this.hasVMAdditions = hasVMAdditions;
+    }
+
+    public String getHeartbeatEnabled() {
+        return heartbeatEnabled;
+    }
+
+    public void setHeartbeatEnabled(String heartbeatEnabled) {
+        this.heartbeatEnabled = heartbeatEnabled;
+    }
+
+    public String getHighlyAvailable() {
+        return highlyAvailable;
+    }
+
+    public void setHighlyAvailable(String highlyAvailable) {
+        this.highlyAvailable = highlyAvailable;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getIsFaultTolerant() {
+        return isFaultTolerant;
+    }
+
+    public void setIsFaultTolerant(String isFaultTolerant) {
+        this.isFaultTolerant = isFaultTolerant;
+    }
+
+    public String getIsHighlyAvailable() {
+        return isHighlyAvailable;
+    }
+
+    public void setIsHighlyAvailable(String isHighlyAvailable) {
+        this.isHighlyAvailable = isHighlyAvailable;
+    }
+
+    public String getIsUndergoingLiveMigration() {
+        return isUndergoingLiveMigration;
+    }
+
+    public void setIsUndergoingLiveMigration(String isUndergoingLiveMigration) {
+        this.isUndergoingLiveMigration = isUndergoingLiveMigration;
+    }
+
+    public String getLastRestoredCheckpointId() {
+        return lastRestoredCheckpointId;
+    }
+
+    public void setLastRestoredCheckpointId(String lastRestoredCheckpointId) {
+        this.lastRestoredCheckpointId = lastRestoredCheckpointId;
+    }
+
+    public String getLibraryGroup() {
+        return libraryGroup;
+    }
+
+    public void setLibraryGroup(String libraryGroup) {
+        this.libraryGroup = libraryGroup;
+    }
+
+    public String getLimitCPUForMigration() {
+        return limitCPUForMigration;
+    }
+
+    public void setLimitCPUForMigration(String limitCPUForMigration) {
+        this.limitCPUForMigration = limitCPUForMigration;
+    }
+
+    public String getLimitCPUFunctionality() {
+        return limitCPUFunctionality;
+    }
+
+    public void setLimitCPUFunctionality(String limitCPUFunctionality) {
+        this.limitCPUFunctionality = limitCPUFunctionality;
+    }
+
+    public List<String> getVmNetworkAssignments() {
+        return vmNetworkAssignments;
+    }
+
+    public void setVmNetworkAssignments(List<String> vmNetworkAssignments) {
+        this.vmNetworkAssignments = vmNetworkAssignments;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getMarkedAsTemplate() {
+        return markedAsTemplate;
+    }
+
+    public void setMarkedAsTemplate(String markedAsTemplate) {
+        this.markedAsTemplate = markedAsTemplate;
+    }
+
+    public String getMemory() {
+        return memory;
+    }
+
+    public void setMemory(String memory) {
+        this.memory = memory;
+    }
+
+    public String getDynamicMemoryEnabled() {
+        return dynamicMemoryEnabled;
+    }
+
+    public void setDynamicMemoryEnabled(String dynamicMemoryEnabled) {
+        this.dynamicMemoryEnabled = dynamicMemoryEnabled;
+    }
+
+    public String getDynamicMemoryMinimumMB() {
+        return dynamicMemoryMinimumMB;
+    }
+
+    public void setDynamicMemoryMinimumMB(String dynamicMemoryMinimumMB) {
+        this.dynamicMemoryMinimumMB = dynamicMemoryMinimumMB;
+    }
+
+    public String getDynamicMemoryMaximumMB() {
+        return dynamicMemoryMaximumMB;
+    }
+
+    public void setDynamicMemoryMaximumMB(String dynamicMemoryMaximumMB) {
+        this.dynamicMemoryMaximumMB = dynamicMemoryMaximumMB;
+    }
+
+    public String getMemoryAssignedMB() {
+        return memoryAssignedMB;
+    }
+
+    public void setMemoryAssignedMB(String memoryAssignedMB) {
+        this.memoryAssignedMB = memoryAssignedMB;
+    }
+
+    public String getMemoryAvailablePercentage() {
+        return memoryAvailablePercentage;
+    }
+
+    public void setMemoryAvailablePercentage(String memoryAvailablePercentage) {
+        this.memoryAvailablePercentage = memoryAvailablePercentage;
+    }
+
+    public String getModifiedTime() {
+        return modifiedTime;
+    }
+
+    public void setModifiedTime(String modifiedTime) {
+        this.modifiedTime = modifiedTime;
+    }
+
+    public String getMostRecentTaskId() {
+        return mostRecentTaskId;
+    }
+
+    public void setMostRecentTaskId(String mostRecentTaskId) {
+        this.mostRecentTaskId = mostRecentTaskId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getNetworkUtilization() {
+        return networkUtilization;
+    }
+
+    public void setNetworkUtilization(String networkUtilization) {
+        this.networkUtilization = networkUtilization;
+    }
+
+    public String getNumLock() {
+        return numLock;
+    }
+
+    public void setNumLock(String numLock) {
+        this.numLock = numLock;
+    }
+
+    public String getOperatingSystem() {
+        return operatingSystem;
+    }
+
+    public void setOperatingSystem(String operatingSystem) {
+        this.operatingSystem = operatingSystem;
+    }
+
+    public WAPOperatingSystemInstance getOperatingSystemInstance() {
+        return operatingSystemInstance;
+    }
+
+    public void setOperatingSystemInstance(WAPOperatingSystemInstance operatingSystemInstance) {
+        this.operatingSystemInstance = operatingSystemInstance;
+    }
+
+    public String getOperatingSystemShutdownEnabled() {
+        return operatingSystemShutdownEnabled;
+    }
+
+    public void setOperatingSystemShutdownEnabled(String operatingSystemShutdownEnabled) {
+        this.operatingSystemShutdownEnabled = operatingSystemShutdownEnabled;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
+    public WAPUserModel getOwner() {
+        return owner;
+    }
+
+    public void setOwner(WAPUserModel owner) {
+        this.owner = owner;
+    }
+
+    public List<String> getGrantedToList() {
+        return grantedToList;
+    }
+
+    public void setGrantedToList(List<String> grantedToList) {
+        this.grantedToList = grantedToList;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getPerfCPUUtilization() {
+        return perfCPUUtilization;
+    }
+
+    public void setPerfCPUUtilization(String perfCPUUtilization) {
+        this.perfCPUUtilization = perfCPUUtilization;
+    }
+
+    public String getPerfDiskBytesRead() {
+        return perfDiskBytesRead;
+    }
+
+    public void setPerfDiskBytesRead(String perfDiskBytesRead) {
+        this.perfDiskBytesRead = perfDiskBytesRead;
+    }
+
+    public String getPerfDiskBytesWrite() {
+        return perfDiskBytesWrite;
+    }
+
+    public void setPerfDiskBytesWrite(String perfDiskBytesWrite) {
+        this.perfDiskBytesWrite = perfDiskBytesWrite;
+    }
+
+    public String getPerfNetworkBytesRead() {
+        return perfNetworkBytesRead;
+    }
+
+    public void setPerfNetworkBytesRead(String perfNetworkBytesRead) {
+        this.perfNetworkBytesRead = perfNetworkBytesRead;
+    }
+
+    public String getPerfNetworkBytesWrite() {
+        return perfNetworkBytesWrite;
+    }
+
+    public void setPerfNetworkBytesWrite(String perfNetworkBytesWrite) {
+        this.perfNetworkBytesWrite = perfNetworkBytesWrite;
+    }
+
+    public String getCpuRelativeWeight() {
+        return cpuRelativeWeight;
+    }
+
+    public void setCpuRelativeWeight(String cpuRelativeWeight) {
+        this.cpuRelativeWeight = cpuRelativeWeight;
+    }
+
+    public String getRetry() {
+        return retry;
+    }
+
+    public void setRetry(String retry) {
+        this.retry = retry;
+    }
+
+    public String getRunGuestAccount() {
+        return runGuestAccount;
+    }
+
+    public void setRunGuestAccount(String runGuestAccount) {
+        this.runGuestAccount = runGuestAccount;
+    }
+
+    public String getServiceDeploymentErrorMessage() {
+        return serviceDeploymentErrorMessage;
+    }
+
+    public void setServiceDeploymentErrorMessage(String serviceDeploymentErrorMessage) {
+        this.serviceDeploymentErrorMessage = serviceDeploymentErrorMessage;
+    }
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public String getSharePath() {
+        return sharePath;
+    }
+
+    public void setSharePath(String sharePath) {
+        this.sharePath = sharePath;
+    }
+
+    public String getSourceObjectType() {
+        return sourceObjectType;
+    }
+
+    public void setSourceObjectType(String sourceObjectType) {
+        this.sourceObjectType = sourceObjectType;
+    }
+
+    public String getStartAction() {
+        return startAction;
+    }
+
+    public void setStartAction(String startAction) {
+        this.startAction = startAction;
+    }
+
+    public String getStartVM() {
+        return startVM;
+    }
+
+    public void setStartVM(String startVM) {
+        this.startVM = startVM;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatusString() {
+        return statusString;
+    }
+
+    public void setStatusString(String statusString) {
+        this.statusString = statusString;
+    }
+
+    public String getStopAction() {
+        return stopAction;
+    }
+
+    public void setStopAction(String stopAction) {
+        this.stopAction = stopAction;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public String getTimeSynchronizationEnabled() {
+        return timeSynchronizationEnabled;
+    }
+
+    public void setTimeSynchronizationEnabled(String timeSynchronizationEnabled) {
+        this.timeSynchronizationEnabled = timeSynchronizationEnabled;
+    }
+
+    public String getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(String totalSize) {
+        this.totalSize = totalSize;
+    }
+
+    public String getUndo() {
+        return undo;
+    }
+
+    public void setUndo(String undo) {
+        this.undo = undo;
+    }
+
+    public String getUndoDisksEnabled() {
+        return undoDisksEnabled;
+    }
+
+    public void setUndoDisksEnabled(String undoDisksEnabled) {
+        this.undoDisksEnabled = undoDisksEnabled;
+    }
+
+    public String getUpgradeDomain() {
+        return upgradeDomain;
+    }
+
+    public void setUpgradeDomain(String upgradeDomain) {
+        this.upgradeDomain = upgradeDomain;
+    }
+
+    public String getUseCluster() {
+        return useCluster;
+    }
+
+    public void setUseCluster(String useCluster) {
+        this.useCluster = useCluster;
+    }
+
+    public String getUseLAN() {
+        return useLAN;
+    }
+
+    public void setUseLAN(String useLAN) {
+        this.useLAN = useLAN;
+    }
+
+    public String getVirtualHardDiskId() {
+        return virtualHardDiskId;
+    }
+
+    public void setVirtualHardDiskId(String virtualHardDiskId) {
+        this.virtualHardDiskId = virtualHardDiskId;
+    }
+
+    public String getVirtualizationPlatform() {
+        return virtualizationPlatform;
+    }
+
+    public void setVirtualizationPlatform(String virtualizationPlatform) {
+        this.virtualizationPlatform = virtualizationPlatform;
+    }
+
+    public String getCapabilityProfile() {
+        return capabilityProfile;
+    }
+
+    public void setCapabilityProfile(String capabilityProfile) {
+        this.capabilityProfile = capabilityProfile;
+    }
+
+    public String getVmBaseConfigurationId() {
+        return vmBaseConfigurationId;
+    }
+
+    public void setVmBaseConfigurationId(String vmBaseConfigurationId) {
+        this.vmBaseConfigurationId = vmBaseConfigurationId;
+    }
+
+    public String getVmConfigResource() {
+        return vmConfigResource;
+    }
+
+    public void setVmConfigResource(String vmConfigResource) {
+        this.vmConfigResource = vmConfigResource;
+    }
+
+    public String getVmCPath() {
+        return vmCPath;
+    }
+
+    public void setVmCPath(String vmCPath) {
+        this.vmCPath = vmCPath;
+    }
+
+    public String getVmHostName() {
+        return vmHostName;
+    }
+
+    public void setVmHostName(String vmHostName) {
+        this.vmHostName = vmHostName;
+    }
+
+    public String getVmId() {
+        return vmId;
+    }
+
+    public void setVmId(String vmId) {
+        this.vmId = vmId;
+    }
+
+    public String getStampId() {
+        return stampId;
+    }
+
+    public void setStampId(String stampId) {
+        this.stampId = stampId;
+    }
+
+    public String getVmResource() {
+        return vmResource;
+    }
+
+    public void setVmResource(String vmResource) {
+        this.vmResource = vmResource;
+    }
+
+    public String getVmResourceGroup() {
+        return vmResourceGroup;
+    }
+
+    public void setVmResourceGroup(String vmResourceGroup) {
+        this.vmResourceGroup = vmResourceGroup;
+    }
+
+    public String getVirtualMachineState() {
+        return virtualMachineState;
+    }
+
+    public void setVirtualMachineState(String virtualMachineState) {
+        this.virtualMachineState = virtualMachineState;
+    }
+
+    public String getVmTemplateId() {
+        return vmTemplateId;
+    }
+
+    public void setVmTemplateId(String vmTemplateId) {
+        this.vmTemplateId = vmTemplateId;
+    }
+
+    public String getHardwareProfileId() {
+        return hardwareProfileId;
+    }
+
+    public void setHardwareProfileId(String hardwareProfileId) {
+        this.hardwareProfileId = hardwareProfileId;
+    }
+
+    public String getBlockDynamicOptimization() {
+        return blockDynamicOptimization;
+    }
+
+    public void setBlockDynamicOptimization(String blockDynamicOptimization) {
+        this.blockDynamicOptimization = blockDynamicOptimization;
+    }
+
+    public String getCpuLimitForMigration() {
+        return cpuLimitForMigration;
+    }
+
+    public void setCpuLimitForMigration(String cpuLimitForMigration) {
+        this.cpuLimitForMigration = cpuLimitForMigration;
+    }
+
+    public String getCpuLimitFunctionality() {
+        return cpuLimitFunctionality;
+    }
+
+    public void setCpuLimitFunctionality(String cpuLimitFunctionality) {
+        this.cpuLimitFunctionality = cpuLimitFunctionality;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getDynamicMemoryBufferPercentage() {
+        return dynamicMemoryBufferPercentage;
+    }
+
+    public void setDynamicMemoryBufferPercentage(String dynamicMemoryBufferPercentage) {
+        this.dynamicMemoryBufferPercentage = dynamicMemoryBufferPercentage;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getMemoryWeight() {
+        return memoryWeight;
+    }
+
+    public void setMemoryWeight(String memoryWeight) {
+        this.memoryWeight = memoryWeight;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
+    public String getDelayStartSeconds() {
+        return delayStartSeconds;
+    }
+
+    public void setDelayStartSeconds(String delayStartSeconds) {
+        this.delayStartSeconds = delayStartSeconds;
+    }
+
+    public String getProductKey() {
+        return productKey;
+    }
+
+    public void setProductKey(String productKey) {
+        this.productKey = productKey;
+    }
+
+    public String getWorkGroup() {
+        return workGroup;
+    }
+
+    public void setWorkGroup(String workGroup) {
+        this.workGroup = workGroup;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public String getRunAsAccountUserName() {
+        return runAsAccountUserName;
+    }
+
+    public void setRunAsAccountUserName(String runAsAccountUserName) {
+        this.runAsAccountUserName = runAsAccountUserName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getLocalAdminRunAsAccountName() {
+        return localAdminRunAsAccountName;
+    }
+
+    public void setLocalAdminRunAsAccountName(String localAdminRunAsAccountName) {
+        this.localAdminRunAsAccountName = localAdminRunAsAccountName;
+    }
+
+    public String getLocalAdminUserName() {
+        return localAdminUserName;
+    }
+
+    public void setLocalAdminUserName(String localAdminUserName) {
+        this.localAdminUserName = localAdminUserName;
+    }
+
+    public String getLocalAdminPassword() {
+        return localAdminPassword;
+    }
+
+    public void setLocalAdminPassword(String localAdminPassword) {
+        this.localAdminPassword = localAdminPassword;
+    }
+
+    public String getLinuxDomainName() {
+        return linuxDomainName;
+    }
+
+    public void setLinuxDomainName(String linuxDomainName) {
+        this.linuxDomainName = linuxDomainName;
+    }
+
+    public String getLinuxAdministratorSSHKey() {
+        return linuxAdministratorSSHKey;
+    }
+
+    public void setLinuxAdministratorSSHKey(String linuxAdministratorSSHKey) {
+        this.linuxAdministratorSSHKey = linuxAdministratorSSHKey;
+    }
+
+    public String getLinuxAdministratorSSHKeyString() {
+        return linuxAdministratorSSHKeyString;
+    }
+
+    public void setLinuxAdministratorSSHKeyString(String linuxAdministratorSSHKeyString) {
+        this.linuxAdministratorSSHKeyString = linuxAdministratorSSHKeyString;
+    }
+
+    public String getCloudVMRoleName() {
+        return cloudVMRoleName;
+    }
+
+    public void setCloudVMRoleName(String cloudVMRoleName) {
+        this.cloudVMRoleName = cloudVMRoleName;
+    }
+
+    public String getGeneration() {
+        return generation;
+    }
+
+    public void setGeneration(String generation) {
+        this.generation = generation;
+    }
+
+    public WAPDeploymentErrorInfoModel getDeploymentErrorInfo() {
+        return deploymentErrorInfo;
+    }
+
+    public void setDeploymentErrorInfo(WAPDeploymentErrorInfoModel deploymentErrorInfo) {
+        this.deploymentErrorInfo = deploymentErrorInfo;
+    }
+
+    public List<String> getNewVirtualNetworkAdapterInput() {
+        return newVirtualNetworkAdapterInput;
+    }
+
+    public void setNewVirtualNetworkAdapterInput(List<String> newVirtualNetworkAdapterInput) {
+        this.newVirtualNetworkAdapterInput = newVirtualNetworkAdapterInput;
+    }
+
+    public String getIsRecoveryVM() {
+        return isRecoveryVM;
+    }
+
+    public void setIsRecoveryVM(String isRecoveryVM) {
+        this.isRecoveryVM = isRecoveryVM;
+    }
+
+    public String getVmNetworkAssignmentsODataType() {
+        return vmNetworkAssignmentsODataType;
+    }
+
+    public void setVmNetworkAssignmentsODataType(String vmNetworkAssignmentsODataType) {
+        this.vmNetworkAssignmentsODataType = vmNetworkAssignmentsODataType;
+    }
+
+    public String getNewVirtualNetworkAdapterInputODataType() {
+        return newVirtualNetworkAdapterInputODataType;
+    }
+
+    public void setNewVirtualNetworkAdapterInputODataType(String newVirtualNetworkAdapterInputODataType) {
+        this.newVirtualNetworkAdapterInputODataType = newVirtualNetworkAdapterInputODataType;
+    }
+
+    public String getGrantedToListOdataType() {
+        return grantedToListOdataType;
+    }
+
+    public void setGrantedToListOdataType(String grantedToListOdataType) {
+        this.grantedToListOdataType = grantedToListOdataType;
     }
 }
