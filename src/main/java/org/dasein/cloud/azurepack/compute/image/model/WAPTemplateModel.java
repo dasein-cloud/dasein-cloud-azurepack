@@ -1,0 +1,93 @@
+package org.dasein.cloud.azurepack.compute.image.model;
+
+import org.dasein.cloud.azurepack.model.WAPOperatingSystemInstance;
+import org.dasein.cloud.azurepack.model.WAPUserModel;
+
+import java.util.List;
+
+/**
+ * Created by vmunthiu on 3/3/2015.
+ */
+public class WAPTemplateModel {
+    private String StampId;
+    private String ID;
+    private String AccessedTime;
+    private String AddedTime;
+    private String Admin;
+    private String AdminPasswordHasValue;
+    private String ComputerName;
+    private String CPUCount;
+    private String CPUMax;
+    private String CPUReserve;
+    private String CPUType;
+    private String CreationTime;
+    private String DiskIO;
+    private String DomainAdmin;
+    private String DomainAdminPasswordHasValue;
+    private String ExpectedCPUUtilization;
+    private String Enabled;
+    private String FullName;
+    private String HasVMAdditions;
+    private String IsHighlyAvailable;
+    private String JoinDomain;
+    private String JoinWorkgroup;
+    private String LibraryGroup;
+    private String LimitCPUForMigration;
+    private String LimitCPUFunctionality;
+    private String Location;
+    private String Memory;
+    private String MergeAnswerFile;
+    private String ModifiedTime;
+    private String Name;
+    private String NetworkUtilization;
+    private String OperatingSystem;
+    private WAPOperatingSystemInstance OperatingSystemInstance;
+    private String OSType;
+    private String OrgName;
+    private WAPUserModel Owner;
+    private List<WAPUserModel> GrantedToList;
+    private String QuotaPoint;
+    private String ProductKeyHasValue;
+    private String RelativeWeight;
+    private String ShareSCSIBus;
+    private String Tag;
+    private String TimeZone;
+    private String TotalVHDCapacity;
+    private String UndoDisksEnabled;
+    private String UseHardwareAssistedVirtualization;
+    private String Accessibility;
+    private String CostCenter;
+    private String Description;
+    private String IsTagEmpty;
+    private String NicCount;
+    private String NumLockEnabled;
+    private String VMAddition;
+    private String IsCustomizable;
+    private String DomainAdminPasswordIsServiceSetting;
+    private String SANCopyCapable;
+    private String IsTemporaryTemplate;
+    private String VMTemplateId;
+    private String VirtualHardDiskId;
+    private String VMId;
+    private String SharePath;
+    private String ApplicationProfileId;
+    private String CloudID;
+    private String DynamicMemoryBufferPercentage;
+    private String DynamicMemoryEnabled;
+    private String DynamicMemoryMaximumMB;
+    private String MemoryWeight;
+    private String DynamicMemoryPreferredBufferPercentage;
+    private String SQLProfileId;
+    private String VirtualFloppyDriveId;
+    private List<String> BootOrder;
+    private List<String> CustomProperties;
+    private List<String> GuiRunOnceCommands;
+    private List<String> ServerFeatures;
+    private String Status;
+    private String VirtualizationPlatform;
+    private String CapabilityProfile;
+    private String AutoLogonCount;
+    private String DomainJoinOrganizationalUnit;
+    private List<String> SANStatus;
+    private String Generation;
+}

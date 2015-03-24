@@ -20,8 +20,8 @@ import java.security.cert.X509Certificate;
  */
 public class AzureSSLSocketFactory extends SSLSocketFactory {
 
-    public AzureSSLSocketFactory(AzureX509 creds) throws InternalException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super("TLS", creds.getKeystore(), AzureX509.PASSWORD, null, null, trustStrategy, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+    public AzureSSLSocketFactory(AzureX509 creds, boolean disableSSLValidation) throws InternalException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        super("TLS", creds.getKeystore(), AzureX509.PASSWORD, null, null, disableSSLValidation ? trustStrategy : null, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
     }
 
     private static final TrustStrategy trustStrategy = new TrustStrategy() {
