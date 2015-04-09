@@ -6,11 +6,14 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPNewAdapterModel;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachinesModel;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
 import org.dasein.cloud.compute.*;
 import org.dasein.cloud.dc.DataCenter;
+import org.dasein.cloud.network.VLAN;
+import org.dasein.cloud.network.VlanCreateOptions;
 import org.dasein.cloud.util.requester.DriverToCoreMapper;
 
 import javax.annotation.Nonnull;
@@ -53,6 +56,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
         virtualMachineModel.setCloudId(provider.getContext().getRegionId());
         virtualMachineModel.setStampId(withLaunchOptions.getDataCenterId());
         virtualMachineModel.setStartVM("True");
+
         if(withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
             virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
             if (image.getPlatform().isWindows()) {
@@ -60,6 +64,22 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
             } else {
                 virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equals("root") ? "dasein" : withLaunchOptions.getBootstrapUser()));
             }
+        }
+
+        if(withLaunchOptions.getVlanId() != null) {
+            VLAN vlan = this.provider.getNetworkServices().getVlanSupport().getVlan(withLaunchOptions.getVlanId());
+            if(vlan == null)
+                throw new InternalException("Invalid vlan id provided");
+
+            WAPNewAdapterModel newAdapterModel = new WAPNewAdapterModel();
+            newAdapterModel.setVlanId("112");
+            newAdapterModel.setVmNetworkName(vlan.getName());
+            newAdapterModel.setVlanEnabled("True");
+
+            ArrayList<WAPNewAdapterModel> adapters = new ArrayList<WAPNewAdapterModel>();
+            adapters.add(newAdapterModel);
+
+            virtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
         }
 
         HttpUriRequest createRequest = new AzurePackVMRequests(provider).createVirtualMachine(virtualMachineModel).build();

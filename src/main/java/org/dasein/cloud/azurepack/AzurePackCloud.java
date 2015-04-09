@@ -7,17 +7,17 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.AbstractCloud;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.ContextRequirements;
-import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.*;
 import org.dasein.cloud.azurepack.compute.AzurePackComputeService;
+import org.dasein.cloud.azurepack.network.AzurePackNetworkServices;
 import org.dasein.cloud.azurepack.utils.AzureSSLSocketFactory;
 import org.dasein.cloud.azurepack.utils.AzureX509;
 import org.dasein.cloud.azurepack.utils.LoggerUtils;
 import org.dasein.cloud.dc.DataCenterServices;
+import org.dasein.cloud.network.NetworkServices;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.net.ssl.*;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
@@ -40,6 +40,9 @@ public class AzurePackCloud extends AbstractCloud {
 
     @Override
     public @Nonnull AzurePackComputeService getComputeServices() { return new AzurePackComputeService(this); }
+
+    @Override
+    public @Nullable NetworkServices getNetworkServices() { return new AzurePackNetworkServices(this);  }
 
     @Nonnull
     @Override
