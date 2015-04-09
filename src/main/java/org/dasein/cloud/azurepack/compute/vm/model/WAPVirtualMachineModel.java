@@ -277,7 +277,7 @@ public class WAPVirtualMachineModel {
     @JsonProperty("NewVirtualNetworkAdapterInput@odata.type")
     private String newVirtualNetworkAdapterInputODataType = "Collection(VMM.NewVMVirtualNetworkAdapterInput)";
     @JsonProperty("NewVirtualNetworkAdapterInput")
-    private List<String> newVirtualNetworkAdapterInput = new ArrayList<String>();
+    private List<WAPNewAdapterModel> newVirtualNetworkAdapterInput = new ArrayList<WAPNewAdapterModel>();
     @JsonProperty("IsRecoveryVM")
     private String isRecoveryVM = null;
 
@@ -1305,11 +1305,11 @@ public class WAPVirtualMachineModel {
         this.deploymentErrorInfo = deploymentErrorInfo;
     }
 
-    public List<String> getNewVirtualNetworkAdapterInput() {
+    public List<WAPNewAdapterModel> getNewVirtualNetworkAdapterInput() {
         return newVirtualNetworkAdapterInput;
     }
 
-    public void setNewVirtualNetworkAdapterInput(List<String> newVirtualNetworkAdapterInput) {
+    public void setNewVirtualNetworkAdapterInput(List<WAPNewAdapterModel> newVirtualNetworkAdapterInput) {
         this.newVirtualNetworkAdapterInput = newVirtualNetworkAdapterInput;
     }
 
