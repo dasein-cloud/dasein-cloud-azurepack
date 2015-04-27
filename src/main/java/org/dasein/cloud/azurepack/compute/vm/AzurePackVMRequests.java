@@ -4,6 +4,7 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapter;
 import org.dasein.cloud.util.requester.entities.DaseinObjectToJsonEntity;
 import org.dasein.cloud.util.requester.entities.DaseinObjectToXmlEntity;
 
@@ -17,6 +18,8 @@ public class AzurePackVMRequests {
 
     private final String LIST_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines";
     private final String VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s') ";
+    private final String HARDWARE_PROFILES = "%s/%s/services/systemcenter/vmm/HardwareProfiles";
+    private final String VIRTUAL_NETWORK_ADAPTERS = "%s/%s/services/systemcenter/vmm/VirtualNetworkAdapters";
 
     private AzurePackCloud provider;
 
@@ -39,6 +42,14 @@ public class AzurePackVMRequests {
         return requestBuilder;
     }
 
+    public RequestBuilder createVirtualNetworkAdapter(WAPVirtualNetworkAdapter wapVirtualNetworkAdapter){
+        RequestBuilder requestBuilder = RequestBuilder.post();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(String.format(VIRTUAL_NETWORK_ADAPTERS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
+        requestBuilder.setEntity(new DaseinObjectToJsonEntity<WAPVirtualNetworkAdapter>(wapVirtualNetworkAdapter));
+        return requestBuilder;
+    }
+
     public RequestBuilder getVirtualMachine(String vmId, String dataCenterId) throws InternalException {
         RequestBuilder requestBuilder = RequestBuilder.get();
         addCommonHeaders(requestBuilder);
@@ -58,6 +69,13 @@ public class AzurePackVMRequests {
         addCommonHeaders(requestBuilder);
         requestBuilder.setUri(getEncodedUri(String.format(VM_RESOURCES, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), dataCenterId, vmId)));
         requestBuilder.setEntity(new DaseinObjectToJsonEntity<WAPVirtualMachineModel>(virtualMachineModel));
+        return requestBuilder;
+    }
+
+    public RequestBuilder listHardwareProfiles(){
+        RequestBuilder requestBuilder = RequestBuilder.get();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(String.format(HARDWARE_PROFILES, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
         return requestBuilder;
     }
 

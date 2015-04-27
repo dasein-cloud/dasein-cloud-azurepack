@@ -2,19 +2,22 @@ package org.dasein.cloud.azurepack.compute.vm;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPNewAdapterModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachinesModel;
+import org.dasein.cloud.azurepack.compute.vm.model.*;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
 import org.dasein.cloud.compute.*;
 import org.dasein.cloud.dc.DataCenter;
 import org.dasein.cloud.network.VLAN;
 import org.dasein.cloud.network.VlanCreateOptions;
 import org.dasein.cloud.util.requester.DriverToCoreMapper;
+import org.dasein.util.uom.storage.Megabyte;
+import org.dasein.util.uom.storage.Storage;
+import org.dasein.util.uom.storage.StorageUnit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,7 +27,7 @@ import java.util.List;
 /**
  * Created by vmunthiu on 3/4/2015.
  */
-public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
+public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackCloud> {
     private AzurePackCloud provider;
 
     public AzurePackVirtualMachineSupport(@Nonnull AzurePackCloud provider) {
@@ -55,7 +58,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
         virtualMachineModel.setVirtualHardDiskId(withLaunchOptions.getMachineImageId());
         virtualMachineModel.setCloudId(provider.getContext().getRegionId());
         virtualMachineModel.setStampId(withLaunchOptions.getDataCenterId());
-        virtualMachineModel.setStartVM("True");
+        virtualMachineModel.setHardwareProfileId(withLaunchOptions.getStandardProductId());
 
         if(withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
             virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
@@ -66,29 +69,45 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
             }
         }
 
-        if(withLaunchOptions.getVlanId() != null) {
-            VLAN vlan = this.provider.getNetworkServices().getVlanSupport().getVlan(withLaunchOptions.getVlanId());
-            if(vlan == null)
-                throw new InternalException("Invalid vlan id provided");
-
-            WAPNewAdapterModel newAdapterModel = new WAPNewAdapterModel();
-            newAdapterModel.setVlanId("112");
-            newAdapterModel.setVmNetworkName(vlan.getName());
-            newAdapterModel.setVlanEnabled("True");
-
-            ArrayList<WAPNewAdapterModel> adapters = new ArrayList<WAPNewAdapterModel>();
-            adapters.add(newAdapterModel);
-
-            virtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
-        }
-
         HttpUriRequest createRequest = new AzurePackVMRequests(provider).createVirtualMachine(virtualMachineModel).build();
-        return new AzurePackRequester(provider, createRequest).withJsonProcessor(new DriverToCoreMapper<WAPVirtualMachineModel, VirtualMachine>() {
+        VirtualMachine virtualMachine = new AzurePackRequester(provider, createRequest).withJsonProcessor(new DriverToCoreMapper<WAPVirtualMachineModel, VirtualMachine>() {
             @Override
             public VirtualMachine mapFrom(WAPVirtualMachineModel entity) {
                 return virtualMachineFrom(entity);
             }
         }, WAPVirtualMachineModel.class).execute();
+
+        waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
+
+        if(withLaunchOptions.getVlanId() != null) {
+            VLAN vlan = this.provider.getNetworkServices().getVlanSupport().getVlan(withLaunchOptions.getVlanId());
+            if (vlan == null)
+                throw new InternalException("Invalid vlan id provided");
+
+            WAPVirtualNetworkAdapter wapVirtualNetworkAdapter = new WAPVirtualNetworkAdapter();
+            wapVirtualNetworkAdapter.setVmId(virtualMachine.getProviderVirtualMachineId());
+            wapVirtualNetworkAdapter.setVmNetworkId(vlan.getProviderVlanId());
+            wapVirtualNetworkAdapter.setStampId(withLaunchOptions.getDataCenterId());
+
+            HttpUriRequest createAdapterRequest = new AzurePackVMRequests(provider).createVirtualNetworkAdapter(wapVirtualNetworkAdapter).build();
+            new AzurePackRequester(provider, createAdapterRequest).execute();
+            waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
+        }
+
+        start(virtualMachine.getProviderVirtualMachineId());
+        return virtualMachine;
+    }
+
+    private void waitForVMOperation(String operationToWaitFor, String vmId, String dataCenterId) throws CloudException, InternalException {
+        HttpUriRequest getVMRequest = new AzurePackVMRequests(provider).getVirtualMachine(vmId, dataCenterId).build();
+        WAPVirtualMachineModel virtualMachineModel = new AzurePackRequester(this.provider, getVMRequest).withJsonProcessor(WAPVirtualMachineModel.class).execute();
+
+        if(!virtualMachineModel.getStatusString().contains(operationToWaitFor))
+            return;
+
+        try { Thread.sleep(15000L); }
+        catch( InterruptedException ignore ) { }
+        waitForVMOperation(operationToWaitFor, vmId, dataCenterId);
     }
 
     @Override
@@ -144,6 +163,40 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport {
         });
 
         return virtualMachines;
+    }
+
+    @Override
+    public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final VirtualMachineProductFilterOptions options, @Nullable Architecture architecture) throws InternalException, CloudException {
+        HttpUriRequest listProfilesRequest = new AzurePackVMRequests(provider).listHardwareProfiles().build();
+
+        WAPHardwareProfilesModel hardwareProfilesModel = new AzurePackRequester(provider, listProfilesRequest).withJsonProcessor(WAPHardwareProfilesModel.class).execute();
+
+        final List<VirtualMachineProduct> products = new ArrayList<VirtualMachineProduct>();
+        CollectionUtils.forAllDo(hardwareProfilesModel.getHardwareProfiles(), new Closure() {
+            @Override
+            public void execute(Object input) {
+                WAPHardwareProfileModel hardwareProfileModel = (WAPHardwareProfileModel) input;
+                VirtualMachineProduct vmProduct = new VirtualMachineProduct();
+                vmProduct.setName(hardwareProfileModel.getName());
+                vmProduct.setCpuCount(Integer.parseInt(hardwareProfileModel.getCpuCount()));
+                vmProduct.setDescription(hardwareProfileModel.getDescription());
+                vmProduct.setRamSize(new Storage<Megabyte>(Integer.parseInt(hardwareProfileModel.getMemory()), Storage.MEGABYTE));
+                vmProduct.setProviderProductId(hardwareProfileModel.getId());
+                vmProduct.setDataCenterId(hardwareProfileModel.getStampId());
+                products.add(vmProduct);
+            }
+        });
+
+        if(options != null) {
+            CollectionUtils.filter(products, new Predicate() {
+                @Override
+                public boolean evaluate(Object object) {
+                    return options.matches((VirtualMachineProduct)object);
+                }
+            });
+        }
+
+        return products;
     }
 
     private VirtualMachine virtualMachineFrom(WAPVirtualMachineModel virtualMachineModel){
