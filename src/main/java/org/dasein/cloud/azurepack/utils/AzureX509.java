@@ -1,17 +1,32 @@
 package org.dasein.cloud.azurepack.utils;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.jcajce.provider.asymmetric.x509.PEMUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemObjectParser;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.dasein.cloud.ContextRequirements;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
 import org.dasein.cloud.azurepack.AzurePackCloud;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.security.cert.*;
+import java.security.cert.Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.List;
 
 /**
@@ -60,8 +75,15 @@ public class AzureX509 {
         }
     }
 
-    private X509Certificate certFromString(String pem) throws IOException {
-        return (X509Certificate)readPemObject(pem);
+    private X509Certificate certFromString(String pem) throws Exception {
+        PemObject pemObject = (PemObject) readPemObject(pem);
+        ByteArrayInputStream inputStream= new ByteArrayInputStream(pemObject.getContent());
+        try {
+            CertificateFactory certFact = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) certFact.generateCertificate(inputStream);
+        } catch (CertificateException e) {
+            throw new Exception("problem parsing cert: " + e.toString(),e);
+        }
     }
 
     private KeyStore createJavaKeystore(X509Certificate cert, PrivateKey key) throws NoSuchProviderException, KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
@@ -76,21 +98,19 @@ public class AzureX509 {
         return keystore;
     }
 
-    private PrivateKey keyFromString(String pem) throws IOException {
-        KeyPair keypair = (KeyPair)readPemObject(pem);
-
-        if( keypair == null ) {
-            throw new IOException("Could not parse key from string");
-        }
-        return keypair.getPrivate();
+    private PrivateKey keyFromString(String pem) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        PemObject pemObject = (PemObject) readPemObject(pem);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pemObject.getContent());
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
     }
 
     private Object readPemObject(String pemString) throws IOException {
         StringReader strReader = new StringReader(pemString);
-        PEMReader pemReader = new PEMReader(strReader, null, BouncyCastleProvider.PROVIDER_NAME);
+        PemReader pemReader = new PemReader(strReader);
 
         try {
-            return pemReader.readObject();
+            return pemReader.readPemObject();
         }
         finally {
             strReader.close();
