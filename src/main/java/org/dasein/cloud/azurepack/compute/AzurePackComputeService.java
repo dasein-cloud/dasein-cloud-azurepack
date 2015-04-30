@@ -13,10 +13,13 @@ import javax.annotation.Nullable;
 /**
  * Created by vmunthiu on 2/27/2015.
  */
-public class AzurePackComputeService extends AbstractComputeServices {
+public class AzurePackComputeService extends AbstractComputeServices<AzurePackCloud> {
     private AzurePackCloud provider;
 
-    public AzurePackComputeService(@Nonnull AzurePackCloud provider) { this.provider = provider; }
+    public AzurePackComputeService(@Nonnull AzurePackCloud provider) {
+        super(provider);
+        this.provider = provider;
+    }
 
 
     @Override

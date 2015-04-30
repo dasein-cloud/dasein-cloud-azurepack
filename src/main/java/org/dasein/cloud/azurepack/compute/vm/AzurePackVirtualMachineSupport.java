@@ -1,9 +1,6 @@
 package org.dasein.cloud.azurepack.compute.vm;
 
-import org.apache.commons.collections.Closure;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.*;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
@@ -135,7 +132,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         if(vmId == null)
             throw new InternalException("Invalid virtual machine id.");
 
-        List<DataCenter> dataCenters = new ArrayList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()));
+        List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator()));
 
         HttpUriRequest getVMRequest = new AzurePackVMRequests(provider).getVirtualMachine(vmId, dataCenters.get(0).getProviderDataCenterId()).build();
 
@@ -219,7 +216,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
     }
 
     private void updateVMState(String vmId, String operation) throws InternalException, CloudException {
-        List<DataCenter> dataCenters = new ArrayList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()));
+        List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator()));
         String dataCenterId = dataCenters.get(0).getProviderDataCenterId();
 
         HttpUriRequest getVMRequest = new AzurePackVMRequests(provider).getVirtualMachine(vmId, dataCenterId).build();
