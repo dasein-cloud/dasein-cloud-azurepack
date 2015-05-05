@@ -193,17 +193,17 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
     }
 
     @Override
-    public boolean supportsClientRequestToken() throws InternalException, CloudException {
+    public boolean isVMProductDCConstrained() throws InternalException, CloudException{
         return false;
     }
 
     @Override
-    public boolean supportsCloudStoredShellKey() throws InternalException, CloudException {
+    public boolean supportsCloudStoredShellKey() throws InternalException, CloudException{
         return false;
     }
 
     @Override
-    public boolean isVMProductDCConstrained() throws InternalException, CloudException {
+    public boolean supportsClientRequestToken() throws InternalException, CloudException{
         return false;
     }
 

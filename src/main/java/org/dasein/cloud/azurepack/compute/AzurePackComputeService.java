@@ -18,7 +18,8 @@ public class AzurePackComputeService extends AbstractComputeServices<AzurePackCl
 
     public AzurePackComputeService(@Nonnull AzurePackCloud provider) {
         super(provider);
-        this.provider = provider; }
+        this.provider = provider;
+    }
 
 
     @Override

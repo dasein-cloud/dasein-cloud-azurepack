@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.dasein</groupId>
     <artifactId>dasein-cloud-azurepack</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2015.03.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>dasein-cloud-azurepack</name>
     <description>
         Implementation of the Dasein Cloud API for Microsoft Windows Azure Pack.
     </description>
-    <url>https://github.org/greese/dasein-cloud-azurepack</url>
+    <url>https://github.org/dasein-cloud/dasein-cloud-azurepack</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,9 +30,9 @@
     </organization>
 
     <scm>
-        <connection>scm:git:git://github.com/greese/dasein-cloud-azurepack.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/greese/dasein-cloud-azurepack.git</developerConnection>
-        <url>http://github.com/greese/dasein-cloud-azurepack</url>
+        <connection>scm:git:git://github.com/dasein-cloud/dasein-cloud-azurepack.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/dasein-cloud/dasein-cloud-azurepack.git</developerConnection>
+        <url>http://github.com/dasein-cloud/dasein-cloud-azurepack</url>
     </scm>
 
     <parent>
@@ -48,7 +46,7 @@
         <dependency>
             <groupId>org.dasein</groupId>
             <artifactId>dasein-cloud-core</artifactId>
-            <version>2015.03.2-SNAPSHOT</version>
+            <version>2015.03.1</version>
             <scope>compile</scope>
             <optional>false</optional>
         </dependency>
@@ -116,7 +114,7 @@
         <dependency>
             <groupId>org.dasein</groupId>
             <artifactId>dasein-cloud-test</artifactId>
-            <version>2015.03.2-SNAPSHOT</version>
+            <version>2015.03.1</version>
             <scope>test</scope>
             <optional>false</optional>
         </dependency>
@@ -291,9 +289,9 @@
                             <value>${proxyPort}</value>
                         </property>
                     </systemProperties>
-                    <includes>
-                        <include>**/TestSuite.java</include>
-                    </includes>
+                    <excludes>
+                        <exclude>**/TestSuite.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

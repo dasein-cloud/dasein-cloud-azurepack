@@ -132,7 +132,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         if(vmId == null)
             throw new InternalException("Invalid virtual machine id.");
 
-        List<DataCenter> dataCenters = IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator());
+        List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator()));
 
         HttpUriRequest getVMRequest = new AzurePackVMRequests(provider).getVirtualMachine(vmId, dataCenters.get(0).getProviderDataCenterId()).build();
 
@@ -216,7 +216,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
     }
 
     private void updateVMState(String vmId, String operation) throws InternalException, CloudException {
-        List<DataCenter> dataCenters = IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator());
+        List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator()));
         String dataCenterId = dataCenters.get(0).getProviderDataCenterId();
 
         HttpUriRequest getVMRequest = new AzurePackVMRequests(provider).getVirtualMachine(vmId, dataCenterId).build();
