@@ -1,5 +1,6 @@
 package org.dasein.cloud.azurepack;
 
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
@@ -9,7 +10,9 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.log4j.Logger;
 import org.dasein.cloud.*;
 import org.dasein.cloud.azurepack.compute.AzurePackComputeService;
+import org.dasein.cloud.azurepack.model.WAPCloudsModel;
 import org.dasein.cloud.azurepack.network.AzurePackNetworkServices;
+import org.dasein.cloud.azurepack.utils.AzurePackRequester;
 import org.dasein.cloud.azurepack.utils.AzureSSLSocketFactory;
 import org.dasein.cloud.azurepack.utils.AzureX509;
 import org.dasein.cloud.azurepack.utils.LoggerUtils;
@@ -54,6 +57,23 @@ public class AzurePackCloud extends AbstractCloud {
         return new ContextRequirements(
                 new ContextRequirements.Field("apiKey", "The API Keypair", ContextRequirements.FieldType.KEYPAIR, ContextRequirements.Field.X509, true)
         );
+    }
+
+    @Override
+    public @Nullable String testContext() {
+        if(this.getContext() == null)
+            return null;
+
+        try {
+            HttpUriRequest httpUriRequest = new AzurePackDataCenterRequests(this).listClouds().build();
+            WAPCloudsModel result = new AzurePackRequester(this, httpUriRequest).withJsonProcessor(WAPCloudsModel.class).execute();
+            if(result == null)
+                return null;
+
+            return this.getContext().getAccountNumber();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     public HttpClientBuilder getAzureClientBuilder() throws CloudException {
