@@ -32,7 +32,7 @@ public class AzurePackDataCenterService implements DataCenterServices {
     @Nonnull
     @Override
     public DataCenterCapabilities getCapabilities() throws InternalException, CloudException {
-        return null;
+        return new AzurePackDataCenterCapabilities(provider);
     }
 
     @Override

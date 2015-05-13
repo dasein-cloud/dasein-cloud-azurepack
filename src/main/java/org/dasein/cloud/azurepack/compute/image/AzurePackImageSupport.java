@@ -50,7 +50,7 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
 
     @Override
     public boolean isSubscribed() throws CloudException, InternalException {
-        return false;
+        return true;
     }
 
     @Nonnull
