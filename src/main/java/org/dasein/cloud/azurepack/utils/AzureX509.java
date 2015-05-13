@@ -44,7 +44,7 @@ public class AzureX509 {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    private KeyStore keystore;
+    private KeyStore        keystore;
 
     public AzureX509(AzurePackCloud provider) throws InternalException {
         ProviderContext ctx = provider.getContext();
@@ -91,7 +91,7 @@ public class AzureX509 {
         char[] pw = PASSWORD.toCharArray();
 
         store.load(null, pw);
-        store.setKeyEntry(ENTRY_ALIAS, key, pw, new java.security.cert.Certificate[] {cert});
+        store.setKeyEntry(ENTRY_ALIAS, key, pw, new Certificate[] {cert});
         return store;
     }
     public KeyStore getKeystore() {

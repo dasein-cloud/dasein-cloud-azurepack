@@ -93,67 +93,67 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
     @Nonnull
     @Override
     public NamingConstraints getVirtualMachineNamingConstraints() throws CloudException, InternalException {
-        return null;
+        return NamingConstraints.getStrictInstance(3, 15).constrainedBy(new char[]{'-', '.'});
     }
 
     @Nullable
     @Override
     public VisibleScope getVirtualMachineVisibleScope() {
-        return null;
+        return VisibleScope.ACCOUNT_REGION;
     }
 
     @Nullable
     @Override
     public VisibleScope getVirtualMachineProductVisibleScope() {
-        return null;
+        return VisibleScope.ACCOUNT_REGION;
     }
 
     @Nonnull
     @Override
     public Requirement identifyDataCenterLaunchRequirement() throws CloudException, InternalException {
-        return null;
+        return Requirement.REQUIRED;
     }
 
     @Nonnull
     @Override
     public Requirement identifyImageRequirement(@Nonnull ImageClass cls) throws CloudException, InternalException {
-        return null;
+        return ( cls.equals(ImageClass.MACHINE) ? Requirement.REQUIRED : Requirement.NONE );
     }
 
     @Nonnull
     @Override
     public Requirement identifyPasswordRequirement(Platform platform) throws CloudException, InternalException {
-        return null;
+        return Requirement.OPTIONAL;
     }
 
     @Nonnull
     @Override
     public Requirement identifyRootVolumeRequirement() throws CloudException, InternalException {
-        return null;
+        return Requirement.NONE;
     }
 
     @Nonnull
     @Override
     public Requirement identifyShellKeyRequirement(Platform platform) throws CloudException, InternalException {
-        return null;
+        return Requirement.NONE;
     }
 
     @Nonnull
     @Override
     public Requirement identifyStaticIPRequirement() throws CloudException, InternalException {
-        return null;
+        return Requirement.NONE;
     }
 
     @Nonnull
     @Override
     public Requirement identifySubnetRequirement() throws CloudException, InternalException {
-        return null;
+        return Requirement.OPTIONAL;
     }
 
     @Nonnull
     @Override
     public Requirement identifyVlanRequirement() throws CloudException, InternalException {
-        return null;
+        return Requirement.OPTIONAL;
     }
 
     @Override

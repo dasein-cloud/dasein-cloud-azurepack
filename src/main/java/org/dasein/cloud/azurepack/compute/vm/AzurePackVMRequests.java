@@ -20,6 +20,8 @@ public class AzurePackVMRequests {
     private final String VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s') ";
     private final String HARDWARE_PROFILES = "%s/%s/services/systemcenter/vmm/HardwareProfiles";
     private final String VIRTUAL_NETWORK_ADAPTERS = "%s/%s/services/systemcenter/vmm/VirtualNetworkAdapters";
+    private final String VIRTUAL_NETWORK_ADAPTER = "%s/%s/services/systemcenter/vmm/VirtualNetworkAdapters(StampId=guid'%s',ID=guid'%s')";
+    private final String VM_NETWORK_ADAPTERS = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s')/VirtualNetworkAdapters";
 
     private AzurePackCloud provider;
 
@@ -47,6 +49,21 @@ public class AzurePackVMRequests {
         addCommonHeaders(requestBuilder);
         requestBuilder.setUri(String.format(VIRTUAL_NETWORK_ADAPTERS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
         requestBuilder.setEntity(new DaseinObjectToJsonEntity<WAPVirtualNetworkAdapter>(wapVirtualNetworkAdapter));
+        return requestBuilder;
+    }
+
+    public RequestBuilder listVirtualMachineNetAdapters(String vmId, String stampId) {
+        RequestBuilder requestBuilder = RequestBuilder.get();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(String.format(VM_NETWORK_ADAPTERS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), stampId, vmId));
+        return requestBuilder;
+    }
+
+    public RequestBuilder updateNetworkAdapter(WAPVirtualNetworkAdapter virtualNetworkAdapter) throws InternalException {
+        RequestBuilder requestBuilder = RequestBuilder.put();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(getEncodedUri(String.format(VIRTUAL_NETWORK_ADAPTER, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), virtualNetworkAdapter.getStampId(), virtualNetworkAdapter.getId())));
+        requestBuilder.setEntity(new DaseinObjectToJsonEntity<WAPVirtualNetworkAdapter>(virtualNetworkAdapter));
         return requestBuilder;
     }
 

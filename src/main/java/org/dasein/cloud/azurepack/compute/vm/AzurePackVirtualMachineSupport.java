@@ -81,13 +81,27 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
             if (vlan == null)
                 throw new InternalException("Invalid vlan id provided");
 
-            WAPVirtualNetworkAdapter wapVirtualNetworkAdapter = new WAPVirtualNetworkAdapter();
-            wapVirtualNetworkAdapter.setVmId(virtualMachine.getProviderVirtualMachineId());
-            wapVirtualNetworkAdapter.setVmNetworkId(vlan.getProviderVlanId());
-            wapVirtualNetworkAdapter.setStampId(withLaunchOptions.getDataCenterId());
+            HttpUriRequest listAdapters = new AzurePackVMRequests(provider).listVirtualMachineNetAdapters(virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId()).build();
+            WAPVirtualNetworkAdapters virtualNetworkAdapters = new AzurePackRequester(provider, listAdapters).withJsonProcessor(WAPVirtualNetworkAdapters.class).execute();
 
-            HttpUriRequest createAdapterRequest = new AzurePackVMRequests(provider).createVirtualNetworkAdapter(wapVirtualNetworkAdapter).build();
-            new AzurePackRequester(provider, createAdapterRequest).execute();
+            if(virtualNetworkAdapters.getVirtualNetworkAdapters() != null && virtualNetworkAdapters.getVirtualNetworkAdapters().get(0) != null) {
+                WAPVirtualNetworkAdapter adapter = virtualNetworkAdapters.getVirtualNetworkAdapters().get(0);
+                adapter.setVmId(virtualMachine.getProviderVirtualMachineId());
+                adapter.setVmNetworkId(vlan.getProviderVlanId());
+                adapter.setStampId(withLaunchOptions.getDataCenterId());
+
+                HttpUriRequest updateAdapterRequest = new AzurePackVMRequests(provider).updateNetworkAdapter(adapter).build();
+                new AzurePackRequester(provider, updateAdapterRequest).execute();
+            }
+            else {
+                WAPVirtualNetworkAdapter wapVirtualNetworkAdapter = new WAPVirtualNetworkAdapter();
+                wapVirtualNetworkAdapter.setVmId(virtualMachine.getProviderVirtualMachineId());
+                wapVirtualNetworkAdapter.setVmNetworkId(vlan.getProviderVlanId());
+                wapVirtualNetworkAdapter.setStampId(withLaunchOptions.getDataCenterId());
+
+                HttpUriRequest createAdapterRequest = new AzurePackVMRequests(provider).createVirtualNetworkAdapter(wapVirtualNetworkAdapter).build();
+                new AzurePackRequester(provider, createAdapterRequest).execute();
+            }
             waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
         }
 
@@ -150,12 +164,15 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         WAPVirtualMachinesModel virtualMachinesModel = new AzurePackRequester(this.provider, listVMRequest).withJsonProcessor(WAPVirtualMachinesModel.class).execute();
 
         final List<VirtualMachine> virtualMachines = new ArrayList<VirtualMachine>();
+        final String regionId = getContext().getRegionId();
 
         CollectionUtils.forAllDo(virtualMachinesModel.getVirtualMachines(), new Closure() {
             @Override
             public void execute(Object input) {
                 WAPVirtualMachineModel virtualMachineModel = (WAPVirtualMachineModel) input;
-                virtualMachines.add(virtualMachineFrom(virtualMachineModel));
+                if(regionId.equalsIgnoreCase(virtualMachineModel.getCloudId())) {
+                    virtualMachines.add(virtualMachineFrom(virtualMachineModel));
+                }
             }
         });
 

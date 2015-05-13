@@ -33,7 +33,7 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
 
     @Override
     public ImageCapabilities getCapabilities() throws CloudException, InternalException {
-        return null;
+        return new AzurePackImageCapabilities(provider);
     }
 
     @Nullable
