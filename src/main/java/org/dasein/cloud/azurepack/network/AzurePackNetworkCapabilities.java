@@ -64,25 +64,25 @@ public class AzurePackNetworkCapabilities extends AbstractCapabilities<AzurePack
     @Nonnull
     @Override
     public String getProviderTermForNetworkInterface(@Nonnull Locale locale) {
-        return null;
+        return "Netwrok Adapter";
     }
 
     @Nonnull
     @Override
     public String getProviderTermForSubnet(@Nonnull Locale locale) {
-        return null;
+        return "Subnet";
     }
 
     @Nonnull
     @Override
     public String getProviderTermForVlan(@Nonnull Locale locale) {
-        return null;
+        return "Virtual Machine Network";
     }
 
     @Nonnull
     @Override
     public Requirement getRoutingTableSupport() throws CloudException, InternalException {
-        return null;
+        return Requirement.NONE;
     }
 
     @Nonnull
@@ -100,7 +100,7 @@ public class AzurePackNetworkCapabilities extends AbstractCapabilities<AzurePack
     @Nonnull
     @Override
     public Requirement identifySubnetDCRequirement() throws CloudException, InternalException {
-        return null;
+        return Requirement.OPTIONAL;
     }
 
     @Override
