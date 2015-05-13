@@ -40,7 +40,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
     @Override
     public boolean isSubscribed() throws CloudException, InternalException {
-        return false;
+        return true;
     }
 
     @Nonnull
