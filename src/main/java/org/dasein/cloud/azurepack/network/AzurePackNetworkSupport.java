@@ -2,6 +2,7 @@ package org.dasein.cloud.azurepack.network;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.dasein.cloud.CloudException;
@@ -70,7 +71,10 @@ public class AzurePackNetworkSupport extends AbstractVLANSupport<AzurePackCloud>
 
     @Override
     public @Nonnull Iterable<Subnet> listSubnets(@Nonnull final String vlanId) throws CloudException, InternalException {
-        HttpUriRequest listSubnetsRequest = new AzurePackNetworkRequests(provider).listSubnets().build();
+        List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator()));
+        String dataCenterId = dataCenters.get(0).getProviderDataCenterId();
+
+        HttpUriRequest listSubnetsRequest = new AzurePackNetworkRequests(provider).listSubnets(dataCenterId).build();
 
         return new AzurePackRequester(provider, listSubnetsRequest).withJsonProcessor(new DriverToCoreMapper<WAPSubnetsModel, List<Subnet>>() {
             @Override
@@ -99,7 +103,10 @@ public class AzurePackNetworkSupport extends AbstractVLANSupport<AzurePackCloud>
 
     @Override
     public void removeSubnet(final String providerSubnetId) throws CloudException, InternalException {
-        WAPSubnetsModel subnetsModel = new AzurePackRequester(provider, new AzurePackNetworkRequests(provider).listSubnets().build()).withJsonProcessor(WAPSubnetsModel.class).execute();
+        List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator()));
+        String dataCenterId = dataCenters.get(0).getProviderDataCenterId();
+
+        WAPSubnetsModel subnetsModel = new AzurePackRequester(provider, new AzurePackNetworkRequests(provider).listSubnets(dataCenterId).build()).withJsonProcessor(WAPSubnetsModel.class).execute();
 
         WAPSubnetModel foundSubnetModel = (WAPSubnetModel)CollectionUtils.find(subnetsModel.getSubnets(), new Predicate() {
             @Override
@@ -179,7 +186,8 @@ public class AzurePackNetworkSupport extends AbstractVLANSupport<AzurePackCloud>
         vlan.setProviderVlanId(networkModel.getId());
         vlan.setProviderDataCenterId(networkModel.getStampId());
         vlan.setProviderRegionId(provider.getContext().getRegionId());
-        vlan.setProviderOwnerId(provider.getContext().getAccountNumber());
+        vlan.setProviderOwnerId(networkModel.getOwner().getRoleID());
+        vlan.setCurrentState("true".equalsIgnoreCase(networkModel.getEnabled()) ? VLANState.AVAILABLE : VLANState.PENDING);
         return vlan;
     }
 
