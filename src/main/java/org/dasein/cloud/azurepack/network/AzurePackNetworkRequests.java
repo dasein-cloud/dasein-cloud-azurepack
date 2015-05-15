@@ -17,6 +17,7 @@ public class AzurePackNetworkRequests {
     private final String VM_NETWORKS = "%s/%s/services/systemcenter/vmm/VMNetworks";
     private final String VM_NETWORK = "%s/%s/services/systemcenter/vmm/VMNetworks(ID=Guid'%s',StampId=Guid'%s')";
     private final String VM_SUBNETS = "%s/%s/services/systemcenter/vmm/VMSubnets";
+    private final String LIST_VM_SUBNETS = "%s/%s/services/systemcenter/vmm/VMSubnets()?$filter=StampId eq guid'%s'";
     private final String VM_SUBNET = "%s/%s/services/systemcenter/vmm/VMSubnets(ID=Guid'%s',StampId=Guid'%s')";
     private final String LOGICAL_NETS = "%s/%s/services/systemcenter/vmm/LogicalNetworks";
 
@@ -35,11 +36,10 @@ public class AzurePackNetworkRequests {
         return requestBuilder;
     }
 
-    public RequestBuilder listSubnets()
-    {
+    public RequestBuilder listSubnets(String dataCenterId) throws InternalException {
         RequestBuilder requestBuilder = RequestBuilder.get();
         addCommonHeaders(requestBuilder);
-        requestBuilder.setUri(String.format(VM_SUBNETS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
+        requestBuilder.setUri(getEncodedUri(String.format(LIST_VM_SUBNETS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), dataCenterId)));
         return requestBuilder;
     }
 
