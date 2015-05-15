@@ -220,6 +220,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         virtualMachine.setProviderDataCenterId(virtualMachineModel.getStampId());
         virtualMachine.setName(virtualMachineModel.getName());
         virtualMachine.setCurrentState(getVmState(virtualMachineModel.getStatusString()));
+        virtualMachine.setProviderOwnerId(virtualMachineModel.getOwner().getRoleID());
 
         return virtualMachine;
     }
