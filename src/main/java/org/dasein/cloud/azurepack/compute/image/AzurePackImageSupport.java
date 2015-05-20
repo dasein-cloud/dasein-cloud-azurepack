@@ -39,7 +39,7 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
     @Nullable
     @Override
     public MachineImage getImage(final String providerImageId) throws CloudException, InternalException {
-        return (MachineImage) CollectionUtils.find((Collection) listImages(ImageFilterOptions.getInstance(ImageClass.MACHINE)), new Predicate() {
+        return (MachineImage)CollectionUtils.find(getAllImages(), new Predicate() {
             @Override
             public boolean evaluate(Object object) {
                 MachineImage image = (MachineImage) object;

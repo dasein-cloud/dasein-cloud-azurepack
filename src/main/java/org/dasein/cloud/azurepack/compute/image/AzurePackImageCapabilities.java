@@ -110,7 +110,7 @@ public class AzurePackImageCapabilities extends AbstractCapabilities<AzurePackCl
 
     @Override
     public boolean supportsPublicLibrary(@Nonnull ImageClass cls) throws CloudException, InternalException {
-        return false;
+        return true;
     }
 
     @Override
