@@ -186,7 +186,7 @@ public class AzurePackNetworkSupport extends AbstractVLANSupport<AzurePackCloud>
         vlan.setProviderVlanId(networkModel.getId());
         vlan.setProviderDataCenterId(networkModel.getStampId());
         vlan.setProviderRegionId(provider.getContext().getRegionId());
-        vlan.setProviderOwnerId(networkModel.getOwner().getRoleID());
+        vlan.setProviderOwnerId(networkModel.getOwner().getRoleID() != null ? networkModel.getOwner().getRoleID() : provider.getContext().getAccountNumber());
         vlan.setCurrentState("true".equalsIgnoreCase(networkModel.getEnabled()) ? VLANState.AVAILABLE : VLANState.PENDING);
         return vlan;
     }

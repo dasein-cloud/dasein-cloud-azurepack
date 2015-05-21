@@ -60,7 +60,7 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
 
     @Override
     public boolean canTerminate(VmState fromState) throws CloudException, InternalException {
-        return !fromState.equals(VmState.TERMINATED);
+        return !VmState.STOPPED.equals(fromState);
     }
 
     @Override
