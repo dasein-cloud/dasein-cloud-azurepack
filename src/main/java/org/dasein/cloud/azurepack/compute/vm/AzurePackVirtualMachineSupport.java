@@ -57,14 +57,14 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         virtualMachineModel.setStampId(withLaunchOptions.getDataCenterId());
         virtualMachineModel.setHardwareProfileId(withLaunchOptions.getStandardProductId());
 
-        if(withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
-            virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
-            if (image.getPlatform().isWindows()) {
-                virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("root") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("admin") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("administrator") ? "dasein" : withLaunchOptions.getBootstrapUser()));
-            } else {
-                virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equals("root") ? "dasein" : withLaunchOptions.getBootstrapUser()));
-            }
-        }
+//        if(withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
+//            virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
+//            if (image.getPlatform().isWindows()) {
+//                virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("root") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("admin") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("administrator") ? "dasein" : withLaunchOptions.getBootstrapUser()));
+//            } else {
+//                virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equals("root") ? "dasein" : withLaunchOptions.getBootstrapUser()));
+//            }
+//        }
 
         HttpUriRequest createRequest = new AzurePackVMRequests(provider).createVirtualMachine(virtualMachineModel).build();
         VirtualMachine virtualMachine = new AzurePackRequester(provider, createRequest).withJsonProcessor(new DriverToCoreMapper<WAPVirtualMachineModel, VirtualMachine>() {
