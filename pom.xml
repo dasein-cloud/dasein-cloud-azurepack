@@ -13,7 +13,7 @@
     <description>
         Implementation of the Dasein Cloud API for Microsoft Windows Azure Pack.
     </description>
-    <url>https://github.org/greese/dasein-cloud-azurepack</url>
+    <url>https://github.org/dasein-cloud/dasein-cloud-azurepack</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,9 +32,9 @@
     </organization>
 
     <scm>
-        <connection>scm:git:git://github.com/greese/dasein-cloud-azurepack.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/greese/dasein-cloud-azurepack.git</developerConnection>
-        <url>http://github.com/greese/dasein-cloud-azurepack</url>
+        <connection>scm:git:git://github.com/dasein-cloud/dasein-cloud-azurepack.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/dasein-cloud/dasein-cloud-azurepack.git</developerConnection>
+        <url>http://github.com/dasein-cloud/dasein-cloud-azurepack</url>
     </scm>
 
     <parent>
