@@ -3,6 +3,7 @@ package org.dasein.cloud.azurepack.compute.image;
 import org.dasein.cloud.*;
 import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.dasein.cloud.compute.*;
+import org.dasein.cloud.util.NamingConstraints;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -116,5 +117,10 @@ public class AzurePackImageCapabilities extends AbstractCapabilities<AzurePackCl
     @Override
     public boolean imageCaptureDestroysVM() throws CloudException, InternalException {
         return false;
+    }
+
+    @Override
+    public NamingConstraints getImageNamingConstraints(){
+        return NamingConstraints.getStrictInstance(3, 15).constrainedBy(new char[]{'-', '.'});
     }
 }
