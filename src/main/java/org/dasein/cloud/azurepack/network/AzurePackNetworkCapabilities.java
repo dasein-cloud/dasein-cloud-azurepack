@@ -4,6 +4,7 @@ import org.dasein.cloud.*;
 import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.dasein.cloud.network.IPVersion;
 import org.dasein.cloud.network.VLANCapabilities;
+import org.dasein.cloud.util.NamingConstraints;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -133,5 +134,10 @@ public class AzurePackNetworkCapabilities extends AbstractCapabilities<AzurePack
     @Override
     public boolean supportsRawAddressRouting() throws CloudException, InternalException {
         return false;
+    }
+
+    @Override
+    public NamingConstraints getVlanNamingConstraints(){
+        return NamingConstraints.getStrictInstance(3, 15).constrainedBy(new char[]{'-', '.'});
     }
 }
