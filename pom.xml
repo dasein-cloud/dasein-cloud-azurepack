@@ -6,14 +6,14 @@
 
     <groupId>org.dasein</groupId>
     <artifactId>dasein-cloud-azurepack</artifactId>
-    <version>2015.05.1-SNAPSHOT</version>
+    <version>2015.09.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>dasein-cloud-azurepack</name>
     <description>
         Implementation of the Dasein Cloud API for Microsoft Windows Azure Pack.
     </description>
-    <url>https://github.org/greese/dasein-cloud-azurepack</url>
+    <url>https://github.org/dasein-cloud/dasein-cloud-azurepack</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,9 +32,9 @@
     </organization>
 
     <scm>
-        <connection>scm:git:git://github.com/greese/dasein-cloud-azurepack.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/greese/dasein-cloud-azurepack.git</developerConnection>
-        <url>http://github.com/greese/dasein-cloud-azurepack</url>
+        <connection>scm:git:git://github.com/dasein-cloud/dasein-cloud-azurepack.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/dasein-cloud/dasein-cloud-azurepack.git</developerConnection>
+        <url>http://github.com/dasein-cloud/dasein-cloud-azurepack</url>
     </scm>
 
     <parent>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.dasein</groupId>
             <artifactId>dasein-cloud-core</artifactId>
-            <version>2015.05.1-SNAPSHOT</version>
+            <version>2015.09.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>false</optional>
         </dependency>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.dasein</groupId>
             <artifactId>dasein-cloud-test</artifactId>
-            <version>2015.05.1-SNAPSHOT</version>
+            <version>2015.09.1-SNAPSHOT</version>
             <scope>test</scope>
             <optional>false</optional>
         </dependency>
