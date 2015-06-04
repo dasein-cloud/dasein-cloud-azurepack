@@ -8,6 +8,8 @@ import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.OperationNotSupportedException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
+import org.dasein.cloud.azurepack.compute.image.model.WAPTemplateModel;
+import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPVhdModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPVhdsModel;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
@@ -56,15 +58,20 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
     @Nonnull
     @Override
     public Iterable<MachineImage> listImages(@Nullable final ImageFilterOptions options) throws CloudException, InternalException {
-        if (!options.getImageClass().equals(ImageClass.MACHINE)) {
+        if (options != null && !ImageClass.MACHINE.equals(options.getImageClass())) {
             return Collections.emptyList();
         }
 
-        options.withAccountNumber(provider.getContext().getAccountNumber());
+        if(options != null)
+            options.withAccountNumber(provider.getContext().getAccountNumber());
+
         return getImages(new Predicate() {
             @Override
             public boolean evaluate(Object object) {
-                return options.matches((MachineImage)object);
+                if(options != null)
+                    return options.matches((MachineImage)object);
+                else
+                    return provider.getContext().getAccountNumber().equals(((MachineImage)object).getProviderOwnerId());
             }
         });
     }
@@ -140,6 +147,44 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
     }
 
     private List<MachineImage> getAllImages() throws CloudException {
+        List<MachineImage> images = new ArrayList<MachineImage>();
+        images.addAll(getAllVhds());
+        images.addAll(getAllTemplates());
+        return images;
+    }
+
+    private List<MachineImage> getAllTemplates() throws CloudException {
+        HttpUriRequest listTemplatesRequest = new AzurePackImageRequests(this.provider).listTemplates().build();
+        WAPTemplatesModel templatesModel = new AzurePackRequester(this.provider, listTemplatesRequest).withJsonProcessor(WAPTemplatesModel.class).execute();
+
+        final List<MachineImage> images = new ArrayList<MachineImage>();
+        final String regionId = this.provider.getContext().getRegionId();
+
+        CollectionUtils.forAllDo(templatesModel.getTemplates(), new Closure() {
+            @Override
+            public void execute(Object input) {
+                WAPTemplateModel templateModel = (WAPTemplateModel)input;
+                if(templateModel.getEnabled().equalsIgnoreCase("true")) {
+                    MachineImage image = MachineImage.getInstance(templateModel.getOwner().getRoleID() != null ? templateModel.getOwner().getRoleID() : "wap",
+                            regionId,
+                            templateModel.getId(),
+                            ImageClass.MACHINE,
+                            MachineImageState.ACTIVE,
+                            templateModel.getName(),
+                            templateModel.getDescription(),
+                            Architecture.I64,
+                            templateModel.getOperatingSystemInstance().getOsType().toLowerCase().contains("windows") ? Platform.WINDOWS : Platform.UNIX);
+                    image.setTag("type", "template");
+                    images.add(image);
+                }
+            }
+        });
+
+        return images;
+    }
+
+
+    private List<MachineImage> getAllVhds() throws CloudException {
         HttpUriRequest listVhdsRequest = new AzurePackImageRequests(this.provider).listVirtualDisks().build();
         WAPVhdsModel vhds = new AzurePackRequester(this.provider, listVhdsRequest).withJsonProcessor(WAPVhdsModel.class).execute();
 
@@ -150,8 +195,19 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
             @Override
             public void execute(Object input) {
                 WAPVhdModel vhd = (WAPVhdModel) input;
-                MachineImage image = MachineImage.getInstance(vhd.getOwner().getRoleID() != null ? vhd.getOwner().getRoleID() : "wap", regionId, vhd.getId(),ImageClass.MACHINE,MachineImageState.ACTIVE,vhd.getName(),vhd.getDescription(),Architecture.I64, vhd.getOperatingSystemInstance().getOsType().toLowerCase().contains("windows") ? Platform.WINDOWS : Platform.UNIX);
-                images.add(image);
+                if(vhd.getEnabled().equalsIgnoreCase("true")) {
+                    MachineImage image = MachineImage.getInstance(vhd.getOwner().getRoleID() != null ? vhd.getOwner().getRoleID() : "wap",
+                            regionId,
+                            vhd.getId(),
+                            ImageClass.MACHINE,
+                            MachineImageState.ACTIVE,
+                            vhd.getName(),
+                            vhd.getDescription(),
+                            Architecture.I64,
+                            vhd.getOperatingSystemInstance().getOsType().toLowerCase().contains("windows") ? Platform.WINDOWS : Platform.UNIX);
+                    image.setTag("type", "vhd");
+                    images.add(image);
+                }
             }
         });
 

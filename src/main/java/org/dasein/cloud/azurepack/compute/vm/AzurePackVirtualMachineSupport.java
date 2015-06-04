@@ -5,6 +5,11 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
+import org.dasein.cloud.azurepack.compute.image.AzurePackImageCapabilities;
+import org.dasein.cloud.azurepack.compute.image.AzurePackImageRequests;
+import org.dasein.cloud.azurepack.compute.image.AzurePackImageSupport;
+import org.dasein.cloud.azurepack.compute.image.model.WAPTemplateModel;
+import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
 import org.dasein.cloud.azurepack.compute.vm.model.*;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
 import org.dasein.cloud.compute.*;
@@ -50,21 +55,41 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         if(image == null)
             throw new InternalException("Invalid machine image id");
 
+        VLAN vlan = null;
+        if(withLaunchOptions.getVlanId() != null) {
+            vlan = this.provider.getNetworkServices().getVlanSupport().getVlan(withLaunchOptions.getVlanId());
+            if (vlan == null)
+                throw new InternalException("Invalid vlan id provided");
+        }
+
+        String imageType = (String)image.getTag("type");
         WAPVirtualMachineModel virtualMachineModel = new WAPVirtualMachineModel();
         virtualMachineModel.setName(withLaunchOptions.getFriendlyName());
-        virtualMachineModel.setVirtualHardDiskId(withLaunchOptions.getMachineImageId());
         virtualMachineModel.setCloudId(provider.getContext().getRegionId());
         virtualMachineModel.setStampId(withLaunchOptions.getDataCenterId());
-        virtualMachineModel.setHardwareProfileId(withLaunchOptions.getStandardProductId());
 
-//        if(withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
-//            virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
-//            if (image.getPlatform().isWindows()) {
-//                virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("root") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("admin") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("administrator") ? "dasein" : withLaunchOptions.getBootstrapUser()));
-//            } else {
-//                virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equals("root") ? "dasein" : withLaunchOptions.getBootstrapUser()));
-//            }
-//        }
+        if(imageType.equalsIgnoreCase("vhd")){
+            virtualMachineModel.setVirtualHardDiskId(withLaunchOptions.getMachineImageId());
+            virtualMachineModel.setHardwareProfileId(withLaunchOptions.getStandardProductId());
+        } else {
+            virtualMachineModel.setVmTemplateId(withLaunchOptions.getMachineImageId());
+        }
+
+        if(imageType.equalsIgnoreCase("template")) {
+            if (withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
+                virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
+                if (image.getPlatform().isWindows()) {
+                    virtualMachineModel.setLocalAdminUserName("administrator");
+                    if(withLaunchOptions.getWinProductSerialNum() != null) {
+                        virtualMachineModel.setProductKey(withLaunchOptions.getWinProductSerialNum());
+                    }
+                    //virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("root") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("admin") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("administrator") ? "dasein" : withLaunchOptions.getBootstrapUser()));
+                } else {
+                    virtualMachineModel.setLocalAdminUserName("root");
+                    //virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equals("root") ? "dasein" : withLaunchOptions.getBootstrapUser()));
+                }
+            }
+        }
 
         HttpUriRequest createRequest = new AzurePackVMRequests(provider).createVirtualMachine(virtualMachineModel).build();
         VirtualMachine virtualMachine = new AzurePackRequester(provider, createRequest).withJsonProcessor(new DriverToCoreMapper<WAPVirtualMachineModel, VirtualMachine>() {
@@ -76,33 +101,33 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
         waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
 
-        if(withLaunchOptions.getVlanId() != null) {
-            VLAN vlan = this.provider.getNetworkServices().getVlanSupport().getVlan(withLaunchOptions.getVlanId());
-            if (vlan == null)
-                throw new InternalException("Invalid vlan id provided");
+        try {
+            if (withLaunchOptions.getVlanId() != null) {
+                HttpUriRequest listAdapters = new AzurePackVMRequests(provider).listVirtualMachineNetAdapters(virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId()).build();
+                WAPVirtualNetworkAdapters virtualNetworkAdapters = new AzurePackRequester(provider, listAdapters).withJsonProcessor(WAPVirtualNetworkAdapters.class).execute();
 
-            HttpUriRequest listAdapters = new AzurePackVMRequests(provider).listVirtualMachineNetAdapters(virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId()).build();
-            WAPVirtualNetworkAdapters virtualNetworkAdapters = new AzurePackRequester(provider, listAdapters).withJsonProcessor(WAPVirtualNetworkAdapters.class).execute();
+                if (virtualNetworkAdapters.getVirtualNetworkAdapters() != null && virtualNetworkAdapters.getVirtualNetworkAdapters().get(0) != null) {
+                    WAPVirtualNetworkAdapter adapter = virtualNetworkAdapters.getVirtualNetworkAdapters().get(0);
+                    adapter.setVmId(virtualMachine.getProviderVirtualMachineId());
+                    adapter.setVmNetworkId(vlan.getProviderVlanId());
+                    adapter.setStampId(withLaunchOptions.getDataCenterId());
 
-            if(virtualNetworkAdapters.getVirtualNetworkAdapters() != null && virtualNetworkAdapters.getVirtualNetworkAdapters().get(0) != null) {
-                WAPVirtualNetworkAdapter adapter = virtualNetworkAdapters.getVirtualNetworkAdapters().get(0);
-                adapter.setVmId(virtualMachine.getProviderVirtualMachineId());
-                adapter.setVmNetworkId(vlan.getProviderVlanId());
-                adapter.setStampId(withLaunchOptions.getDataCenterId());
+                    HttpUriRequest updateAdapterRequest = new AzurePackVMRequests(provider).updateNetworkAdapter(adapter).build();
+                    new AzurePackRequester(provider, updateAdapterRequest).execute();
+                } else {
+                    WAPVirtualNetworkAdapter wapVirtualNetworkAdapter = new WAPVirtualNetworkAdapter();
+                    wapVirtualNetworkAdapter.setVmId(virtualMachine.getProviderVirtualMachineId());
+                    wapVirtualNetworkAdapter.setVmNetworkId(vlan.getProviderVlanId());
+                    wapVirtualNetworkAdapter.setStampId(withLaunchOptions.getDataCenterId());
 
-                HttpUriRequest updateAdapterRequest = new AzurePackVMRequests(provider).updateNetworkAdapter(adapter).build();
-                new AzurePackRequester(provider, updateAdapterRequest).execute();
+                    HttpUriRequest createAdapterRequest = new AzurePackVMRequests(provider).createVirtualNetworkAdapter(wapVirtualNetworkAdapter).build();
+                    new AzurePackRequester(provider, createAdapterRequest).execute();
+                }
+                waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
             }
-            else {
-                WAPVirtualNetworkAdapter wapVirtualNetworkAdapter = new WAPVirtualNetworkAdapter();
-                wapVirtualNetworkAdapter.setVmId(virtualMachine.getProviderVirtualMachineId());
-                wapVirtualNetworkAdapter.setVmNetworkId(vlan.getProviderVlanId());
-                wapVirtualNetworkAdapter.setStampId(withLaunchOptions.getDataCenterId());
-
-                HttpUriRequest createAdapterRequest = new AzurePackVMRequests(provider).createVirtualNetworkAdapter(wapVirtualNetworkAdapter).build();
-                new AzurePackRequester(provider, createAdapterRequest).execute();
-            }
-            waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
+        } catch (Exception ex){
+            terminate(virtualMachine.getProviderVirtualMachineId());
+            throw new CloudException(ex.getMessage());
         }
 
         start(virtualMachine.getProviderVirtualMachineId());
@@ -180,6 +205,39 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
     }
 
     @Override
+    public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final String machineImageId) throws InternalException, CloudException {
+        MachineImage image = provider.getComputeServices().getImageSupport().getImage(machineImageId);
+        if(image == null)
+            throw new InternalException("Invalid machine image id");
+
+        String imageType = (String)image.getTag("type");
+        if(imageType.equalsIgnoreCase("vhd"))
+            return listProducts(VirtualMachineProductFilterOptions.getInstance());
+
+        HttpUriRequest listTemplatesRequest = new AzurePackImageRequests(this.provider).listTemplates().build();
+        WAPTemplatesModel templatesModel = new AzurePackRequester(this.provider, listTemplatesRequest).withJsonProcessor(WAPTemplatesModel.class).execute();
+
+        WAPTemplateModel template = (WAPTemplateModel)CollectionUtils.find(templatesModel.getTemplates(), new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                WAPTemplateModel templateModel = (WAPTemplateModel)object;
+                return machineImageId.equalsIgnoreCase(templateModel.getId());
+            }
+        });
+
+        //for templates add a default dummy product
+        List<VirtualMachineProduct> products = new ArrayList<VirtualMachineProduct>();
+        VirtualMachineProduct vmProduct = new VirtualMachineProduct();
+        vmProduct.setName("Default");
+        vmProduct.setProviderProductId("default");
+        vmProduct.setDescription("Default");
+        vmProduct.setCpuCount(Integer.parseInt(template.getCpuCount()));
+        vmProduct.setRamSize(new Storage<Megabyte>(Integer.parseInt(template.getMemory()), Storage.MEGABYTE));
+        products.add(vmProduct);
+        return products;
+    }
+
+    @Override
     public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final VirtualMachineProductFilterOptions options, @Nullable Architecture architecture) throws InternalException, CloudException {
         HttpUriRequest listProfilesRequest = new AzurePackVMRequests(provider).listHardwareProfiles().build();
 
@@ -213,7 +271,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         return products;
     }
 
-    private VirtualMachine virtualMachineFrom(WAPVirtualMachineModel virtualMachineModel){
+    private VirtualMachine virtualMachineFrom(WAPVirtualMachineModel virtualMachineModel) {
         VirtualMachine virtualMachine = new VirtualMachine();
         virtualMachine.setProviderVirtualMachineId(virtualMachineModel.getId());
         virtualMachine.setProviderRegionId(virtualMachineModel.getCloudId());
@@ -222,7 +280,61 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         virtualMachine.setCurrentState(getVmState(virtualMachineModel.getStatusString()));
         virtualMachine.setProviderOwnerId(virtualMachineModel.getOwner().getRoleID());
 
+        String vlanId = tryGetVMNetworkId(virtualMachineModel.getId(), virtualMachineModel.getStampId());
+        if(vlanId != null)
+            virtualMachine.setProviderVlanId(vlanId);
+
+        String productId = tryGetProductId(virtualMachineModel.getCpuCount(), virtualMachineModel.getMemory());
+        if(productId != null)
+            virtualMachine.setProductId(productId);
+
         return virtualMachine;
+    }
+
+    private String tryGetVMNetworkId(String virtualMachineId, String stampId) {
+        try {
+            HttpUriRequest listAdapters = new AzurePackVMRequests(provider).listVirtualMachineNetAdapters(virtualMachineId, stampId).build();
+            WAPVirtualNetworkAdapters virtualNetworkAdapters = new AzurePackRequester(provider, listAdapters).withJsonProcessor(WAPVirtualNetworkAdapters.class).execute();
+
+            WAPVirtualNetworkAdapter networkAdapter = (WAPVirtualNetworkAdapter) CollectionUtils.find(virtualNetworkAdapters.getVirtualNetworkAdapters(), new Predicate() {
+                @Override
+                public boolean evaluate(Object object) {
+                    WAPVirtualNetworkAdapter networkAdapter = (WAPVirtualNetworkAdapter) object;
+                    return networkAdapter.getVmNetworkId() != null;
+                }
+            });
+
+            if (networkAdapter == null)
+                return null;
+
+            return networkAdapter.getVmNetworkId();
+        }
+        catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private String tryGetProductId(final String cpuCount, final String memory) {
+        try {
+            HttpUriRequest listProfilesRequest = new AzurePackVMRequests(provider).listHardwareProfiles().build();
+            WAPHardwareProfilesModel hardwareProfilesModel = new AzurePackRequester(provider, listProfilesRequest).withJsonProcessor(WAPHardwareProfilesModel.class).execute();
+
+            WAPHardwareProfileModel profileModel = (WAPHardwareProfileModel) CollectionUtils.find(hardwareProfilesModel.getHardwareProfiles(), new Predicate() {
+                @Override
+                public boolean evaluate(Object object) {
+                    WAPHardwareProfileModel hardwareProfileModel = (WAPHardwareProfileModel) object;
+                    return hardwareProfileModel.getCpuCount().equalsIgnoreCase(cpuCount) && hardwareProfileModel.getMemory().equalsIgnoreCase(memory);
+                }
+            });
+
+            if (profileModel == null)
+                return null;
+
+            return profileModel.getId();
+        }
+        catch (Exception ex){
+            return null;
+        }
     }
 
     private VmState getVmState(String state){
