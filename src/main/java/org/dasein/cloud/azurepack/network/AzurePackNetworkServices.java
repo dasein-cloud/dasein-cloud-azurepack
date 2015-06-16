@@ -13,7 +13,10 @@ import javax.annotation.Nullable;
 public class AzurePackNetworkServices extends AbstractNetworkServices<AzurePackCloud> {
     private AzurePackCloud provider;
 
-    public AzurePackNetworkServices(AzurePackCloud cloud) { super(cloud); }
+    public AzurePackNetworkServices(AzurePackCloud cloud) {
+        super(cloud);
+        this.provider = cloud;
+    }
 
     public @Nullable IpAddressSupport getIpAddressSupport() {
         return null;

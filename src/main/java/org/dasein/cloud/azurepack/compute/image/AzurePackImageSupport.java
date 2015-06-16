@@ -175,6 +175,7 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
                             Architecture.I64,
                             templateModel.getOperatingSystemInstance().getOsType().toLowerCase().contains("windows") ? Platform.WINDOWS : Platform.UNIX);
                     image.setTag("type", "template");
+                    image.setTag("ProductKeyHasValue", templateModel.getProductKeyHasValue());
                     images.add(image);
                 }
             }
