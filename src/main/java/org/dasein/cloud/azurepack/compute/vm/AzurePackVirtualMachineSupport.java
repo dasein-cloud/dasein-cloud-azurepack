@@ -206,9 +206,17 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
     @Override
     public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final String machineImageId) throws InternalException, CloudException {
+        return listProducts(machineImageId, VirtualMachineProductFilterOptions.getInstance());
+    }
+
+    @Override
+    public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final String machineImageId, @Nonnull VirtualMachineProductFilterOptions options) throws InternalException, CloudException{
         MachineImage image = provider.getComputeServices().getImageSupport().getImage(machineImageId);
         if(image == null)
             throw new InternalException("Invalid machine image id");
+
+        if(options == null)
+            throw new InternalException("VirtualMachineProductFilterOptions parameter cannot be null");
 
         String imageType = (String)image.getTag("type");
         if(imageType.equalsIgnoreCase("vhd"))
@@ -233,7 +241,10 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         vmProduct.setDescription("Default");
         vmProduct.setCpuCount(Integer.parseInt(template.getCpuCount()));
         vmProduct.setRamSize(new Storage<Megabyte>(Integer.parseInt(template.getMemory()), Storage.MEGABYTE));
-        products.add(vmProduct);
+
+        if(options.matches(vmProduct))
+            products.add(vmProduct);
+
         return products;
     }
 
