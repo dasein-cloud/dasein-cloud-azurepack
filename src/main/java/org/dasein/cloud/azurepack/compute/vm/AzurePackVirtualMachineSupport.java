@@ -76,13 +76,14 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         }
 
         if(imageType.equalsIgnoreCase("template")) {
+            if(image.getPlatform().isWindows() && withLaunchOptions.getWinProductSerialNum() != null) {
+                virtualMachineModel.setProductKey(withLaunchOptions.getWinProductSerialNum());
+            }
+
             if (withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
                 virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
                 if (image.getPlatform().isWindows()) {
                     virtualMachineModel.setLocalAdminUserName("administrator");
-                    if(withLaunchOptions.getWinProductSerialNum() != null) {
-                        virtualMachineModel.setProductKey(withLaunchOptions.getWinProductSerialNum());
-                    }
                     //virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("root") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("admin") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("administrator") ? "dasein" : withLaunchOptions.getBootstrapUser()));
                 } else {
                     virtualMachineModel.setLocalAdminUserName("root");
@@ -206,9 +207,17 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
     @Override
     public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final String machineImageId) throws InternalException, CloudException {
+        return listProducts(machineImageId, VirtualMachineProductFilterOptions.getInstance());
+    }
+
+    @Override
+    public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final String machineImageId, @Nonnull VirtualMachineProductFilterOptions options) throws InternalException, CloudException{
         MachineImage image = provider.getComputeServices().getImageSupport().getImage(machineImageId);
         if(image == null)
             throw new InternalException("Invalid machine image id");
+
+        if(options == null)
+            throw new InternalException("VirtualMachineProductFilterOptions parameter cannot be null");
 
         String imageType = (String)image.getTag("type");
         if(imageType.equalsIgnoreCase("vhd"))
@@ -233,7 +242,10 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         vmProduct.setDescription("Default");
         vmProduct.setCpuCount(Integer.parseInt(template.getCpuCount()));
         vmProduct.setRamSize(new Storage<Megabyte>(Integer.parseInt(template.getMemory()), Storage.MEGABYTE));
-        products.add(vmProduct);
+
+        if(options.matches(vmProduct))
+            products.add(vmProduct);
+
         return products;
     }
 
@@ -339,9 +351,17 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
     private VmState getVmState(String state){
         try {
+            if("Update Failed".equalsIgnoreCase(state)) {
+                return VmState.ERROR;
+            }
+
+            if("Creating...".equalsIgnoreCase(state)) {
+                return VmState.PENDING;
+            }
+
             return VmState.valueOf(state.toUpperCase());
         } catch (Exception ex) {
-            return null;
+            return VmState.PENDING;
         }
     }
 
