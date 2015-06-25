@@ -144,7 +144,7 @@ public class WAPVirtualMachineModel {
     @JsonProperty("GrantedToList@odata.type")
     private String grantedToListOdataType = "Collection(VMM.UserAndRole)";
     @JsonProperty("GrantedToList")
-    private List<String> grantedToList = new ArrayList<String>();
+    private List<WAPUserModel> grantedToList = new ArrayList<WAPUserModel>();
     @JsonProperty("Path")
     private String path = null;
     @JsonProperty("PerfCPUUtilization")
@@ -785,11 +785,11 @@ public class WAPVirtualMachineModel {
         this.owner = owner;
     }
 
-    public List<String> getGrantedToList() {
+    public List<WAPUserModel> getGrantedToList() {
         return grantedToList;
     }
 
-    public void setGrantedToList(List<String> grantedToList) {
+    public void setGrantedToList(List<WAPUserModel> grantedToList) {
         this.grantedToList = grantedToList;
     }
 
