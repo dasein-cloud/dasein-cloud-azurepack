@@ -14,6 +14,7 @@ import org.dasein.cloud.azurepack.compute.vm.model.*;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
 import org.dasein.cloud.compute.*;
 import org.dasein.cloud.dc.DataCenter;
+import org.dasein.cloud.network.RawAddress;
 import org.dasein.cloud.network.VLAN;
 import org.dasein.cloud.network.VlanCreateOptions;
 import org.dasein.cloud.util.requester.DriverToCoreMapper;
@@ -24,6 +25,7 @@ import org.dasein.util.uom.storage.StorageUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -292,9 +294,23 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         virtualMachine.setCurrentState(getVmState(virtualMachineModel.getStatusString()));
         virtualMachine.setProviderOwnerId(virtualMachineModel.getOwner().getRoleID());
 
-        String vlanId = tryGetVMNetworkId(virtualMachineModel.getId(), virtualMachineModel.getStampId());
-        if(vlanId != null)
-            virtualMachine.setProviderVlanId(vlanId);
+        VirtualMachineNetworkData virtualMachineNetworkData = tryGetVMNetworkId(virtualMachineModel.getId(), virtualMachineModel.getStampId());
+        if(virtualMachineNetworkData != null) {
+            virtualMachine.setProviderVlanId(virtualMachineNetworkData.getVlanId());
+            Collection<RawAddress> addresses = CollectionUtils.collect(virtualMachineNetworkData.getIpAddresses(), new Transformer() {
+                @Override
+                public Object transform(Object input) {
+                    String address = (String) input;
+                    return new RawAddress(address);
+                }
+            });
+
+            if(!addresses.isEmpty() && addresses.size() == 1) {
+                virtualMachine.setPublicAddresses(addresses.iterator().next());
+            } else if((!addresses.isEmpty() && addresses.size() != 1)) {
+                virtualMachine.setPublicAddresses(addresses.toArray(new RawAddress[addresses.size()]));
+            }
+        }
 
         String productId = tryGetProductId(virtualMachineModel.getCpuCount(), virtualMachineModel.getMemory());
         if(productId != null)
@@ -303,7 +319,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         return virtualMachine;
     }
 
-    private String tryGetVMNetworkId(String virtualMachineId, String stampId) {
+    private VirtualMachineNetworkData tryGetVMNetworkId(String virtualMachineId, String stampId) {
         try {
             HttpUriRequest listAdapters = new AzurePackVMRequests(provider).listVirtualMachineNetAdapters(virtualMachineId, stampId).build();
             WAPVirtualNetworkAdapters virtualNetworkAdapters = new AzurePackRequester(provider, listAdapters).withJsonProcessor(WAPVirtualNetworkAdapters.class).execute();
@@ -319,7 +335,10 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
             if (networkAdapter == null)
                 return null;
 
-            return networkAdapter.getVmNetworkId();
+            VirtualMachineNetworkData data = new VirtualMachineNetworkData();
+            data.setVlanId(networkAdapter.getVmNetworkId());
+            data.setIpAddresses(networkAdapter.getIpv4Addresses());
+            return data;
         }
         catch (Exception ex) {
             return null;
@@ -376,5 +395,26 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
         HttpUriRequest updateVMRequest = new AzurePackVMRequests(provider).updateVirtualMachine(vmId, dataCenterId, virtualMachineModel).build();
         new AzurePackRequester(provider, updateVMRequest).execute();
+    }
+
+    private class VirtualMachineNetworkData {
+        private String vlanId;
+        private List<String> ipAddresses;
+
+        public String getVlanId() {
+            return vlanId;
+        }
+
+        public void setVlanId(String vlanId) {
+            this.vlanId = vlanId;
+        }
+
+        public List<String> getIpAddresses() {
+            return ipAddresses;
+        }
+
+        public void setIpAddresses(List<String> ipAddresses) {
+            this.ipAddresses = ipAddresses;
+        }
     }
 }
