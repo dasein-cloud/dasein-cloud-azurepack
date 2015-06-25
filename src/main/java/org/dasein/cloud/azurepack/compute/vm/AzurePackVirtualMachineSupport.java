@@ -76,13 +76,14 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         }
 
         if(imageType.equalsIgnoreCase("template")) {
+            if(image.getPlatform().isWindows() && withLaunchOptions.getWinProductSerialNum() != null) {
+                virtualMachineModel.setProductKey(withLaunchOptions.getWinProductSerialNum());
+            }
+
             if (withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
                 virtualMachineModel.setLocalAdminPassword(withLaunchOptions.getBootstrapPassword());
                 if (image.getPlatform().isWindows()) {
                     virtualMachineModel.setLocalAdminUserName("administrator");
-                    if(withLaunchOptions.getWinProductSerialNum() != null) {
-                        virtualMachineModel.setProductKey(withLaunchOptions.getWinProductSerialNum());
-                    }
                     //virtualMachineModel.setLocalAdminUserName((withLaunchOptions.getBootstrapUser() == null || withLaunchOptions.getBootstrapUser().trim().length() == 0 || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("root") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("admin") || withLaunchOptions.getBootstrapUser().equalsIgnoreCase("administrator") ? "dasein" : withLaunchOptions.getBootstrapUser()));
                 } else {
                     virtualMachineModel.setLocalAdminUserName("root");
@@ -350,9 +351,17 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
     private VmState getVmState(String state){
         try {
+            if("Update Failed".equalsIgnoreCase(state)) {
+                return VmState.ERROR;
+            }
+
+            if("Creating...".equalsIgnoreCase(state)) {
+                return VmState.PENDING;
+            }
+
             return VmState.valueOf(state.toUpperCase());
         } catch (Exception ex) {
-            return null;
+            return VmState.PENDING;
         }
     }
 
