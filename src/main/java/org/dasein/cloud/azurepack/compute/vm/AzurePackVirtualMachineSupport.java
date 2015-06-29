@@ -80,6 +80,8 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         if(imageType.equalsIgnoreCase("template")) {
             if(image.getPlatform().isWindows() && withLaunchOptions.getWinProductSerialNum() != null) {
                 virtualMachineModel.setProductKey(withLaunchOptions.getWinProductSerialNum());
+            } else if (!image.getPlatform().isWindows() && withLaunchOptions.getBootstrapKey() != null) {
+                virtualMachineModel.setLinuxAdministratorSSHKeyString(withLaunchOptions.getBootstrapKey());
             }
 
             if (withLaunchOptions.getBootstrapPassword() != null && withLaunchOptions.getBootstrapUser() != null) {
