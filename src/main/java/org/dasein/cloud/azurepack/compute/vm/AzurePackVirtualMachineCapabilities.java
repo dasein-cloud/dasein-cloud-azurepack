@@ -50,7 +50,7 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
 
     @Override
     public boolean canStop(VmState fromState) throws CloudException, InternalException {
-        return !VmState.STOPPED.equals(fromState) && !VmState.TERMINATED.equals(fromState);
+        return !VmState.STOPPED.equals(fromState) && !VmState.ERROR.equals(fromState) && !VmState.TERMINATED.equals(fromState);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
 
     @Override
     public boolean canTerminate(VmState fromState) throws CloudException, InternalException {
-        return VmState.STOPPED.equals(fromState) && !VmState.TERMINATED.equals(fromState);
+        return ( VmState.STOPPED.equals(fromState) || VmState.ERROR.equals(fromState) ) && !VmState.TERMINATED.equals(fromState);
     }
 
     @Override
