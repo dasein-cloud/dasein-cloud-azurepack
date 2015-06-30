@@ -96,6 +96,14 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
             }
         }
 
+        if (withLaunchOptions.getVlanId() != null) {
+            ArrayList<WAPNewAdapterModel> adapters = new ArrayList<WAPNewAdapterModel>();
+            WAPNewAdapterModel newAdapterModel = new WAPNewAdapterModel();
+            newAdapterModel.setVmNetworkName(vlan.getName());
+            adapters.add(newAdapterModel);
+            virtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
+        }
+
         HttpUriRequest createRequest = new AzurePackVMRequests(provider).createVirtualMachine(virtualMachineModel).build();
         VirtualMachine virtualMachine = new AzurePackRequester(provider, createRequest).withJsonProcessor(new DriverToCoreMapper<WAPVirtualMachineModel, VirtualMachine>() {
             @Override
@@ -105,36 +113,6 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         }, WAPVirtualMachineModel.class).execute();
 
         waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
-
-        try {
-            if (withLaunchOptions.getVlanId() != null) {
-                HttpUriRequest listAdapters = new AzurePackVMRequests(provider).listVirtualMachineNetAdapters(virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId()).build();
-                WAPVirtualNetworkAdapters virtualNetworkAdapters = new AzurePackRequester(provider, listAdapters).withJsonProcessor(WAPVirtualNetworkAdapters.class).execute();
-
-                if (virtualNetworkAdapters.getVirtualNetworkAdapters() != null && virtualNetworkAdapters.getVirtualNetworkAdapters().get(0) != null) {
-                    WAPVirtualNetworkAdapter adapter = virtualNetworkAdapters.getVirtualNetworkAdapters().get(0);
-                    adapter.setVmId(virtualMachine.getProviderVirtualMachineId());
-                    adapter.setVmNetworkId(vlan.getProviderVlanId());
-                    adapter.setStampId(withLaunchOptions.getDataCenterId());
-
-                    HttpUriRequest updateAdapterRequest = new AzurePackVMRequests(provider).updateNetworkAdapter(adapter).build();
-                    new AzurePackRequester(provider, updateAdapterRequest).execute();
-                } else {
-                    WAPVirtualNetworkAdapter wapVirtualNetworkAdapter = new WAPVirtualNetworkAdapter();
-                    wapVirtualNetworkAdapter.setVmId(virtualMachine.getProviderVirtualMachineId());
-                    wapVirtualNetworkAdapter.setVmNetworkId(vlan.getProviderVlanId());
-                    wapVirtualNetworkAdapter.setStampId(withLaunchOptions.getDataCenterId());
-
-                    HttpUriRequest createAdapterRequest = new AzurePackVMRequests(provider).createVirtualNetworkAdapter(wapVirtualNetworkAdapter).build();
-                    new AzurePackRequester(provider, createAdapterRequest).execute();
-                }
-                waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
-            }
-        } catch (Exception ex){
-            terminate(virtualMachine.getProviderVirtualMachineId());
-            throw new CloudException(ex.getMessage());
-        }
-
         start(virtualMachine.getProviderVirtualMachineId());
         return virtualMachine;
     }
