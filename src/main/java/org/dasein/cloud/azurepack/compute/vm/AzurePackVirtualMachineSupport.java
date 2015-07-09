@@ -273,6 +273,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         virtualMachine.setName(virtualMachineModel.getName());
         virtualMachine.setCurrentState(getVmState(virtualMachineModel.getStatusString()));
         virtualMachine.setProviderOwnerId(virtualMachineModel.getOwner().getRoleID());
+        virtualMachine.setPersistent(true);
 
         VirtualMachineNetworkData virtualMachineNetworkData = tryGetVMNetworkId(virtualMachineModel.getId(), virtualMachineModel.getStampId());
         if(virtualMachineNetworkData != null) {
