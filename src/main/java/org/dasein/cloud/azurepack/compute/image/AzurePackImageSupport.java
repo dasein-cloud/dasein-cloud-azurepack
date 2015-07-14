@@ -197,7 +197,7 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
             public void execute(Object input) {
                 WAPVhdModel vhd = (WAPVhdModel) input;
                 if(vhd.getEnabled().equalsIgnoreCase("true")) {
-                    MachineImage image = MachineImage.getInstance(vhd.getOwner().getRoleID() != null ? vhd.getOwner().getRoleID() : "wap",
+                    MachineImage image = MachineImage.getInstance((vhd.getOwner() != null && vhd.getOwner().getRoleID() != null) ? vhd.getOwner().getRoleID() : "wap",
                             regionId,
                             vhd.getId(),
                             ImageClass.MACHINE,
