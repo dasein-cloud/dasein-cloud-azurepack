@@ -114,6 +114,9 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
         waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
         start(virtualMachine.getProviderVirtualMachineId());
+
+        virtualMachine.setRootUser(virtualMachineModel.getLocalAdminUserName());
+        virtualMachine.setRootPassword(virtualMachineModel.getLocalAdminPassword());
         return virtualMachine;
     }
 
