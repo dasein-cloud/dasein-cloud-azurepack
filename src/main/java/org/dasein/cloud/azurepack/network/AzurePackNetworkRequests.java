@@ -3,8 +3,8 @@ package org.dasein.cloud.azurepack.network;
 import org.apache.http.client.methods.RequestBuilder;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
-import org.dasein.cloud.azurepack.network.model.WAPSubnetModel;
-import org.dasein.cloud.azurepack.network.model.WAPVMNetworkModel;
+import org.dasein.cloud.azurepack.network.model.*;
+import org.dasein.cloud.network.VLAN;
 import org.dasein.cloud.util.requester.entities.DaseinObjectToJsonEntity;
 
 import java.net.URI;
@@ -20,6 +20,15 @@ public class AzurePackNetworkRequests {
     private final String LIST_VM_SUBNETS = "%s/%s/services/systemcenter/vmm/VMSubnets()?$filter=StampId eq guid'%s'";
     private final String VM_SUBNET = "%s/%s/services/systemcenter/vmm/VMSubnets(ID=Guid'%s',StampId=Guid'%s')";
     private final String LOGICAL_NETS = "%s/%s/services/systemcenter/vmm/LogicalNetworks";
+    private final String VM_NET_GATEWAYS = "%s/%s/services/systemcenter/vmm/VMNetworkGateways";
+    private final String LIST_NET_GATEWAYS = "%s/%s/services/systemcenter/vmm/VMNetworkGateways()?$filter=VMNetworkId eq guid'%s' and StampId eq guid'%s'";
+    private final String VM_NET_GATEWAY = "%s/%s/services/systemcenter/vmm/VMNetworkGateways(ID=Guid'%s',StampId=Guid'%s')";
+    private final String NET_NAT_CONNECTIONS = "%s/%s/services/systemcenter/vmm/NATConnections";
+    private final String NET_NAT_CONNECTION = "%s/%s/services/systemcenter/vmm/NATConnections(ID=Guid'%s',StampId=Guid'%s')";
+    private final String GATEWAY_NAT_CONNECTIONS = "%s/%s/services/systemcenter/vmm/NATConnections()?$filter=StampId eq guid'%s' and VMNetworkGatewayId eq guid'%s'";
+    private final String NAT_RULES = "%s/%s/services/systemcenter/vmm/NATRules";
+    private final String NAT_RULE = "%s/%s/services/systemcenter/vmm/NATRules(ID=guid'%s',StampId=guid'%s')";
+    private final String NAT_RULES_FOR_CONNECTION = "%s/%s/services/systemcenter/vmm/NATRules()?$filter=StampId eq guid'%s' and NATConnectionId eq guid'%s'";
 
     private AzurePackCloud provider;
 
@@ -77,6 +86,79 @@ public class AzurePackNetworkRequests {
         RequestBuilder requestBuilder = RequestBuilder.delete();
         addCommonHeaders(requestBuilder);
         requestBuilder.setUri(String.format(VM_NETWORK, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), networkModel.getId(), networkModel.getStampId()));
+        return requestBuilder;
+    }
+
+    public RequestBuilder createInternetGateway(WAPVMNetworkGatewayModel wapvmNetworkGatewayModel){
+        RequestBuilder requestBuilder = RequestBuilder.post();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(String.format(VM_NET_GATEWAYS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
+        requestBuilder.setEntity(new DaseinObjectToJsonEntity<WAPVMNetworkGatewayModel>(wapvmNetworkGatewayModel));
+        return requestBuilder;
+    }
+
+    public RequestBuilder listGateways(VLAN vlan) throws InternalException {
+        RequestBuilder requestBuilder = RequestBuilder.get();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(getEncodedUri(String.format(LIST_NET_GATEWAYS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), vlan.getProviderVlanId(), vlan.getProviderDataCenterId())));
+        return requestBuilder;
+    }
+
+    public RequestBuilder getGateway(String gatewayId, String stampId) throws InternalException {
+        RequestBuilder requestBuilder = RequestBuilder.get();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(getEncodedUri(String.format(VM_NET_GATEWAY, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), gatewayId, stampId)));
+        return requestBuilder;
+    }
+
+    public RequestBuilder deleteInternetGateway(WAPVMNetworkGatewayModel wapvmNetworkGatewayModel) throws InternalException {
+        RequestBuilder requestBuilder = RequestBuilder.delete();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(getEncodedUri(String.format(VM_NET_GATEWAY, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), wapvmNetworkGatewayModel.getId(), wapvmNetworkGatewayModel.getStampId())));
+        return requestBuilder;
+    }
+
+    public RequestBuilder createNatConnection(WAPNatConnectionModel wapNatConnectionModel){
+        RequestBuilder requestBuilder = RequestBuilder.post();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(String.format(NET_NAT_CONNECTIONS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
+        requestBuilder.setEntity(new DaseinObjectToJsonEntity<WAPNatConnectionModel>(wapNatConnectionModel));
+        return requestBuilder;
+    }
+
+    public RequestBuilder listNatConnections(String gatewayId, String stampId) throws InternalException {
+        RequestBuilder requestBuilder = RequestBuilder.get();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(getEncodedUri(String.format(GATEWAY_NAT_CONNECTIONS, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), stampId, gatewayId)));
+        return requestBuilder;
+    }
+
+    public RequestBuilder deleteNatConnection(WAPNatConnectionModel wapNatConnectionModel){
+        RequestBuilder requestBuilder = RequestBuilder.delete();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(String.format(NET_NAT_CONNECTION, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber(), wapNatConnectionModel.getId(), wapNatConnectionModel.getStampId()));
+        return requestBuilder;
+    }
+
+    public RequestBuilder createNatRule(WAPNatRuleModel wapNatRuleModel){
+        RequestBuilder requestBuilder = RequestBuilder.post();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(String.format(NAT_RULES, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
+        requestBuilder.setEntity(new DaseinObjectToJsonEntity<WAPNatRuleModel>(wapNatRuleModel));
+        return requestBuilder;
+    }
+
+    public RequestBuilder deleteNatRule(String ruleId, String stampId) throws InternalException {
+        RequestBuilder requestBuilder = RequestBuilder.delete();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(getEncodedUri(String.format(NAT_RULE, this.provider.getContext().getCloud().getEndpoint(), this.provider.getContext().getAccountNumber(), ruleId, stampId)));
+        return requestBuilder;
+    }
+
+    public RequestBuilder listRulesForConnection(String natConnectionId, String stampId) throws InternalException {
+        RequestBuilder requestBuilder = RequestBuilder.get();
+        addCommonHeaders(requestBuilder);
+        requestBuilder.setUri(getEncodedUri(String.format(NAT_RULES_FOR_CONNECTION, this.provider.getContext().getCloud().getEndpoint(), this.provider.getContext().getAccountNumber(), stampId, natConnectionId)));
         return requestBuilder;
     }
 
