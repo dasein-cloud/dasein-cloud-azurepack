@@ -19,8 +19,7 @@ public class AzurePackNetworkServices extends AbstractNetworkServices<AzurePackC
     }
 
     public @Nullable IpAddressSupport getIpAddressSupport() {
-        return null;
-        //return new StaticIp(cloud);
+        return new AzurePackIpAddressSupport(this.provider);
     }
 
     @Nullable
