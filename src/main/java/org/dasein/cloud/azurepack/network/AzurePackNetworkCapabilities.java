@@ -128,7 +128,7 @@ public class AzurePackNetworkCapabilities extends AbstractCapabilities<AzurePack
 
     @Override
     public boolean supportsInternetGatewayCreation() throws CloudException, InternalException {
-        return false;
+        return true;
     }
 
     @Override

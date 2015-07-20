@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 /**
- * Created by vmunthiu on 4/1/2015.
+ * Created by vmunthiu on 7/14/2015.
  */
-public class WAPLogicalNetsMode {
+public class WAPVMNetworkGatewaysModel {
     @JsonProperty("odata.metadata")
     private String odataMetadata;
     @JsonProperty("value")
-    private List<WAPLogicalNetModel> logicalNets;
+    private List<WAPVMNetworkGatewayModel> gateways;
 
     public String getOdataMetadata() {
         return odataMetadata;
@@ -21,11 +21,11 @@ public class WAPLogicalNetsMode {
         this.odataMetadata = odataMetadata;
     }
 
-    public List<WAPLogicalNetModel> getLogicalNets() {
-        return logicalNets;
+    public List<WAPVMNetworkGatewayModel> getGateways() {
+        return gateways;
     }
 
-    public void setLogicalNets(List<WAPLogicalNetModel> logicalNets) {
-        this.logicalNets = logicalNets;
+    public void setGateways(List<WAPVMNetworkGatewayModel> gateways) {
+        this.gateways = gateways;
     }
 }

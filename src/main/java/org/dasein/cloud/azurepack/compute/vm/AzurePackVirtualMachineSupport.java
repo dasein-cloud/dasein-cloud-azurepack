@@ -114,6 +114,9 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
         waitForVMOperation("Creating", virtualMachine.getProviderVirtualMachineId(), virtualMachine.getProviderDataCenterId());
         start(virtualMachine.getProviderVirtualMachineId());
+
+        virtualMachine.setRootUser(virtualMachineModel.getLocalAdminUserName());
+        virtualMachine.setRootPassword(virtualMachineModel.getLocalAdminPassword());
         return virtualMachine;
     }
 
@@ -300,7 +303,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         return virtualMachine;
     }
 
-    private VirtualMachineNetworkData tryGetVMNetworkId(String virtualMachineId, String stampId) {
+    public VirtualMachineNetworkData tryGetVMNetworkId(String virtualMachineId, String stampId) {
         try {
             HttpUriRequest listAdapters = new AzurePackVMRequests(provider).listVirtualMachineNetAdapters(virtualMachineId, stampId).build();
             WAPVirtualNetworkAdapters virtualNetworkAdapters = new AzurePackRequester(provider, listAdapters).withJsonProcessor(WAPVirtualNetworkAdapters.class).execute();
@@ -378,7 +381,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         new AzurePackRequester(provider, updateVMRequest).execute();
     }
 
-    private class VirtualMachineNetworkData {
+    public class VirtualMachineNetworkData {
         private String vlanId;
         private List<String> ipAddresses;
 
