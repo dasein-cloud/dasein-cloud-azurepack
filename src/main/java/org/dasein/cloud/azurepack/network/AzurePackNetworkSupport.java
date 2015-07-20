@@ -6,9 +6,7 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.dasein.cloud.CloudException;
-import org.dasein.cloud.CloudProvider;
 import org.dasein.cloud.InternalException;
-import org.dasein.cloud.OperationNotSupportedException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.dasein.cloud.azurepack.network.model.*;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
@@ -17,10 +15,8 @@ import org.dasein.cloud.network.*;
 import org.dasein.cloud.util.requester.DriverToCoreMapper;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import javax.annotation.Nullable;
+import java.util.*;
 
 /**
  * Created by vmunthiu on 3/26/2015.
@@ -193,7 +189,7 @@ public class AzurePackNetworkSupport extends AbstractVLANSupport<AzurePackCloud>
 
     private WAPLogicalNetModel getFirstLogicalNetwork() throws CloudException {
         HttpUriRequest listLogicalNetRequest = new AzurePackNetworkRequests(provider).listLogicalNets().build();
-        WAPLogicalNetsMode logicalNets = new AzurePackRequester(provider, listLogicalNetRequest).withJsonProcessor(WAPLogicalNetsMode.class).execute();
+        WAPLogicalNetsModel logicalNets = new AzurePackRequester(provider, listLogicalNetRequest).withJsonProcessor(WAPLogicalNetsModel.class).execute();
 
         if(logicalNets == null || logicalNets.getLogicalNets().size() == 0)
             return null;
@@ -233,5 +229,142 @@ public class AzurePackNetworkSupport extends AbstractVLANSupport<AzurePackCloud>
     @Override
     public boolean isSubscribed() throws CloudException, InternalException {
         return true;
+    }
+
+    @Override
+    public VLAN getVlan(final String vlanId) throws InternalException, CloudException {
+        if(vlanId == null)
+            throw new InternalException("Parameter vlanId cannot be null.");
+
+        return (VLAN) CollectionUtils.find((ArrayList<VLAN>) listVlans(), new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return ((VLAN) object).getProviderVlanId().equalsIgnoreCase(vlanId);
+            }
+        });
+    }
+    @Override
+    public String createInternetGateway(@Nonnull final String vlanId) throws CloudException, InternalException {
+        VLAN vlan = getVlan(vlanId);
+        if(vlan == null)
+            throw new InternalException("Parameter vlanId does not belong to an existing network");
+
+        WAPVMNetworkGatewayModel wapvmNetworkGatewayModel = new WAPVMNetworkGatewayModel();
+        wapvmNetworkGatewayModel.setName(vlan.getName() + "Gateway");
+        wapvmNetworkGatewayModel.setDescription(vlan.getDescription() + "Gateway");
+        wapvmNetworkGatewayModel.setStampId(vlan.getProviderDataCenterId());
+        wapvmNetworkGatewayModel.setVmNetworkId(vlan.getProviderVlanId());
+        wapvmNetworkGatewayModel.setRequiresNAT("true");
+
+        HttpUriRequest httpUriRequest = new AzurePackNetworkRequests(provider).createInternetGateway(wapvmNetworkGatewayModel).build();
+
+        WAPVMNetworkGatewayModel wapvmNetworkGatewayResult =
+                new AzurePackRequester(provider, httpUriRequest).withJsonProcessor(WAPVMNetworkGatewayModel.class).execute();
+
+
+        WAPNatConnectionModel wapNatConnectionModel = new WAPNatConnectionModel();
+        wapNatConnectionModel.setName(vlan.getName() + "NAT Connection");
+        wapNatConnectionModel.setStampId(vlan.getProviderDataCenterId());
+        wapNatConnectionModel.setVmNetworkGatewayId(wapvmNetworkGatewayResult.getId());
+
+        HttpUriRequest natCreateUriRequest = new AzurePackNetworkRequests(provider).createNatConnection(wapNatConnectionModel).build();
+
+        try {
+            new AzurePackRequester(provider, natCreateUriRequest).execute();
+        } catch (Exception ex) {
+            //delete created internet gateway
+            HttpUriRequest deleteGatewayRequest = new AzurePackNetworkRequests(provider).deleteInternetGateway(wapvmNetworkGatewayResult).build();
+            new AzurePackRequester(provider, deleteGatewayRequest).execute();
+            throw new CloudException(ex.getMessage());
+        }
+
+        return wapvmNetworkGatewayResult.getId();
+    }
+
+    @Override
+    public void removeInternetGateway(@Nonnull final String vlanId) throws CloudException, InternalException {
+        VLAN vlan = getVlan(vlanId);
+        if(vlan == null)
+            throw new InternalException("Parameter vlanId does not belong to an existing network");
+
+        final WAPVMNetworkGatewayModel wapvmNetworkGatewayModel = getInternetGateway(vlan);
+
+        if(wapvmNetworkGatewayModel == null)
+            throw new InternalException("There is no internet gateway on the provide vlanId");
+
+        HttpUriRequest listNatConnectionRequest = new AzurePackNetworkRequests(provider).listNatConnections(wapvmNetworkGatewayModel.getId(), wapvmNetworkGatewayModel.getStampId()).build();
+        WAPNatConnectionsModel wapNatConnectionModels = new AzurePackRequester(provider, listNatConnectionRequest).withJsonProcessor(WAPNatConnectionsModel.class).execute();
+
+        if(wapNatConnectionModels != null && wapNatConnectionModels.getConnections() != null){
+            for (WAPNatConnectionModel wapNatConnectionModel : wapNatConnectionModels.getConnections()) {
+                HttpUriRequest deleteNatRequest = new AzurePackNetworkRequests(provider).deleteNatConnection(wapNatConnectionModel).build();
+                new AzurePackRequester(provider, deleteNatRequest).execute();
+            }
+        }
+
+        HttpUriRequest deleteGatewayRequest = new AzurePackNetworkRequests(provider).deleteInternetGateway(wapvmNetworkGatewayModel).build();
+        new AzurePackRequester(provider, deleteGatewayRequest).execute();
+    }
+
+    @Override
+    public boolean isConnectedViaInternetGateway(@Nonnull final String vlanId) throws CloudException, InternalException {
+        VLAN vlan = getVlan(vlanId);
+        if(vlan == null)
+            throw new InternalException("Parameter vlanId does not belong to an existing network");
+
+        WAPVMNetworkGatewayModel wapvmNetworkGatewayModel = getInternetGateway(vlan);
+
+        if(wapvmNetworkGatewayModel == null)
+            return false;
+
+        return true;
+    }
+
+    private WAPVMNetworkGatewayModel getInternetGateway(final VLAN vlan) throws CloudException, InternalException {
+        HttpUriRequest listGatewaysRequest = new AzurePackNetworkRequests(provider).listGateways(vlan).build();
+        WAPVMNetworkGatewaysModel wapvmNetworkGatewayModels = new AzurePackRequester(provider, listGatewaysRequest).withJsonProcessor(WAPVMNetworkGatewaysModel.class).execute();
+        if(wapvmNetworkGatewayModels.getGateways() == null || wapvmNetworkGatewayModels.getGateways().size() == 0)
+            return null;
+
+        return wapvmNetworkGatewayModels.getGateways().get(0);
+    }
+
+    public @Nullable String getAttachedInternetGatewayId(@Nonnull String vlanId) throws CloudException, InternalException {
+        VLAN vlan = getVlan(vlanId);
+        if(vlan == null)
+            throw new InternalException("Parameter vlanId does not belong to an existing network");
+
+        WAPVMNetworkGatewayModel wapvmNetworkGatewayModel = getInternetGateway(vlan);
+
+        if(wapvmNetworkGatewayModel == null)
+            return null;
+
+        return wapvmNetworkGatewayModel.getId();
+    }
+
+    public @Nullable InternetGateway getInternetGatewayById(@Nonnull final String gatewayId) throws CloudException, InternalException {
+        if(gatewayId == null)
+            throw new InternalException("Parameter gatewayId cannot be null");
+
+        String stampId = provider.getDataCenterServices().listDataCenters(provider.getContext().getRegionId()).iterator().next().getProviderDataCenterId();
+        HttpUriRequest getGatewayRequest = new AzurePackNetworkRequests(provider).getGateway(gatewayId, stampId).build();
+        try {
+            WAPVMNetworkGatewayModel wapvmNetworkGatewayModel = new AzurePackRequester(provider, getGatewayRequest).withJsonProcessor(WAPVMNetworkGatewayModel.class).execute();
+
+            if( wapvmNetworkGatewayModel == null)
+                return null;
+
+            InternetGateway internetGateway = new InternetGateway();
+            internetGateway.setProviderInternetGatewayId(wapvmNetworkGatewayModel.getId());
+            internetGateway.setProviderVlanId(wapvmNetworkGatewayModel.getVmNetworkId());
+            internetGateway.setProviderRegionId(provider.getContext().getRegionId());
+            internetGateway.setProviderOwnerId(provider.getContext().getAccountNumber());
+            return internetGateway;
+        } catch (CloudException ex) {
+            if(ex.getProviderCode().equalsIgnoreCase("Not found")) {
+                return null;
+            }
+            throw ex;
+        }
     }
 }
