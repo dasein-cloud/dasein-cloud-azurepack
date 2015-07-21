@@ -7,17 +7,20 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.log4j.Logger;
 import org.dasein.cloud.*;
 import org.dasein.cloud.azurepack.compute.AzurePackComputeService;
 import org.dasein.cloud.azurepack.model.WAPCloudsModel;
 import org.dasein.cloud.azurepack.network.AzurePackNetworkServices;
+import org.dasein.cloud.azurepack.platform.AzurePackPlatformServices;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
 import org.dasein.cloud.azurepack.utils.AzureSSLSocketFactory;
 import org.dasein.cloud.azurepack.utils.AzureX509;
 import org.dasein.cloud.azurepack.utils.LoggerUtils;
 import org.dasein.cloud.dc.DataCenterServices;
 import org.dasein.cloud.network.NetworkServices;
+import org.dasein.cloud.platform.PlatformServices;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,6 +49,11 @@ public class AzurePackCloud extends AbstractCloud {
 
     @Override
     public @Nullable NetworkServices getNetworkServices() { return new AzurePackNetworkServices(this);  }
+
+    @Override
+    public @Nullable PlatformServices getPlatformServices() {
+        return new AzurePackPlatformServices(this);
+    }
 
     @Nonnull
     @Override
@@ -86,8 +94,10 @@ public class AzurePackCloud extends AbstractCloud {
                     .register("https", new AzureSSLSocketFactory(new AzureX509(this), disableSSLValidation))
                     .build();
 
-            HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
-            builder.setConnectionManager(ccm);
+            PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(registry);
+            connManager.setMaxTotal(200);
+            connManager.setDefaultMaxPerRoute(20);
+            builder.setConnectionManager(connManager);
             return builder;
         } catch (Exception e) {
             throw new CloudException(e.getMessage());
