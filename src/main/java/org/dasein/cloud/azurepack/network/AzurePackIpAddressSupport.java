@@ -55,6 +55,8 @@ public class AzurePackIpAddressSupport extends AbstractIpAddressSupport<AzurePac
         natRuleModel.setExternalPort(String.valueOf(publicPort));
         natRuleModel.setStampId(stampId);
         natRuleModel.setNatConnectionId(wapNatConnectionModel.getId());
+        if(protocol != null)
+            natRuleModel.setProtocol(protocol.toString());
 
         HttpUriRequest createRuleRequest = new AzurePackNetworkRequests(provider).createNatRule(natRuleModel).build();
         WAPNatRuleModel natRuleResultModel = new AzurePackRequester(provider, createRuleRequest).withJsonProcessor(WAPNatRuleModel.class).execute();
@@ -113,6 +115,8 @@ public class AzurePackIpAddressSupport extends AbstractIpAddressSupport<AzurePac
                 rule.setProviderRuleId(wapNatRuleModel.getId());
                 rule.setPrivatePort(Integer.valueOf(wapNatRuleModel.getInternalPort()));
                 rule.setPublicPort(Integer.valueOf(wapNatRuleModel.getExternalPort()));
+                if(wapNatRuleModel.getProtocol() != null)
+                    rule.setProtocol(Protocol.valueOf(wapNatRuleModel.getProtocol().toUpperCase()));
 
                 rules.add(rule);
             }
