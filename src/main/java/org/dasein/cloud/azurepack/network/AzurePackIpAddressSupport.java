@@ -113,6 +113,8 @@ public class AzurePackIpAddressSupport extends AbstractIpAddressSupport<AzurePac
                 rule.setProviderRuleId(wapNatRuleModel.getId());
                 rule.setPrivatePort(Integer.valueOf(wapNatRuleModel.getInternalPort()));
                 rule.setPublicPort(Integer.valueOf(wapNatRuleModel.getExternalPort()));
+                if(wapNatRuleModel.getProtocol() != null)
+                    rule.setProtocol(Protocol.valueOf(wapNatRuleModel.getProtocol().toUpperCase()));
 
                 rules.add(rule);
             }
