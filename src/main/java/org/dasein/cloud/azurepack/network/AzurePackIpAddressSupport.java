@@ -55,6 +55,8 @@ public class AzurePackIpAddressSupport extends AbstractIpAddressSupport<AzurePac
         natRuleModel.setExternalPort(String.valueOf(publicPort));
         natRuleModel.setStampId(stampId);
         natRuleModel.setNatConnectionId(wapNatConnectionModel.getId());
+        if(protocol != null)
+            natRuleModel.setProtocol(protocol.toString());
 
         HttpUriRequest createRuleRequest = new AzurePackNetworkRequests(provider).createNatRule(natRuleModel).build();
         WAPNatRuleModel natRuleResultModel = new AzurePackRequester(provider, createRuleRequest).withJsonProcessor(WAPNatRuleModel.class).execute();
