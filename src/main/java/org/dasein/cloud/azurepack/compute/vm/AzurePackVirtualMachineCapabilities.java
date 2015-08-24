@@ -147,7 +147,7 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
     @Nonnull
     @Override
     public Requirement identifySubnetRequirement() throws CloudException, InternalException {
-        return Requirement.OPTIONAL;
+        return Requirement.NONE;
     }
 
     @Nonnull
