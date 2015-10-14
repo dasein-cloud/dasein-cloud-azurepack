@@ -31,7 +31,6 @@ import org.dasein.cloud.CloudException;
 import org.dasein.cloud.CloudProvider;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.AzurePackDataCenterService;
-import org.dasein.cloud.azurepack.AzurePackTestsBase;
 import org.dasein.cloud.azurepack.model.WAPCloudModel;
 import org.dasein.cloud.azurepack.model.WAPCloudsModel;
 import org.dasein.cloud.dc.DataCenter;
@@ -44,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.dasein.cloud.azurepack.HttpMethodAsserts.assertGet;
+import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.assertGet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

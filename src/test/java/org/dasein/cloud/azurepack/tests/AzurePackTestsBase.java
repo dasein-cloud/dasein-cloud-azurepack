@@ -19,7 +19,7 @@
  *
  */
 
-package org.dasein.cloud.azurepack;
+package org.dasein.cloud.azurepack.tests;
 
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
@@ -27,6 +27,7 @@ import org.dasein.cloud.Cloud;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.junit.Before;
 
 /**

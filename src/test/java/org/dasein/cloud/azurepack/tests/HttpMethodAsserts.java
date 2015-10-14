@@ -19,7 +19,7 @@
  *
  */
 
-package org.dasein.cloud.azurepack;
+package org.dasein.cloud.azurepack.tests;
 
 import junit.framework.Assert;
 import org.apache.commons.collections.Closure;
