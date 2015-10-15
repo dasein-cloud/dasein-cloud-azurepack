@@ -34,17 +34,19 @@ import org.dasein.cloud.azurepack.AzurePackDataCenterService;
 import org.dasein.cloud.azurepack.model.WAPCloudModel;
 import org.dasein.cloud.azurepack.model.WAPCloudsModel;
 import org.dasein.cloud.dc.DataCenter;
+import org.dasein.cloud.dc.Region;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.assertGet;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -57,7 +59,7 @@ public class AzurePackDataCenterServiceTest extends AzurePackTestsBase {
 
     private final String CLOUD_RESOURCES = "%s/%s/services/systemcenter/vmm/Clouds";
     private final String DATA_CENTER_ID = UUID.randomUUID().toString();
-    private final String DATA_CENTER_NAME = "TEST_DATA_CENTER";
+    private final String REGION_NAME = "TEST_REGION_NAME";
 
 
     private AzurePackDataCenterService azurePackDataCenterService;
@@ -69,46 +71,129 @@ public class AzurePackDataCenterServiceTest extends AzurePackTestsBase {
     }
 
     @Test
-    public void listDataCentersShouldReturnCorrectResult() throws CloudException, InternalException, LoginException {
-        new MockUp<DaseinRequestExecutor>() {
-            @Mock
-            public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request, ResponseHandler handler) {
-                assertGet(request, String.format(CLOUD_RESOURCES, ENDPOINT, ACCOUNT_NO));
-            }
+    public void getDataCenterShouldReturnCorrectResult() throws CloudException, InternalException {
+        new ListCloudsDaseinRequestExecutorMockUp();
 
-            @Mock
-            public Object execute() {
-                WAPCloudsModel wapCloudsModel = new WAPCloudsModel();
-                wapCloudsModel.setOdataMetadata("https://smapi-server:30006/2222aa22-22a2-2a22-2a22-2aaaaa2aaaaa/services/systemcenter/vmm/$metadata#Clouds");
+        DataCenter dataCenter = azurePackDataCenterService.getDataCenter(DATA_CENTER_ID);
+        assertDataCenter(dataCenter);
+    }
 
-                List<WAPCloudModel> wapCloudModels = new ArrayList<WAPCloudModel>();
-                WAPCloudModel invalidWapCloudModel = new WAPCloudModel();
-                invalidWapCloudModel.setId("3333b333-b3bb-333b-333b-3bbb33333bbb");
-                invalidWapCloudModel.setName("KatalCloud");
-                invalidWapCloudModel.setStampId("444c4444-c44c-4444-c4c4-44ccc4444c4c");
-                wapCloudModels.add(invalidWapCloudModel);
 
-                WAPCloudModel validWapCloudModel = new WAPCloudModel();
-                validWapCloudModel.setId(REGION);
-                validWapCloudModel.setName(DATA_CENTER_NAME);
-                validWapCloudModel.setStampId(DATA_CENTER_ID);
-                wapCloudModels.add(validWapCloudModel);
-
-                wapCloudsModel.setClouds(wapCloudModels);
-                return wapCloudsModel;
-            }
-        };
+    @Test
+    public void listDataCentersShouldReturnCorrectResult() throws CloudException, InternalException {
+        new ListCloudsDaseinRequestExecutorMockUp();
 
         List<DataCenter> dataCenters = IteratorUtils.toList(
                 azurePackDataCenterService.listDataCenters(REGION).iterator());
 
         assertEquals("listDataCenters doesn't return correct data center size", 1, dataCenters.size());
-        DataCenter dataCenter = dataCenters.get(0);
-        assertEquals("listDataCenters doesn't return correct data center", REGION, dataCenter.getRegionId());
-        assertEquals("listDataCenters doesn't return correct data center", DATA_CENTER_ID, dataCenter.getProviderDataCenterId());
-        assertEquals("listDataCenters doesn't return correct data center", DATA_CENTER_NAME, dataCenter.getName());
-        assertTrue("listDataCenters doesn't return correct data center", dataCenter.isActive());
-        assertTrue("listDataCenters doesn't return correct data center", dataCenter.isAvailable());
+        assertDataCenter(dataCenters.get(0));
+    }
+
+    @Test
+    public void getRegionShouldReturnCorrectResult() throws CloudException, InternalException {
+        new ListCloudsDaseinRequestExecutorMockUp();
+
+        Region region = azurePackDataCenterService.getRegion(REGION);
+        assertRegion(region);
+    }
+
+    @Test
+    public void listRegionsShouldReturnCorrectResult() throws CloudException, InternalException {
+        new ListCloudsDaseinRequestExecutorMockUp();
+
+        List<Region> regions = IteratorUtils.toList(azurePackDataCenterService.listRegions().iterator());
+        assertEquals("listRegions doesn't return correct region size", 2, regions.size());
+        assertRegion(regions.get(1));
+    }
+
+    private void assertDataCenter(DataCenter dataCenter) {
+        assertEquals("doesn't return correct data center", REGION, dataCenter.getRegionId());
+        assertEquals("doesn't return correct data center", DATA_CENTER_ID, dataCenter.getProviderDataCenterId());
+        assertEquals("doesn't return correct data center", REGION_NAME, dataCenter.getName());
+        assertTrue("doesn't return correct data center", dataCenter.isActive());
+        assertTrue("doesn't return correct data center", dataCenter.isAvailable());
+    }
+
+    private void assertRegion(Region region) {
+        assertEquals("doesn't return correct region", REGION, region.getProviderRegionId());
+        assertEquals("doesn't return correct region", "US", region.getJurisdiction());
+        assertEquals("doesn't return correct region", REGION_NAME, region.getName());
+        assertTrue("doesn't return correct region", region.isActive());
+        assertTrue("doesn't return correct region", region.isAvailable());
+    }
+
+    public class ListCloudsDaseinRequestExecutorMockUp extends MockUp<DaseinRequestExecutor> {
+        @Mock
+        public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request, ResponseHandler handler) {
+            assertGet(request, String.format(CLOUD_RESOURCES, ENDPOINT, ACCOUNT_NO));
+        }
+
+        @Mock
+        public Object execute() {
+            WAPCloudsModel wapCloudsModel = new WAPCloudsModel();
+            wapCloudsModel.setOdataMetadata("https://smapi-server:30006/2222aa22-22a2-2a22-2a22-2aaaaa2aaaaa/services/systemcenter/vmm/$metadata#Clouds");
+
+            List<WAPCloudModel> wapCloudModels = new ArrayList<WAPCloudModel>();
+            WAPCloudModel invalidWapCloudModel = new WAPCloudModel();
+            invalidWapCloudModel.setId("3333b333-b3bb-333b-333b-3bbb33333bbb");
+            invalidWapCloudModel.setName("KatalCloud");
+            invalidWapCloudModel.setStampId("444c4444-c44c-4444-c4c4-44ccc4444c4c");
+            wapCloudModels.add(invalidWapCloudModel);
+
+            WAPCloudModel validWapCloudModel = new WAPCloudModel();
+            validWapCloudModel.setId(REGION);
+            validWapCloudModel.setName(REGION_NAME);
+            validWapCloudModel.setStampId(DATA_CENTER_ID);
+            wapCloudModels.add(validWapCloudModel);
+
+            wapCloudsModel.setClouds(wapCloudModels);
+            return wapCloudsModel;
+        }
+    };
+
+    @Test
+    public void getProviderTermForDataCenterShouldReturnCorrectResult() throws CloudException, InternalException {
+        assertEquals("getProviderTermForDataCenter doesn't return correct result", "Stamp",
+                azurePackDataCenterService.getProviderTermForDataCenter(Locale.US));
+    }
+
+    @Test
+    public void getProviderTermForRegionShouldReturnCorrectResult() throws CloudException, InternalException {
+        assertEquals("getProviderTermForRegion doesn't return correct result", "Cloud",
+                azurePackDataCenterService.getProviderTermForRegion(Locale.US));
+    }
+
+    @Test
+    public void listResourcePoolsShouldReturnNull() throws CloudException, InternalException {
+        assertNull("listResourcePools doesn't return null",
+                azurePackDataCenterService.listResourcePools(DATA_CENTER_ID));
+    }
+
+    @Test
+    public void getResourcePoolShouldReturnNull() throws CloudException, InternalException {
+        assertNull("getResourcePool doesn't return null",
+                azurePackDataCenterService.getResourcePool("resource_pool_id"));
+    }
+
+    @Test
+    public void listStoragePoolsShouldReturnNull() throws CloudException, InternalException {
+        assertNull("listStoragePools doesn't return null", azurePackDataCenterService.listStoragePools());
+    }
+
+    @Test
+    public void getStoragePoolShouldReturnNull() throws CloudException, InternalException {
+        assertNull("getStoragePool doesn't return null", azurePackDataCenterService.getStoragePool("storage_pool_id"));
+    }
+
+    @Test
+    public void listVMFoldersShouldReturnNull() throws CloudException, InternalException {
+        assertNull("listVMFolders doesn't return null", azurePackDataCenterService.listVMFolders());
+    }
+
+    @Test
+    public void getVMFolderShouldReturnNull() throws CloudException, InternalException {
+        assertNull("getVMFolder doesn't return null", azurePackDataCenterService.getVMFolder("vm_folder_id"));
     }
 }
 

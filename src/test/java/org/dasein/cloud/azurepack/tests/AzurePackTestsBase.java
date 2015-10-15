@@ -23,6 +23,7 @@ package org.dasein.cloud.azurepack.tests;
 
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.dasein.cloud.Cloud;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
@@ -40,6 +41,7 @@ public class AzurePackTestsBase {
     @Mocked protected ProviderContext providerContextMock;
     @Mocked protected AzurePackCloud azurePackCloudMock;
     @Mocked protected Cloud cloudMock;
+    @Mocked protected HttpClientBuilder httpClientBuilderMock;
 
     protected final String ENDPOINT = "TEST_END_POINT";
     protected final String ACCOUNT_NO = "TEST_ACCOUNT_NO";
@@ -47,13 +49,14 @@ public class AzurePackTestsBase {
 
     @Before
     public void setUp() throws CloudException, InternalException {
-        new NonStrictExpectations() {
-            { azurePackCloudMock.getContext(); result = providerContextMock; }
-            { providerContextMock.getAccountNumber(); result = ACCOUNT_NO; }
-            { providerContextMock.getRegionId(); result = REGION; }
-            { providerContextMock.getEndpoint(); result = ENDPOINT;}
-            { providerContextMock.getCloud(); result = cloudMock; }
-            { cloudMock.getEndpoint(); result = ENDPOINT; }
-        };
+        new NonStrictExpectations() {{
+            azurePackCloudMock.getContext(); result = providerContextMock;
+            azurePackCloudMock.getAzureClientBuilder(); result = httpClientBuilderMock;
+            providerContextMock.getAccountNumber(); result = ACCOUNT_NO;
+            providerContextMock.getRegionId(); result = REGION;
+            providerContextMock.getEndpoint(); result = ENDPOINT;
+            providerContextMock.getCloud(); result = cloudMock;
+            cloudMock.getEndpoint(); result = ENDPOINT;
+        }};
     }
 }
