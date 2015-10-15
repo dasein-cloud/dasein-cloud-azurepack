@@ -37,23 +37,23 @@ import org.junit.Before;
  * @since 2015.09.1
  */
 public class AzurePackTestsBase {
-  @Mocked protected ProviderContext providerContextMock;
-  @Mocked protected AzurePackCloud azurePackCloudMock;
-  @Mocked protected Cloud cloudMock;
+    @Mocked protected ProviderContext providerContextMock;
+    @Mocked protected AzurePackCloud azurePackCloudMock;
+    @Mocked protected Cloud cloudMock;
 
-  protected final String ENDPOINT = "TEST_END_POINT";
-  protected final String ACCOUNT_NO = "TEST_ACCOUNT_NO";
-  protected final String REGION = "TEST_REGION";
+    protected final String ENDPOINT = "TEST_END_POINT";
+    protected final String ACCOUNT_NO = "TEST_ACCOUNT_NO";
+    protected final String REGION = "TEST_REGION";
 
-  @Before
-  public void setUp() throws CloudException, InternalException {
-    new NonStrictExpectations() {
-      { azurePackCloudMock.getContext(); result = providerContextMock; }
-      { providerContextMock.getAccountNumber(); result = ACCOUNT_NO; }
-      { providerContextMock.getRegionId(); result = REGION; }
-      { providerContextMock.getEndpoint(); result = ENDPOINT;}
-      { providerContextMock.getCloud(); result = cloudMock; }
-      { cloudMock.getEndpoint(); result = ENDPOINT; }
-    };
-  }
+    @Before
+    public void setUp() throws CloudException, InternalException {
+        new NonStrictExpectations() {
+            { azurePackCloudMock.getContext(); result = providerContextMock; }
+            { providerContextMock.getAccountNumber(); result = ACCOUNT_NO; }
+            { providerContextMock.getRegionId(); result = REGION; }
+            { providerContextMock.getEndpoint(); result = ENDPOINT;}
+            { providerContextMock.getCloud(); result = cloudMock; }
+            { cloudMock.getEndpoint(); result = ENDPOINT; }
+        };
+    }
 }

@@ -55,62 +55,63 @@ import static org.junit.Assert.assertTrue;
  */
 public class AzurePackDataCenterServiceTest extends AzurePackTestsBase {
 
-  private final String CLOUD_RESOURCES = "%s/%s/services/systemcenter/vmm/Clouds";
-  private final String DATA_CENTER_ID = UUID.randomUUID().toString();
-  private final String DATA_CENTER_NAME = "TEST_DATA_CENTER";
+    private final String CLOUD_RESOURCES = "%s/%s/services/systemcenter/vmm/Clouds";
+    private final String DATA_CENTER_ID = UUID.randomUUID().toString();
+    private final String DATA_CENTER_NAME = "TEST_DATA_CENTER";
 
 
-  private AzurePackDataCenterService azurePackDataCenterService;
+    private AzurePackDataCenterService azurePackDataCenterService;
 
-  @Before
-  public void setUp() throws CloudException, InternalException {
-    super.setUp();
-    azurePackDataCenterService = new AzurePackDataCenterService(azurePackCloudMock);
-  }
+    @Before
+    public void setUp() throws CloudException, InternalException {
+        super.setUp();
+        azurePackDataCenterService = new AzurePackDataCenterService(azurePackCloudMock);
+    }
 
-  @Test
-  public void listDataCentersShouldReturnCorrectResult() throws CloudException, InternalException, LoginException {
-    new MockUp<DaseinRequestExecutor>() {
-      @Mock
-      public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request, ResponseHandler handler) {
-        assertGet(request, String.format(CLOUD_RESOURCES, ENDPOINT, ACCOUNT_NO));
-      }
+    @Test
+    public void listDataCentersShouldReturnCorrectResult() throws CloudException, InternalException, LoginException {
+        new MockUp<DaseinRequestExecutor>() {
+            @Mock
+            public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request, ResponseHandler handler) {
+                assertGet(request, String.format(CLOUD_RESOURCES, ENDPOINT, ACCOUNT_NO));
+            }
 
-      @Mock
-      public Object execute() {
-        WAPCloudsModel wapCloudsModel = new WAPCloudsModel();
-        wapCloudsModel.setOdataMetadata("https://smapi-server:30006/2222aa22-22a2-2a22-2a22-2aaaaa2aaaaa/services/systemcenter/vmm/$metadata#Clouds");
+            @Mock
+            public Object execute() {
+                WAPCloudsModel wapCloudsModel = new WAPCloudsModel();
+                wapCloudsModel.setOdataMetadata("https://smapi-server:30006/2222aa22-22a2-2a22-2a22-2aaaaa2aaaaa/services/systemcenter/vmm/$metadata#Clouds");
 
-        List<WAPCloudModel> wapCloudModels = new ArrayList<WAPCloudModel>();
-        WAPCloudModel invalidWapCloudModel = new WAPCloudModel();
-        invalidWapCloudModel.setId("3333b333-b3bb-333b-333b-3bbb33333bbb");
-        invalidWapCloudModel.setName("KatalCloud");
-        invalidWapCloudModel.setStampId("444c4444-c44c-4444-c4c4-44ccc4444c4c");
-        wapCloudModels.add(invalidWapCloudModel);
+                List<WAPCloudModel> wapCloudModels = new ArrayList<WAPCloudModel>();
+                WAPCloudModel invalidWapCloudModel = new WAPCloudModel();
+                invalidWapCloudModel.setId("3333b333-b3bb-333b-333b-3bbb33333bbb");
+                invalidWapCloudModel.setName("KatalCloud");
+                invalidWapCloudModel.setStampId("444c4444-c44c-4444-c4c4-44ccc4444c4c");
+                wapCloudModels.add(invalidWapCloudModel);
 
-        WAPCloudModel validWapCloudModel = new WAPCloudModel();
-        validWapCloudModel.setId(REGION);
-        validWapCloudModel.setName(DATA_CENTER_NAME);
-        validWapCloudModel.setStampId(DATA_CENTER_ID);
-        wapCloudModels.add(validWapCloudModel);
+                WAPCloudModel validWapCloudModel = new WAPCloudModel();
+                validWapCloudModel.setId(REGION);
+                validWapCloudModel.setName(DATA_CENTER_NAME);
+                validWapCloudModel.setStampId(DATA_CENTER_ID);
+                wapCloudModels.add(validWapCloudModel);
 
-        wapCloudsModel.setClouds(wapCloudModels);
-        return wapCloudsModel;
-      }
-    };
+                wapCloudsModel.setClouds(wapCloudModels);
+                return wapCloudsModel;
+            }
+        };
 
-    List<DataCenter> dataCenters = IteratorUtils.toList(
-            azurePackDataCenterService.listDataCenters(REGION).iterator());
+        List<DataCenter> dataCenters = IteratorUtils.toList(
+                azurePackDataCenterService.listDataCenters(REGION).iterator());
 
-    assertEquals("listDataCenters doesn't return correct data center size", 1, dataCenters.size());
-    DataCenter dataCenter = dataCenters.get(0);
-    assertEquals("listDataCenters doesn't return correct data center", REGION, dataCenter.getRegionId());
-    assertEquals("listDataCenters doesn't return correct data center", DATA_CENTER_ID, dataCenter.getProviderDataCenterId());
-    assertEquals("listDataCenters doesn't return correct data center", DATA_CENTER_NAME, dataCenter.getName());
-    assertTrue("listDataCenters doesn't return correct data center", dataCenter.isActive());
-    assertTrue("listDataCenters doesn't return correct data center", dataCenter.isAvailable());
-  }
+        assertEquals("listDataCenters doesn't return correct data center size", 1, dataCenters.size());
+        DataCenter dataCenter = dataCenters.get(0);
+        assertEquals("listDataCenters doesn't return correct data center", REGION, dataCenter.getRegionId());
+        assertEquals("listDataCenters doesn't return correct data center", DATA_CENTER_ID, dataCenter.getProviderDataCenterId());
+        assertEquals("listDataCenters doesn't return correct data center", DATA_CENTER_NAME, dataCenter.getName());
+        assertTrue("listDataCenters doesn't return correct data center", dataCenter.isActive());
+        assertTrue("listDataCenters doesn't return correct data center", dataCenter.isAvailable());
+    }
 }
+
 
 
 
