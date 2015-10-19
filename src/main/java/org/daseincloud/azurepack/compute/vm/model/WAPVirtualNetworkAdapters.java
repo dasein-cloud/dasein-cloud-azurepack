@@ -17,20 +17,20 @@
  * ====================================================================
  */
 
-package org.dasein.cloud.azurepack.network.model;
+package org.dasein.cloud.azurepack.compute.vm.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 /**
- * Created by vmunthiu on 7/20/2015.
+ * Created by vmunthiu on 5/11/2015.
  */
-public class WAPNatRulesModel {
+public class WAPVirtualNetworkAdapters {
     @JsonProperty("odata.metadata")
     private String odataMetadata;
     @JsonProperty("value")
-    private List<WAPNatRuleModel> rules;
+    private List<WAPVirtualNetworkAdapter> virtualNetworkAdapters;
 
     public String getOdataMetadata() {
         return odataMetadata;
@@ -40,11 +40,11 @@ public class WAPNatRulesModel {
         this.odataMetadata = odataMetadata;
     }
 
-    public List<WAPNatRuleModel> getRules() {
-        return rules;
+    public List<WAPVirtualNetworkAdapter> getVirtualNetworkAdapters() {
+        return virtualNetworkAdapters;
     }
 
-    public void setRules(List<WAPNatRuleModel> rules) {
-        this.rules = rules;
+    public void setVirtualNetworkAdapters(List<WAPVirtualNetworkAdapter> virtualNetworkAdapters) {
+        this.virtualNetworkAdapters = virtualNetworkAdapters;
     }
 }
