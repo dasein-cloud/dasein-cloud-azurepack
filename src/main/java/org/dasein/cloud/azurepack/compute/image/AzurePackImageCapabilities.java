@@ -95,6 +95,11 @@ public class AzurePackImageCapabilities extends AbstractCapabilities<AzurePackCl
     }
 
     @Override
+    public boolean supportsImageRemoval() throws CloudException, InternalException {
+        return false;
+    }
+
+    @Override
     public boolean supportsImageSharing() throws CloudException, InternalException {
         return false;
     }
