@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2009-2015 Dell, Inc
+ * See annotations for authorship information
+ *
+ * ====================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ====================================================================
+ */
+
 package org.dasein.cloud.azurepack.compute.vm;
 
 import org.apache.commons.collections.*;
@@ -159,7 +178,8 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
         List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator()));
 
-        HttpUriRequest getVMRequest = new AzurePackVMRequests(provider).getVirtualMachine(vmId, dataCenters.get(0).getProviderDataCenterId()).build();
+        HttpUriRequest getVMRequest = new AzurePackVMRequests(provider)
+                .getVirtualMachine(vmId, dataCenters.get(0).getProviderDataCenterId()).build();
 
         return new AzurePackRequester(this.provider, getVMRequest).withJsonProcessor(new DriverToCoreMapper<WAPVirtualMachineModel, VirtualMachine>() {
             @Override
@@ -188,11 +208,6 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         });
 
         return virtualMachines;
-    }
-
-    @Override
-    public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final String machineImageId) throws InternalException, CloudException {
-        return listProducts(machineImageId, VirtualMachineProductFilterOptions.getInstance());
     }
 
     @Override
@@ -234,8 +249,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         return products;
     }
 
-    @Override
-    public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final VirtualMachineProductFilterOptions options, @Nullable Architecture architecture) throws InternalException, CloudException {
+    private @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final VirtualMachineProductFilterOptions options) throws InternalException, CloudException {
         HttpUriRequest listProfilesRequest = new AzurePackVMRequests(provider).listHardwareProfiles().build();
 
         WAPHardwareProfilesModel hardwareProfilesModel = new AzurePackRequester(provider, listProfilesRequest).withJsonProcessor(WAPHardwareProfilesModel.class).execute();

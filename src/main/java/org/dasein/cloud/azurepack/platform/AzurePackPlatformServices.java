@@ -17,37 +17,28 @@
  * ====================================================================
  */
 
-package org.dasein.cloud.azurepack.compute;
+package org.dasein.cloud.azurepack.platform;
 
+import org.dasein.cloud.CloudProvider;
 import org.dasein.cloud.azurepack.AzurePackCloud;
-import org.dasein.cloud.azurepack.compute.image.AzurePackImageSupport;
-import org.dasein.cloud.azurepack.compute.vm.AzurePackVirtualMachineSupport;
-import org.dasein.cloud.compute.AbstractComputeServices;
-import org.dasein.cloud.compute.MachineImageSupport;
-import org.dasein.cloud.compute.VirtualMachineSupport;
+import org.dasein.cloud.platform.AbstractPlatformServices;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Created by vmunthiu on 2/27/2015.
+ * Created by vmunthiu on 6/16/2015.
  */
-public class AzurePackComputeService extends AbstractComputeServices<AzurePackCloud> {
+public class AzurePackPlatformServices extends AbstractPlatformServices {
     private AzurePackCloud provider;
 
-    public AzurePackComputeService(@Nonnull AzurePackCloud provider) {
+    public AzurePackPlatformServices(AzurePackCloud provider) {
         super(provider);
         this.provider = provider;
     }
 
-
     @Override
-    public MachineImageSupport getImageSupport() {
-        return new AzurePackImageSupport(provider);
-    }
-
-    @Override
-    public VirtualMachineSupport getVirtualMachineSupport() {
-        return new AzurePackVirtualMachineSupport(provider);
+    public @Nullable AzurePackDatabaseSupport getRelationalDatabaseSupport() {
+        return AzurePackDatabaseSupport.getInstance(provider);
     }
 }

@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2009-2015 Dell, Inc
+ * See annotations for authorship information
+ *
+ * ====================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ====================================================================
+ */
+
 package org.dasein.cloud.azurepack.compute.vm;
 
 import org.dasein.cloud.*;
@@ -110,6 +129,12 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
 
     @Nonnull
     @Override
+    public String[] getVirtualMachineReservedUserNames() {
+        return new String[0];
+    }
+
+    @Nonnull
+    @Override
     public Requirement identifyDataCenterLaunchRequirement() throws CloudException, InternalException {
         return Requirement.REQUIRED;
     }
@@ -118,6 +143,12 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
     @Override
     public Requirement identifyImageRequirement(@Nonnull ImageClass cls) throws CloudException, InternalException {
         return ( cls.equals(ImageClass.MACHINE) ? Requirement.REQUIRED : Requirement.NONE );
+    }
+
+    @Nonnull
+    @Override
+    public Requirement identifyUsernameRequirement() throws CloudException, InternalException {
+        return Requirement.REQUIRED;
     }
 
     @Nonnull
@@ -178,6 +209,11 @@ public class AzurePackVirtualMachineCapabilities extends AbstractCapabilities<Az
 
     @Override
     public boolean isUserDefinedPrivateIPSupported() throws CloudException, InternalException {
+        return false;
+    }
+
+    @Override
+    public boolean isRootPasswordSSHKeyEncrypted() throws CloudException, InternalException {
         return false;
     }
 
