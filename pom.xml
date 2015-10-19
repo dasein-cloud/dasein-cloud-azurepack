@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.dasein</groupId>
     <artifactId>dasein-cloud-azurepack</artifactId>
-    <version>2015.10.1-SNAPSHOT</version>
+    <version>2015.10.1</version>
     <packaging>jar</packaging>
 
     <name>dasein-cloud-azurepack</name>
@@ -35,7 +33,8 @@
         <connection>scm:git:git://github.com/dasein-cloud/dasein-cloud-azurepack.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/dasein-cloud/dasein-cloud-azurepack.git</developerConnection>
         <url>http://github.com/dasein-cloud/dasein-cloud-azurepack</url>
-    </scm>
+      <tag>dasein-cloud-azurepack-2015.10.1</tag>
+  </scm>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
