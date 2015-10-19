@@ -70,6 +70,11 @@ public class AzurePackDatabaseCapabilities implements RelationalDatabaseCapabili
     }
 
     @Override
+    public boolean supportsRootPasswordChange() throws CloudException, InternalException {
+        return false;
+    }
+
+    @Override
     public boolean supportsAlterDatabase() throws CloudException, InternalException {
         return false;
     }

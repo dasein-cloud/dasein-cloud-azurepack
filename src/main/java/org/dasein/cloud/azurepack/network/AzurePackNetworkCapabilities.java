@@ -72,6 +72,11 @@ public class AzurePackNetworkCapabilities extends AbstractCapabilities<AzurePack
     }
 
     @Override
+    public boolean allowsDeletionOfReservedSubnets() throws CloudException, InternalException {
+        return false;
+    }
+
+    @Override
     public int getMaxNetworkInterfaceCount() throws CloudException, InternalException {
         return 0;
     }
