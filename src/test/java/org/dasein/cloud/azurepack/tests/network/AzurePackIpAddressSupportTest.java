@@ -75,9 +75,6 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 	
 	private IpAddressSupport azurePackIpAddressSupport;
 	
-	@Rule
-    public final TestName name = new TestName();
-	
 	private final String IP_ADDRESS_ENDPOINT = "http://endpoint.com:80";
 	
 	@Before
@@ -88,7 +85,6 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 		new NonStrictExpectations() {
 			{ 
 				providerContextMock.getEndpoint(); result = IP_ADDRESS_ENDPOINT; 
-				providerContextMock.getCloud(); result = cloudMock;
 				cloudMock.getEndpoint(); result = IP_ADDRESS_ENDPOINT;
 			}
 		};

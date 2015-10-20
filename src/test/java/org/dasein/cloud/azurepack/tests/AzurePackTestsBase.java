@@ -21,14 +21,18 @@
 
 package org.dasein.cloud.azurepack.tests;
 
+import java.lang.reflect.Field;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.dasein.cloud.Cloud;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
 import org.dasein.cloud.azurepack.AzurePackCloud;
+import org.dasein.cloud.util.requester.DaseinResponseHandlerWithMapper;
+import org.dasein.cloud.util.requester.DriverToCoreMapper;
 import org.junit.Before;
 
 /**
@@ -58,5 +62,23 @@ public class AzurePackTestsBase {
             providerContextMock.getCloud(); result = cloudMock;
             cloudMock.getEndpoint(); result = ENDPOINT;
         }};
+    }
+    
+    protected Object mapFromModel(ResponseHandler responseHandler, Object model) {
+		try {
+			Field field = DaseinResponseHandlerWithMapper.class.getDeclaredField("mapper");
+			field.setAccessible(true);
+			DriverToCoreMapper mapper = (DriverToCoreMapper) field.get(responseHandler);
+			return mapper.mapFrom(model);
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException("find field mapper failed", e);
+		} catch (SecurityException e) {
+			throw new RuntimeException("set accessible failed", e);
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException("invalid response handler", e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("field cannot be fetched", e);
+		}
+		
     }
 }
