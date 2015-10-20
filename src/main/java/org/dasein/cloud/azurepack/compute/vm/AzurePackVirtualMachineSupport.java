@@ -211,6 +211,11 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
     }
 
     @Override
+    public @Nonnull Iterable<VirtualMachineProduct> listAllProducts() throws InternalException, CloudException{
+        return listProducts(VirtualMachineProductFilterOptions.getInstance());
+    }
+
+    @Override
     public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull final String machineImageId, @Nonnull VirtualMachineProductFilterOptions options) throws InternalException, CloudException{
         MachineImage image = provider.getComputeServices().getImageSupport().getImage(machineImageId);
         if(image == null)

@@ -4,7 +4,7 @@
 
     <groupId>org.dasein</groupId>
     <artifactId>dasein-cloud-azurepack</artifactId>
-    <version>2015.10.1</version>
+    <version>2015.10.2</version>
     <packaging>jar</packaging>
 
     <name>dasein-cloud-azurepack</name>
@@ -33,14 +33,8 @@
         <connection>scm:git:git://github.com/dasein-cloud/dasein-cloud-azurepack.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/dasein-cloud/dasein-cloud-azurepack.git</developerConnection>
         <url>http://github.com/dasein-cloud/dasein-cloud-azurepack</url>
-      <tag>dasein-cloud-azurepack-2015.10.1</tag>
+      <tag>dasein-cloud-azurepack-2015.10.2</tag>
   </scm>
-
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>5</version>
-    </parent>
 
     <dependencies>
         <!-- Compile -->
@@ -359,7 +353,7 @@
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
-                        <phase>verify</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>sign</goal>
                         </goals>
