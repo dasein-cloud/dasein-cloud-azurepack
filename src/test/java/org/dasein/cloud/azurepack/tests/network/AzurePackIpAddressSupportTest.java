@@ -24,13 +24,11 @@ package org.dasein.cloud.azurepack.tests.network;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
-
 import mockit.Invocation;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
-
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -52,10 +50,7 @@ import org.dasein.cloud.network.Protocol;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.dasein.cloud.util.requester.entities.DaseinObjectToJsonEntity;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
-
 import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
 import static org.junit.Assert.*;
 import static org.unitils.reflectionassert.ReflectionAssert.*;
@@ -181,11 +176,11 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 		};
 		
 		new MockUp<DaseinRequestExecutor>() {
-			@Mock
+			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, REGION, INTERNET_GATEWAY_ID).replace(" ", "%20"));
             }
-            @Mock
+            @Mock(invocations = 1)
             public Object execute() {
             	return null;
             }
@@ -200,11 +195,11 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 		final String testRuleId = UUID.randomUUID().toString();
 		
 		new MockUp<DaseinRequestExecutor>() {
-			@Mock
+			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				assertDelete(httpUriRequest, String.format(NAT_RULE, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, testRuleId, REGION));
             }
-            @Mock
+            @Mock(invocations = 1)
             public Object execute() {
             	return null;
             }
@@ -298,11 +293,11 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 		};
 		
 		new MockUp<DaseinRequestExecutor>() {
-			@Mock
+			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, REGION, INTERNET_GATEWAY_ID).replace(" ", "%20"));
             }
-            @Mock
+            @Mock(invocations = 1)
             public Object execute() {
             	return null;
             }

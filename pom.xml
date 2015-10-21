@@ -306,10 +306,14 @@
                     <systemPropertyVariables>
                         <jacoco-agent.destfile>${project.build.directory}/jacoco.exec</jacoco-agent.destfile>
                     </systemPropertyVariables>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                    </includes>
                     <excludes>
-                        <exclude>**/*Test.java</exclude>
-                        <exclude>**/TestSuite.java</exclude>
+                        <exclude>**/DummyTest.java</exclude>
                     </excludes>
+                    <jvm>${env.JAVA_HOME}/bin/java</jvm>
                 </configuration>
             </plugin>
             <plugin>
