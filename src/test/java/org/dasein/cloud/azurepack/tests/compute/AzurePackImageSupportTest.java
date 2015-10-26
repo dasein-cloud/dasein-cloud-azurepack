@@ -30,6 +30,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.CloudProvider;
 import org.dasein.cloud.InternalException;
+import org.dasein.cloud.OperationNotSupportedException;
 import org.dasein.cloud.azurepack.AzurePackDataCenterService;
 import org.dasein.cloud.azurepack.compute.image.AzurePackImageSupport;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplateModel;
@@ -163,11 +164,18 @@ public class AzurePackImageSupportTest extends AzurePackTestsBase {
         images = IteratorUtils.toList(azurePackImageSupport.searchImages(ACCOUNT_NO, null, Platform.WINDOWS, null).iterator());
         assertEquals("searchImages doesn't return correct result", 2, images.size());
 
-        images = IteratorUtils.toList(azurePackImageSupport.searchImages(ACCOUNT_NO, null, Platform.WINDOWS, null, ImageClass.MACHINE).iterator());
+        images = IteratorUtils.toList(azurePackImageSupport.searchImages(ACCOUNT_NO, null, Platform.WINDOWS, null,
+                ImageClass.MACHINE).iterator());
         assertEquals("searchImages doesn't return correct result", 2, images.size());
 
-        images = IteratorUtils.toList(azurePackImageSupport.searchImages(ACCOUNT_NO, null, Platform.WINDOWS, null, ImageClass.KERNEL).iterator());
+        images = IteratorUtils.toList(azurePackImageSupport.searchImages(ACCOUNT_NO, null, Platform.WINDOWS, null,
+                ImageClass.KERNEL).iterator());
         assertEquals("searchImages doesn't return correct result", 0, images.size());
+    }
+
+    @Test(expected=OperationNotSupportedException.class)
+    public void removeShouldThrowException() throws CloudException, InternalException {
+        azurePackImageSupport.remove(VHD_1_ID, false);
     }
 
     public class GetAllImagesRequestExecutorMockUp extends MockUp<DaseinRequestExecutor> {
