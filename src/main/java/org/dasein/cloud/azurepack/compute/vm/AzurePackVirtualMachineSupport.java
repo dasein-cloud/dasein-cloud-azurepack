@@ -19,27 +19,40 @@
 
 package org.dasein.cloud.azurepack.compute.vm;
 
-import org.apache.commons.collections.*;
+import org.apache.commons.collections.Closure;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
-import org.dasein.cloud.azurepack.compute.image.AzurePackImageCapabilities;
 import org.dasein.cloud.azurepack.compute.image.AzurePackImageRequests;
-import org.dasein.cloud.azurepack.compute.image.AzurePackImageSupport;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplateModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
-import org.dasein.cloud.azurepack.compute.vm.model.*;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPHardwareProfileModel;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPHardwareProfilesModel;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPNewAdapterModel;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachinesModel;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapter;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapters;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
-import org.dasein.cloud.compute.*;
+import org.dasein.cloud.compute.AbstractVMSupport;
+import org.dasein.cloud.compute.MachineImage;
+import org.dasein.cloud.compute.VMLaunchOptions;
+import org.dasein.cloud.compute.VirtualMachine;
+import org.dasein.cloud.compute.VirtualMachineCapabilities;
+import org.dasein.cloud.compute.VirtualMachineProduct;
+import org.dasein.cloud.compute.VirtualMachineProductFilterOptions;
+import org.dasein.cloud.compute.VmState;
 import org.dasein.cloud.dc.DataCenter;
 import org.dasein.cloud.network.RawAddress;
 import org.dasein.cloud.network.VLAN;
-import org.dasein.cloud.network.VlanCreateOptions;
 import org.dasein.cloud.util.requester.DriverToCoreMapper;
 import org.dasein.util.uom.storage.Megabyte;
 import org.dasein.util.uom.storage.Storage;
-import org.dasein.util.uom.storage.StorageUnit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

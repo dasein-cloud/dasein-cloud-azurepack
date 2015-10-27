@@ -25,7 +25,6 @@ import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapter;
 import org.dasein.cloud.util.requester.entities.DaseinObjectToJsonEntity;
-import org.dasein.cloud.util.requester.entities.DaseinObjectToXmlEntity;
 
 import java.net.URI;
 import java.net.URL;
