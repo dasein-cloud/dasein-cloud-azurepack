@@ -106,7 +106,7 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
             	if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, REGION, INTERNET_GATEWAY_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, DATACENTER_ID, INTERNET_GATEWAY_ID).replace(" ", "%20"));
 				} else if (inv.getInvocationCount() == 2) {
 					
 					WAPNatRuleModel expectedNatRuleModel = new WAPNatRuleModel();
@@ -114,7 +114,7 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 					expectedNatRuleModel.setInternalPort("908");
 					expectedNatRuleModel.setInternalIPAddress(ADDRESS_ID);
 					expectedNatRuleModel.setExternalPort("80");
-					expectedNatRuleModel.setStampId(REGION);
+					expectedNatRuleModel.setStampId(DATACENTER_ID);
 					expectedNatRuleModel.setNatConnectionId(wapNatConnectionId);
 					expectedNatRuleModel.setProtocol(Protocol.UDP.name());
 					
@@ -178,7 +178,7 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, REGION, INTERNET_GATEWAY_ID).replace(" ", "%20"));
+				assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, DATACENTER_ID, INTERNET_GATEWAY_ID).replace(" ", "%20"));
             }
             @Mock(invocations = 1)
             public Object execute() {
@@ -197,7 +197,7 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertDelete(httpUriRequest, String.format(NAT_RULE, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, testRuleId, REGION));
+				assertDelete(httpUriRequest, String.format(NAT_RULE, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, testRuleId, DATACENTER_ID));
             }
             @Mock(invocations = 1)
             public Object execute() {
@@ -232,9 +232,9 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
             	if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, REGION, INTERNET_GATEWAY_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, DATACENTER_ID, INTERNET_GATEWAY_ID).replace(" ", "%20"));
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(NAT_RULES_FOR_CONNECTION, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, REGION, natConnectionId).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(NAT_RULES_FOR_CONNECTION, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, DATACENTER_ID, natConnectionId).replace(" ", "%20"));
             	}
             }
 			
@@ -295,7 +295,7 @@ public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocatio
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, REGION, INTERNET_GATEWAY_ID).replace(" ", "%20"));
+				assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, IP_ADDRESS_ENDPOINT, ACCOUNT_NO, DATACENTER_ID, INTERNET_GATEWAY_ID).replace(" ", "%20"));
             }
             @Mock(invocations = 1)
             public Object execute() {

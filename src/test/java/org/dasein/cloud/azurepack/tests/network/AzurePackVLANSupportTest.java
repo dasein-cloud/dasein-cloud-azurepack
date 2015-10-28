@@ -87,7 +87,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		final String TEST_SUBNET_ID = UUID.randomUUID().toString();
 		final String TEST_SUBNET_NAME = "TESTSUBNET";
 		
-		final SubnetCreateOptions options = SubnetCreateOptions.getInstance(TEST_VLAN_ID, REGION, "10.30.16.1/16", TEST_SUBNET_NAME, TEST_SUBNET_NAME);
+		final SubnetCreateOptions options = SubnetCreateOptions.getInstance(TEST_VLAN_ID, DATACENTER_ID, "10.30.16.1/16", TEST_SUBNET_NAME, TEST_SUBNET_NAME);
 		
 		new MockUp<DaseinRequestExecutor>() {
             
@@ -124,7 +124,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
             		wapVMNetworkModel.setName(TEST_VLAN_NAME);
             		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworkModel.setOwner(wapUserModel);
             		wapVMNetworkModel.setEnabled("true");
             		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -183,7 +183,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, REGION).replace(" ", "%20"));
+				assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
 				this.responseHandler = responseHandler;
             }
 			
@@ -217,9 +217,9 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, REGION).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
 				} else if (inv.getInvocationCount() == 2) {
-					assertDelete(httpUriRequest, String.format(VM_SUBNET, VLAN_ENDPOINT, ACCOUNT_NO, TEST_SUBNET_ID, REGION));
+					assertDelete(httpUriRequest, String.format(VM_SUBNET, VLAN_ENDPOINT, ACCOUNT_NO, TEST_SUBNET_ID, DATACENTER_ID));
 				}
             }
 			
@@ -231,7 +231,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 	            	wapSubnetModel.setId(TEST_SUBNET_ID);
 	            	wapSubnetModel.setName(TEST_SUBNET_NAME);
 	            	wapSubnetModel.setSubnet("10.30.16.1/16");
-	            	wapSubnetModel.setStampId(REGION);
+	            	wapSubnetModel.setStampId(DATACENTER_ID);
 	            	wapSubnetModel.setVmNetworkId(TEST_VLAN_ID);
 	            	wapSubnetsModel.setSubnets(Arrays.asList(wapSubnetModel));
 	        		return wapSubnetsModel;
@@ -254,7 +254,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, REGION).replace(" ", "%20"));
+				assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
             }
             @Mock(invocations = 1)
             public Object execute() {
@@ -286,7 +286,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					
 					WAPVMNetworkModel networkModel = new WAPVMNetworkModel();
 			        networkModel.setName(vlanCreateOptions.getName());
-			        networkModel.setStampId(REGION);
+			        networkModel.setStampId(DATACENTER_ID);
 			        networkModel.setLogicalNetworkId(LOGICAL_NETWORK_ID);
 			        networkModel.setDescription(vlanCreateOptions.getDescription());
 					
@@ -299,7 +299,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					
 					WAPSubnetModel subnetModel = new WAPSubnetModel();
 			        subnetModel.setName(vlanCreateOptions.getName());
-			        subnetModel.setStampId(REGION);
+			        subnetModel.setStampId(DATACENTER_ID);
 			        subnetModel.setSubnet(vlanCreateOptions.getCidr());
 			        subnetModel.setVmNetworkId(TEST_VLAN_ID);
 			        
@@ -319,7 +319,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 	            	WAPLogicalNetModel wapLogicalNetModel = new WAPLogicalNetModel();
 	            	wapLogicalNetModel.setNetworkVirtualizationEnabled("true");
 	            	wapLogicalNetModel.setId(LOGICAL_NETWORK_ID);
-	            	wapLogicalNetModel.setStampId(REGION);
+	            	wapLogicalNetModel.setStampId(DATACENTER_ID);
 	            	wapLogicalNetsModel.setLogicalNets(Arrays.asList(wapLogicalNetModel));
 	            	return wapLogicalNetsModel;
             	} else if (inv.getInvocationCount() == 2) {
@@ -329,7 +329,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
             		wapVMNetworkModel.setName(TEST_VLAN_NAME);
             		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworkModel.setEnabled("true");
             		wapVMNetworkModel.setOwner(wapUserModel);
             		wapVMNetworkModel.setLogicalNetworkId(LOGICAL_NETWORK_ID);
@@ -338,7 +338,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		WAPSubnetModel subnetModel = new WAPSubnetModel();
             		subnetModel.setId(TEST_SUBNET_ID);
                     subnetModel.setName(vlanCreateOptions.getName());
-                    subnetModel.setStampId(REGION);
+                    subnetModel.setStampId(DATACENTER_ID);
                     subnetModel.setSubnet(vlanCreateOptions.getCidr());
                     subnetModel.setVmNetworkId(TEST_VLAN_ID);
             		return mapFromModel(this.responseHandler, subnetModel);
@@ -352,7 +352,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
         expectedResult.setName(TEST_VLAN_NAME);
         expectedResult.setDescription(TEST_VLAN_NAME);
         expectedResult.setProviderVlanId(TEST_VLAN_ID);
-        expectedResult.setProviderDataCenterId(REGION);
+        expectedResult.setProviderDataCenterId(DATACENTER_ID);
         expectedResult.setProviderRegionId(REGION);
         expectedResult.setProviderOwnerId(USER_ROLE_ID);
         expectedResult.setCurrentState(VLANState.AVAILABLE);
@@ -376,7 +376,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 				if (inv.getInvocationCount() == 1) {
 					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 2) {
-					assertDelete(httpUriRequest, String.format(VM_NETWORK, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, REGION));
+					assertDelete(httpUriRequest, String.format(VM_NETWORK, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID));
 				}
 			}
 			
@@ -386,7 +386,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		WAPVMNetworksModel wapVMNetworksModel = new WAPVMNetworksModel();
             		WAPVMNetworkModel wapVMNetworkModel = new WAPVMNetworkModel();
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
             		return wapVMNetworksModel;
             	} else if (inv.getInvocationCount() == 2) {
@@ -440,7 +440,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
         		wapVMNetworkModel.setId(TEST_VLAN_ID);
         		wapVMNetworkModel.setName(TEST_VLAN_NAME);
         		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-        		wapVMNetworkModel.setStampId(REGION);
+        		wapVMNetworkModel.setStampId(DATACENTER_ID);
         		wapVMNetworkModel.setEnabled("true");
         		wapVMNetworkModel.setOwner(wapUserModel);
         		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -452,7 +452,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
         expectedResult.setName(TEST_VLAN_NAME);
         expectedResult.setDescription(TEST_VLAN_NAME);
         expectedResult.setProviderVlanId(TEST_VLAN_ID);
-        expectedResult.setProviderDataCenterId(REGION);
+        expectedResult.setProviderDataCenterId(DATACENTER_ID);
         expectedResult.setProviderRegionId(REGION);
         expectedResult.setProviderOwnerId(USER_ROLE_ID);
         expectedResult.setCurrentState(VLANState.AVAILABLE);
@@ -492,7 +492,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
         		wapVMNetworkModel.setId(TEST_VLAN_ID);
         		wapVMNetworkModel.setName(TEST_VLAN_NAME);
         		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-        		wapVMNetworkModel.setStampId(REGION);
+        		wapVMNetworkModel.setStampId(DATACENTER_ID);
         		wapVMNetworkModel.setEnabled("true");
         		wapVMNetworkModel.setOwner(wapUserModel);
         		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -504,7 +504,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
         expectedResult.setName(TEST_VLAN_NAME);
         expectedResult.setDescription(TEST_VLAN_NAME);
         expectedResult.setProviderVlanId(TEST_VLAN_ID);
-        expectedResult.setProviderDataCenterId(REGION);
+        expectedResult.setProviderDataCenterId(DATACENTER_ID);
         expectedResult.setProviderRegionId(REGION);
         expectedResult.setProviderOwnerId(USER_ROLE_ID);
         expectedResult.setCurrentState(VLANState.AVAILABLE);
@@ -538,7 +538,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					WAPVMNetworkGatewayModel wapvmNetworkGatewayModel = new WAPVMNetworkGatewayModel();
 			        wapvmNetworkGatewayModel.setName(TEST_VLAN_NAME + "Gateway");
 			        wapvmNetworkGatewayModel.setDescription(TEST_VLAN_NAME + "Gateway");
-			        wapvmNetworkGatewayModel.setStampId(REGION);
+			        wapvmNetworkGatewayModel.setStampId(DATACENTER_ID);
 			        wapvmNetworkGatewayModel.setVmNetworkId(TEST_VLAN_ID);
 			        wapvmNetworkGatewayModel.setRequiresNAT("true");
 			        
@@ -551,7 +551,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					
 					WAPNatConnectionModel wapNatConnectionModel = new WAPNatConnectionModel();
 			        wapNatConnectionModel.setName(TEST_VLAN_NAME + "NAT Connection");
-			        wapNatConnectionModel.setStampId(REGION);
+			        wapNatConnectionModel.setStampId(DATACENTER_ID);
 			        wapNatConnectionModel.setVmNetworkGatewayId(INTERNET_GATEWAY_ID);
 			        
 			        HttpEntityEnclosingRequest httpEntityEnclosingRequest = (HttpEntityEnclosingRequest) httpUriRequest;
@@ -572,7 +572,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 	        		wapVMNetworkModel.setId(TEST_VLAN_ID);
 	        		wapVMNetworkModel.setName(TEST_VLAN_NAME);
 	        		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-	        		wapVMNetworkModel.setStampId(REGION);
+	        		wapVMNetworkModel.setStampId(DATACENTER_ID);
 	        		wapVMNetworkModel.setEnabled("true");
 	        		wapVMNetworkModel.setOwner(wapUserModel);
 	        		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -629,7 +629,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					WAPVMNetworkGatewayModel wapvmNetworkGatewayModel = new WAPVMNetworkGatewayModel();
 			        wapvmNetworkGatewayModel.setName(TEST_VLAN_NAME + "Gateway");
 			        wapvmNetworkGatewayModel.setDescription(TEST_VLAN_NAME + "Gateway");
-			        wapvmNetworkGatewayModel.setStampId(REGION);
+			        wapvmNetworkGatewayModel.setStampId(DATACENTER_ID);
 			        wapvmNetworkGatewayModel.setVmNetworkId(TEST_VLAN_ID);
 			        wapvmNetworkGatewayModel.setRequiresNAT("true");
 			        
@@ -642,7 +642,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					
 					WAPNatConnectionModel wapNatConnectionModel = new WAPNatConnectionModel();
 			        wapNatConnectionModel.setName(TEST_VLAN_NAME + "NAT Connection");
-			        wapNatConnectionModel.setStampId(REGION);
+			        wapNatConnectionModel.setStampId(DATACENTER_ID);
 			        wapNatConnectionModel.setVmNetworkGatewayId(INTERNET_GATEWAY_ID);
 			        
 			        HttpEntityEnclosingRequest httpEntityEnclosingRequest = (HttpEntityEnclosingRequest) httpUriRequest;
@@ -651,7 +651,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 							httpEntityEnclosingRequest.getEntity());
 					assertPost(httpUriRequest, String.format(NET_NAT_CONNECTIONS, VLAN_ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 4) {
-					assertDelete(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, REGION));
+					assertDelete(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 				}
 			}
 			
@@ -665,7 +665,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 	        		wapVMNetworkModel.setId(TEST_VLAN_ID);
 	        		wapVMNetworkModel.setName(TEST_VLAN_NAME);
 	        		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-	        		wapVMNetworkModel.setStampId(REGION);
+	        		wapVMNetworkModel.setStampId(DATACENTER_ID);
 	        		wapVMNetworkModel.setEnabled("true");
 	        		wapVMNetworkModel.setOwner(wapUserModel);
 	        		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -673,7 +673,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             	} else if (inv.getInvocationCount() == 2) {
             		WAPVMNetworkGatewayModel wapVMNetworkGatewayModel = new WAPVMNetworkGatewayModel();
             		wapVMNetworkGatewayModel.setId(INTERNET_GATEWAY_ID);
-            		wapVMNetworkGatewayModel.setStampId(REGION);
+            		wapVMNetworkGatewayModel.setStampId(DATACENTER_ID);
             		return wapVMNetworkGatewayModel;
             	} else if (inv.getInvocationCount() == 3) {
             		throw new RuntimeException("Create Nat Connection Failed!");
@@ -705,13 +705,13 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, REGION).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				} else if (inv.getInvocationCount() == 3) {
-					assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, VLAN_ENDPOINT, ACCOUNT_NO, REGION, INTERNET_GATEWAY_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, VLAN_ENDPOINT, ACCOUNT_NO, DATACENTER_ID, INTERNET_GATEWAY_ID).replace(" ", "%20"));
 				} else if (inv.getInvocationCount() == 4) {
-					assertDelete(httpUriRequest, String.format(NET_NAT_CONNECTION, VLAN_ENDPOINT, ACCOUNT_NO, NAT_CONNECTION_ID, REGION));
+					assertDelete(httpUriRequest, String.format(NET_NAT_CONNECTION, VLAN_ENDPOINT, ACCOUNT_NO, NAT_CONNECTION_ID, DATACENTER_ID));
 				} else if (inv.getInvocationCount() == 5) {
-					assertDelete(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, REGION));
+					assertDelete(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 				}
 			}
 			
@@ -725,7 +725,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
             		wapVMNetworkModel.setName(TEST_VLAN_NAME);
             		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworkModel.setEnabled("true");
             		wapVMNetworkModel.setOwner(wapUserModel);
             		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -734,14 +734,14 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 	            	WAPVMNetworkGatewaysModel wapVMNetworkGatewaysModel = new WAPVMNetworkGatewaysModel();
 	            	WAPVMNetworkGatewayModel wapVMNetworkGatewayModel = new WAPVMNetworkGatewayModel();
 	            	wapVMNetworkGatewayModel.setId(INTERNET_GATEWAY_ID);
-	            	wapVMNetworkGatewayModel.setStampId(REGION);
+	            	wapVMNetworkGatewayModel.setStampId(DATACENTER_ID);
 	            	wapVMNetworkGatewaysModel.setGateways(Arrays.asList(wapVMNetworkGatewayModel));
 	        		return wapVMNetworkGatewaysModel;
             	} else if (inv.getInvocationCount() == 3) {
             		WAPNatConnectionsModel wapNatConnectionsModel = new WAPNatConnectionsModel();
             		WAPNatConnectionModel wapNatConnectionModel = new WAPNatConnectionModel();
             		wapNatConnectionModel.setId(NAT_CONNECTION_ID);
-            		wapNatConnectionModel.setStampId(REGION);
+            		wapNatConnectionModel.setStampId(DATACENTER_ID);
             		wapNatConnectionsModel.setConnections(Arrays.asList(wapNatConnectionModel));
             		return wapNatConnectionsModel;
             	} else if (inv.getInvocationCount() == 4) {
@@ -787,7 +787,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, REGION).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -801,7 +801,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
             		wapVMNetworkModel.setName(TEST_VLAN_NAME);
             		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworkModel.setEnabled("true");
             		wapVMNetworkModel.setOwner(wapUserModel);
             		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -832,7 +832,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, REGION).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -846,7 +846,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
             		wapVMNetworkModel.setName(TEST_VLAN_NAME);
             		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworkModel.setEnabled("true");
             		wapVMNetworkModel.setOwner(wapUserModel);
             		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -879,7 +879,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, REGION).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -893,7 +893,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
             		wapVMNetworkModel.setName(TEST_VLAN_NAME);
             		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworkModel.setEnabled("true");
             		wapVMNetworkModel.setOwner(wapUserModel);
             		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -939,7 +939,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, REGION).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -953,7 +953,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
             		wapVMNetworkModel.setName(TEST_VLAN_NAME);
             		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworkModel.setEnabled("true");
             		wapVMNetworkModel.setOwner(wapUserModel);
             		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -1006,7 +1006,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, REGION).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -1020,7 +1020,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
             		wapVMNetworkModel.setId(TEST_VLAN_ID);
             		wapVMNetworkModel.setName(TEST_VLAN_NAME);
             		wapVMNetworkModel.setDescription(wapVMNetworkModel.getName());
-            		wapVMNetworkModel.setStampId(REGION);
+            		wapVMNetworkModel.setStampId(DATACENTER_ID);
             		wapVMNetworkModel.setEnabled("true");
             		wapVMNetworkModel.setOwner(wapUserModel);
             		wapVMNetworksModel.setVirtualMachineNetworks(Arrays.asList(wapVMNetworkModel));
@@ -1044,7 +1044,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, REGION));
+				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 			}
         	@Mock(invocations = 1)
             public Object execute() {
@@ -1078,7 +1078,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, REGION));
+				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 			}
         	@Mock(invocations = 1)
             public Object execute() {
@@ -1096,7 +1096,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, REGION));
+				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 			}
         	@Mock(invocations = 1)
             public Object execute() throws CloudException {

@@ -39,18 +39,20 @@ public class AzurePackTestsBaseWithLocation extends AzurePackTestsBase {
 	private AzurePackDataCenterService azurePackDataCenterService;
 	
 	protected final String REGION_NAME = "test_region_name";
+	protected final String DATACENTER_ID = "test_datacenter_id";
+	protected final String DATACENTER_NAME = "test_datacenter_name";
 	
 	@Before
 	public void setUp() throws CloudException, InternalException {
 		super.setUp();
 		
 		final Region region = new Region(REGION, REGION_NAME, true, true);
-        final DataCenter dataCenter = new DataCenter(REGION, REGION_NAME, REGION, true, true);
+        final DataCenter dataCenter = new DataCenter(DATACENTER_ID, DATACENTER_NAME, REGION, true, true);
         new NonStrictExpectations() {{
         	azurePackCloudMock.getDataCenterServices(); result = azurePackDataCenterService;
         	azurePackDataCenterService.getRegion(REGION); result= region;
         	azurePackDataCenterService.listDataCenters(REGION); result = Arrays.asList(dataCenter);
-        	azurePackDataCenterService.getDataCenter(REGION); result = dataCenter;
+        	azurePackDataCenterService.getDataCenter(DATACENTER_ID); result = dataCenter;
         }};
 		
 	}
