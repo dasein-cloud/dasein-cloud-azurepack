@@ -31,7 +31,6 @@ import org.dasein.cloud.CloudException;
 import org.dasein.cloud.CloudProvider;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.OperationNotSupportedException;
-import org.dasein.cloud.azurepack.AzurePackDataCenterService;
 import org.dasein.cloud.azurepack.compute.image.AzurePackImageSupport;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplateModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
@@ -45,7 +44,6 @@ import org.dasein.cloud.compute.ImageClass;
 import org.dasein.cloud.compute.ImageFilterOptions;
 import org.dasein.cloud.compute.MachineImage;
 import org.dasein.cloud.compute.Platform;
-import org.dasein.cloud.dc.DataCenter;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,10 +62,7 @@ import static org.junit.Assert.assertNull;
  * @author Jeffrey Yan
  * @since 2015.09.1
  */
-public class AzurePackImageSupportTest extends AzurePackTestsBase {
-
-    private final String VHD_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualHardDisks";
-    private final String VMTEMPLATES_RESOURCES = "%s/%s/services/systemcenter/vmm/VMTemplates";
+public class AzurePackImageSupportTest extends AzurePackComputeTestsBase {
 
     private final String VHD_1_ID = UUID.randomUUID().toString();
     private final String VHD_1_OWNER = ACCOUNT_NO;
@@ -187,9 +182,11 @@ public class AzurePackImageSupportTest extends AzurePackTestsBase {
             String requestUri = request.getURI().toString();
             if(requestUri.equals(String.format(VHD_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
                 requestResourceType = 1;
+                assertGet(request, String.format(VHD_RESOURCES, ENDPOINT, ACCOUNT_NO));
             }
             if(requestUri.equals(String.format(VMTEMPLATES_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
                 requestResourceType = 2;
+                assertGet(request, String.format(VMTEMPLATES_RESOURCES, ENDPOINT, ACCOUNT_NO));
             }
         }
 
@@ -218,36 +215,6 @@ public class AzurePackImageSupportTest extends AzurePackTestsBase {
                 return templatesModel;
             }
             return null;
-        }
-
-        private WAPTemplateModel createTemplate(String id, String name, String owner, String description, String enabled, String os) {
-            WAPTemplateModel wapTemplateModel = new WAPTemplateModel();
-            wapTemplateModel.setId(id);
-            wapTemplateModel.setName(name);
-            WAPUserModel userModel = new WAPUserModel();
-            userModel.setRoleID(owner);
-            wapTemplateModel.setOwner(userModel);
-            wapTemplateModel.setDescription(description);
-            wapTemplateModel.setEnabled(enabled);
-            WAPOperatingSystemInstance wapOperatingSystemInstance = new WAPOperatingSystemInstance();
-            wapOperatingSystemInstance.setOsType(os);
-            wapTemplateModel.setOperatingSystemInstance(wapOperatingSystemInstance);
-            return wapTemplateModel;
-        }
-
-        private WAPVhdModel createVhd(String id, String name, String owner, String description, String enabled, String os) {
-            WAPVhdModel vhdModel = new WAPVhdModel();
-            vhdModel.setId(id);
-            vhdModel.setName(name);
-            WAPUserModel userModel = new WAPUserModel();
-            userModel.setRoleID(owner);
-            vhdModel.setOwner(userModel);
-            vhdModel.setDescription(description);
-            vhdModel.setEnabled(enabled);
-            WAPOperatingSystemInstance wapOperatingSystemInstance = new WAPOperatingSystemInstance();
-            wapOperatingSystemInstance.setOsType(os);
-            vhdModel.setOperatingSystemInstance(wapOperatingSystemInstance);
-            return vhdModel;
         }
     }
 }
