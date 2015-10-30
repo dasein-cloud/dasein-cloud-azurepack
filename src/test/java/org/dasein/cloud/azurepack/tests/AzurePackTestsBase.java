@@ -47,7 +47,7 @@ public class AzurePackTestsBase {
     @Mocked protected Cloud cloudMock;
     @Mocked protected HttpClientBuilder httpClientBuilderMock;
 
-    protected final String ENDPOINT = "TEST_END_POINT";
+    protected final String ENDPOINT = "http://test-end-point.com";
     protected final String ACCOUNT_NO = "TEST_ACCOUNT_NO";
     protected final String REGION = "TEST_REGION";
 
