@@ -28,7 +28,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.dasein.cloud.util.requester.streamprocessors.XmlStreamToObjectProcessor;
+import org.dasein.cloud.util.requester.streamprocessors.JsonStreamToObjectProcessor;
 
 import java.util.Arrays;
 
@@ -111,7 +111,7 @@ public class HttpMethodAsserts {
         assertTrue("Incorrect httpRequest found in the call", actualHttpRequest instanceof HttpEntityEnclosingRequestBase);
 
         try {
-            Object actualEntity = new XmlStreamToObjectProcessor().read(((HttpEntityEnclosingRequestBase)actualHttpRequest).getEntity().getContent(), expectedEntity.getClass());
+            Object actualEntity = new JsonStreamToObjectProcessor().read(((HttpEntityEnclosingRequestBase)actualHttpRequest).getEntity().getContent(), expectedEntity.getClass());
             assertReflectionEquals("Incorrect value(s) found in the XML body of the request", expectedEntity, actualEntity);
         } catch (Exception e) {
             Assert.fail("Incorrect XML body found in the request");
