@@ -39,6 +39,7 @@ import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
 import org.dasein.cloud.azurepack.compute.vm.AzurePackVirtualMachineSupport;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPHardwareProfileModel;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPHardwareProfilesModel;
+import org.dasein.cloud.azurepack.compute.vm.model.WAPNewAdapterModel;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachinesModel;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapter;
@@ -49,6 +50,7 @@ import org.dasein.cloud.compute.ImageClass;
 import org.dasein.cloud.compute.MachineImage;
 import org.dasein.cloud.compute.MachineImageState;
 import org.dasein.cloud.compute.Platform;
+import org.dasein.cloud.compute.VMLaunchOptions;
 import org.dasein.cloud.compute.VirtualMachine;
 import org.dasein.cloud.compute.VirtualMachineProduct;
 import org.dasein.cloud.compute.VirtualMachineProductFilterOptions;
@@ -65,6 +67,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.assertPost;
 import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.assertPut;
 import static org.junit.Assert.assertEquals;
 
@@ -94,6 +97,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
 
     private final String VM_1_ID = UUID.randomUUID().toString();
     private final String VM_1_NAME = "the first VM";
+    private final String VM_1_DESCRIPTION = "the first VM description";
     private final String VM_1_STATUS = "running";
     private final String VM_1_OWNER = ACCOUNT_NO;
     private final String VM_1_CPU_COUNT = "8";
@@ -101,6 +105,9 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
     private final String VM_1_NETWORK_ID = UUID.randomUUID().toString();
     private final String VM_1_NETWORK_NAME = "vlan_name";
     private final List<String> VM_1_NETWORK_IP_ADDRESSES = Arrays.asList("192.168.1.15");
+    private final String VM_1_WINDOWS_SERIAL_NUMBER = UUID.randomUUID().toString();
+    private final String VM_1_BOOTSTRAP_USER = "administrator";
+    private final String VM_1_BOOTSTRAP_PASSWORD = "bs_password";
 
     private AzurePackVirtualMachineSupport azurePackVirtualMachineSupport;
 
@@ -130,6 +137,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
             vlan.setProviderVlanId(VM_1_NETWORK_ID);
             vlan.setName(VM_1_NETWORK_NAME);
             networkSupport.getVlan(VM_1_NETWORK_ID); result = vlan;
+            networkSupport.getVlan(anyString); result = null;
         }};
 
         azurePackVirtualMachineSupport = new AzurePackVirtualMachineSupport(azurePackCloudMock);
@@ -395,5 +403,116 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         assertEquals("terminate doesn't send DELETE request", 1, deleteCount.get());
     }
 
+    @Test(expected=InternalException.class)
+    public void lauchShouldThrowExceptionIfImageIsNotExist() throws CloudException, InternalException {
+        VMLaunchOptions vmLaunchOptions = VMLaunchOptions.getInstance(HWP_1_ID, "not-exist-image-id", VM_1_NAME,
+                VM_1_DESCRIPTION);
+        azurePackVirtualMachineSupport.launch(vmLaunchOptions);
+    }
 
+    @Test(expected=InternalException.class)
+    public void lauchShouldThrowExceptionIfVlanIsNotExist() throws CloudException, InternalException {
+        VMLaunchOptions vmLaunchOptions = VMLaunchOptions.getInstance(HWP_1_ID, VHD_1_ID, VM_1_NAME, VM_1_DESCRIPTION);
+        vmLaunchOptions.inVlan(null, DATACENTER_ID, "not-exist-vlan-id");
+        azurePackVirtualMachineSupport.launch(vmLaunchOptions);
+    }
+
+    @Test
+    public void lauchVhdVMShouldSendCorrectRequest() throws CloudException, InternalException {
+        final AtomicInteger postCount = new AtomicInteger(0);
+        new StartOrStopVirtualMachinesRequestExecutorMockUp("Start") {
+            @Mock
+            public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request,
+                    ResponseHandler handler) {
+                String requestUri = request.getURI().toString();
+                if(request.getMethod().equals("POST") && requestUri.equals(String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
+                    requestResourceType = 21;
+                    WAPVirtualMachineModel wapVirtualMachineModel = new WAPVirtualMachineModel();
+                    wapVirtualMachineModel.setName(VM_1_NAME);
+                    wapVirtualMachineModel.setCloudId(REGION);
+                    wapVirtualMachineModel.setStampId(DATACENTER_ID);
+                    wapVirtualMachineModel.setVirtualHardDiskId(VHD_1_ID);
+                    wapVirtualMachineModel.setHardwareProfileId(HWP_1_ID);
+
+                    List<WAPNewAdapterModel> adapters = new ArrayList<>();
+                    WAPNewAdapterModel newAdapterModel = new WAPNewAdapterModel();
+                    newAdapterModel.setVmNetworkName(VM_1_NETWORK_NAME);
+                    adapters.add(newAdapterModel);
+                    wapVirtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
+
+                    assertPost(request, String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO), new Header[0],
+                            wapVirtualMachineModel);
+                } else {
+                    super.$init(provider, clientBuilder, request, handler);
+                }
+                responseHandler = handler;
+            }
+            @Mock
+            public Object execute() {
+                if(requestResourceType == 21) {
+                    postCount.incrementAndGet();
+                    return mapFromModel(this.responseHandler, createWAPVirtualMachineModel());
+                } else {
+                    return super.execute();
+                }
+            }
+        };
+
+        VMLaunchOptions vmLaunchOptions = VMLaunchOptions.getInstance(HWP_1_ID, VHD_1_ID, VM_1_NAME, VM_1_DESCRIPTION);
+        vmLaunchOptions.inVlan(null, DATACENTER_ID, VM_1_NETWORK_ID);
+        VirtualMachine virtualMachine = azurePackVirtualMachineSupport.launch(vmLaunchOptions);
+        assertEquals("terminate doesn't send DELETE request", 1, postCount.get());
+        assertVirtualMachine(virtualMachine);
+    }
+
+    @Test
+    public void lauchTemplateVMShouldSendCorrectRequest() throws CloudException, InternalException {
+        final AtomicInteger postCount = new AtomicInteger(0);
+        new StartOrStopVirtualMachinesRequestExecutorMockUp("Start") {
+            @Mock
+            public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request,
+                    ResponseHandler handler) {
+                String requestUri = request.getURI().toString();
+                if(request.getMethod().equals("POST") && requestUri.equals(String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
+                    requestResourceType = 21;
+                    WAPVirtualMachineModel wapVirtualMachineModel = new WAPVirtualMachineModel();
+                    wapVirtualMachineModel.setName(VM_1_NAME);
+                    wapVirtualMachineModel.setCloudId(REGION);
+                    wapVirtualMachineModel.setStampId(DATACENTER_ID);
+                    wapVirtualMachineModel.setVmTemplateId(TPL_1_ID);
+                    wapVirtualMachineModel.setProductKey(VM_1_WINDOWS_SERIAL_NUMBER);
+                    wapVirtualMachineModel.setLocalAdminUserName(VM_1_BOOTSTRAP_USER);
+                    wapVirtualMachineModel.setLocalAdminPassword(VM_1_BOOTSTRAP_PASSWORD);
+                    List<WAPNewAdapterModel> adapters = new ArrayList<>();
+                    WAPNewAdapterModel newAdapterModel = new WAPNewAdapterModel();
+                    newAdapterModel.setVmNetworkName(VM_1_NETWORK_NAME);
+                    adapters.add(newAdapterModel);
+                    wapVirtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
+
+                    assertPost(request, String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO), new Header[0],
+                            wapVirtualMachineModel);
+                } else {
+                    super.$init(provider, clientBuilder, request, handler);
+                }
+                responseHandler = handler;
+            }
+            @Mock
+            public Object execute() {
+                if(requestResourceType == 21) {
+                    postCount.incrementAndGet();
+                    return mapFromModel(this.responseHandler, createWAPVirtualMachineModel());
+                } else {
+                    return super.execute();
+                }
+            }
+        };
+
+        VMLaunchOptions vmLaunchOptions = VMLaunchOptions.getInstance(HWP_1_ID, TPL_1_ID, VM_1_NAME, VM_1_DESCRIPTION);
+        vmLaunchOptions.inVlan(null, DATACENTER_ID, VM_1_NETWORK_ID);
+        vmLaunchOptions.withWinProductSerialNum(VM_1_WINDOWS_SERIAL_NUMBER);
+        vmLaunchOptions.withBootstrapUser("dummy-user-name-to-be-replaced", VM_1_BOOTSTRAP_PASSWORD);
+        VirtualMachine virtualMachine = azurePackVirtualMachineSupport.launch(vmLaunchOptions);
+        assertEquals("terminate doesn't send DELETE request", 1, postCount.get());
+        assertVirtualMachine(virtualMachine);
+    }
 }
