@@ -55,6 +55,12 @@ import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
 import static org.junit.Assert.*;
 import static org.unitils.reflectionassert.ReflectionAssert.*;
 
+/**
+ * Created by Jane Wang on 10/20/2015.
+ *
+ * @author Jane Wang
+ * @since 2015.09.1
+ */
 public class AzurePackIpAddressSupportTest extends AzurePackTestsBaseWithLocation {
 
 	private final String NAT_RULES = "%s/%s/services/systemcenter/vmm/NATRules";

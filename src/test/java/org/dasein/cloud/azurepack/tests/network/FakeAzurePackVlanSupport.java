@@ -29,6 +29,12 @@ import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.dasein.cloud.azurepack.network.AzurePackNetworkSupport;
 
+/**
+ * Created by Jane Wang on 10/20/2015.
+ *
+ * @author Jane Wang
+ * @since 2015.09.1
+ */
 public class FakeAzurePackVlanSupport extends AzurePackNetworkSupport {
 
 	private String internetGatewayId;

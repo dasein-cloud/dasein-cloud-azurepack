@@ -33,6 +33,12 @@ import org.dasein.cloud.dc.DataCenter;
 import org.dasein.cloud.dc.Region;
 import org.junit.Before;
 
+/**
+ * Created by Jane Wang on 10/20/2015.
+ *
+ * @author Jane Wang
+ * @since 2015.09.1
+ */
 public class AzurePackTestsBaseWithLocation extends AzurePackTestsBase {
 
 	@Mocked
