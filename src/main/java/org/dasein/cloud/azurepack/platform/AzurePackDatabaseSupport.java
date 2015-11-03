@@ -130,7 +130,7 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
     @Nonnull
     @Override
     public String createFromScratch(String dataSourceName, DatabaseProduct product, String databaseVersion, String withAdminUser, String withAdminPassword, int hostPort) throws CloudException, InternalException {
-        if(product == null && product.getName() == null){
+        if(product == null || product.getName() == null){
             throw new InternalException("Cannot create database. Database product or database product name cannot be empty");
         }
 

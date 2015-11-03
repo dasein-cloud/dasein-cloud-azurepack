@@ -64,12 +64,12 @@ public class AzurePackTestsBase {
         }};
     }
     
-    protected Object mapFromModel(ResponseHandler responseHandler, Object model) {
+    protected <T> T mapFromModel(ResponseHandler responseHandler, Object model) {
 		try {
 			Field field = DaseinResponseHandlerWithMapper.class.getDeclaredField("mapper");
 			field.setAccessible(true);
 			DriverToCoreMapper mapper = (DriverToCoreMapper) field.get(responseHandler);
-			return mapper.mapFrom(model);
+			return (T) mapper.mapFrom(model);
 		} catch (NoSuchFieldException e) {
 			throw new RuntimeException("find field mapper failed", e);
 		} catch (SecurityException e) {
