@@ -59,4 +59,22 @@ public class AzurePackTestsBase {
             cloudMock.getEndpoint(); result = ENDPOINT;
         }};
     }
+    
+    protected <T> T mapFromModel(ResponseHandler responseHandler, Object model) {
+		try {
+			Field field = DaseinResponseHandlerWithMapper.class.getDeclaredField("mapper");
+			field.setAccessible(true);
+			DriverToCoreMapper mapper = (DriverToCoreMapper) field.get(responseHandler);
+			return (T) mapper.mapFrom(model);
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException("find field mapper failed", e);
+		} catch (SecurityException e) {
+			throw new RuntimeException("set accessible failed", e);
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException("invalid response handler", e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("field cannot be fetched", e);
+		}
+		
+    }
 }
