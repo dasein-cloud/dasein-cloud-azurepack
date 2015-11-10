@@ -390,6 +390,14 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
                 return VmState.ERROR;
             }
 
+            if("Creation Failed".equalsIgnoreCase(state)) {
+                return VmState.ERROR;
+            }
+
+            if("Missing".equalsIgnoreCase(state)) {
+                return VmState.ERROR;
+            }
+
             if("Creating...".equalsIgnoreCase(state)) {
                 return VmState.PENDING;
             }
