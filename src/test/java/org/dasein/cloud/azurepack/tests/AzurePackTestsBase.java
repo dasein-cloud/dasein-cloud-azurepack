@@ -23,13 +23,18 @@ package org.dasein.cloud.azurepack.tests;
 
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.dasein.cloud.Cloud;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
 import org.dasein.cloud.azurepack.AzurePackCloud;
+import org.dasein.cloud.util.requester.DaseinResponseHandlerWithMapper;
+import org.dasein.cloud.util.requester.DriverToCoreMapper;
 import org.junit.Before;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by Jeffrey Yan on 10/14/2015.
