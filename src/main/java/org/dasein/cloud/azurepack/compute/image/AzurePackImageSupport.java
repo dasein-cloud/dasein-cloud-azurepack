@@ -32,12 +32,18 @@ import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPVhdModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPVhdsModel;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
-import org.dasein.cloud.compute.*;
+import org.dasein.cloud.compute.AbstractImageSupport;
+import org.dasein.cloud.compute.Architecture;
+import org.dasein.cloud.compute.ImageCapabilities;
+import org.dasein.cloud.compute.ImageClass;
+import org.dasein.cloud.compute.ImageFilterOptions;
+import org.dasein.cloud.compute.MachineImage;
+import org.dasein.cloud.compute.MachineImageState;
+import org.dasein.cloud.compute.Platform;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
