@@ -1,3 +1,24 @@
+/*
+ *  *
+ *  Copyright (C) 2009-2015 Dell, Inc.
+ *  See annotations for authorship information
+ *
+ *  ====================================================================
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *  ====================================================================
+ *
+ */
+
 package org.dasein.cloud.azurepack.tests.network;
 
 import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
@@ -8,7 +29,6 @@ import java.util.UUID;
 import mockit.Invocation;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.NonStrictExpectations;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -44,6 +64,12 @@ import org.dasein.cloud.util.requester.entities.DaseinObjectToJsonEntity;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Created by Jane Wang on 10/20/2015.
+ *
+ * @author Jane Wang
+ * @since 2015.09.1
+ */
 public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 
 	private final String VM_NETWORKS = "%s/%s/services/systemcenter/vmm/VMNetworks";
@@ -61,22 +87,12 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 	
 	private VLANSupport azurePackNetworkSupport;
 	
-	private final String VLAN_ENDPOINT = "https://endpoint.com:443";
 	private final String TEST_VLAN_ID = UUID.randomUUID().toString();
 	private final String TEST_VLAN_NAME = "TESTVLAN";
 	
 	@Before
 	public void setUp() throws CloudException, InternalException {
-		
 		super.setUp();
-		
-		new NonStrictExpectations() {
-			{ 
-				providerContextMock.getEndpoint(); result = VLAN_ENDPOINT; 
-				cloudMock.getEndpoint(); result = VLAN_ENDPOINT;
-			}
-		};
-		
 		final AzurePackNetworkServices azurePackNetworkServices = new AzurePackNetworkServices(azurePackCloudMock);
 		azurePackNetworkSupport = azurePackNetworkServices.getVlanSupport();
 	}
@@ -96,7 +112,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 2) {
 					
 					WAPSubnetModel expectedSubnetModel = new WAPSubnetModel();
@@ -109,7 +125,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertReflectionEquals(
 							new DaseinObjectToJsonEntity<WAPSubnetModel>(expectedSubnetModel),
 							httpEntityEnclosingRequest.getEntity());
-            		assertPost(httpUriRequest, String.format(VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO));
+            		assertPost(httpUriRequest, String.format(VM_SUBNETS, ENDPOINT, ACCOUNT_NO));
             	}
 				this.responseHandler = responseHandler;
             }
@@ -159,7 +175,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
             }
             @Mock(invocations = 1)
             public Object execute() {
@@ -183,7 +199,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
+				assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
 				this.responseHandler = responseHandler;
             }
 			
@@ -217,9 +233,9 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
 				} else if (inv.getInvocationCount() == 2) {
-					assertDelete(httpUriRequest, String.format(VM_SUBNET, VLAN_ENDPOINT, ACCOUNT_NO, TEST_SUBNET_ID, DATACENTER_ID));
+					assertDelete(httpUriRequest, String.format(VM_SUBNET, ENDPOINT, ACCOUNT_NO, TEST_SUBNET_ID, DATACENTER_ID));
 				}
             }
 			
@@ -254,7 +270,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
+				assertGet(httpUriRequest, String.format(LIST_VM_SUBNETS, ENDPOINT, ACCOUNT_NO, DATACENTER_ID).replace(" ", "%20"));
             }
             @Mock(invocations = 1)
             public Object execute() {
@@ -281,7 +297,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 3)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(LOGICAL_NETS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(LOGICAL_NETS, ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 2) {
 					
 					WAPVMNetworkModel networkModel = new WAPVMNetworkModel();
@@ -294,7 +310,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertReflectionEquals(
 							new DaseinObjectToJsonEntity<WAPVMNetworkModel>(networkModel),
 							httpEntityEnclosingRequest.getEntity());
-					assertPost(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertPost(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 3) {
 					
 					WAPSubnetModel subnetModel = new WAPSubnetModel();
@@ -307,7 +323,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertReflectionEquals(
 							new DaseinObjectToJsonEntity<WAPSubnetModel>(subnetModel),
 							httpEntityEnclosingRequest.getEntity());
-					assertPost(httpUriRequest, String.format(VM_SUBNETS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertPost(httpUriRequest, String.format(VM_SUBNETS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				}
 			}
@@ -374,9 +390,9 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 2) {
-					assertDelete(httpUriRequest, String.format(VM_NETWORK, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID));
+					assertDelete(httpUriRequest, String.format(VM_NETWORK, ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID));
 				}
 			}
 			
@@ -406,7 +422,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+				assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 			}
             @Mock(invocations = 1)
             public Object execute() {
@@ -427,7 +443,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+				assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 				this.responseHandler = responseHandler;
 			}
 			
@@ -479,7 +495,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+				assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 				this.responseHandler = responseHandler;
 			}
 			
@@ -531,7 +547,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 3)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
 					
@@ -546,7 +562,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertReflectionEquals(
 							new DaseinObjectToJsonEntity<WAPVMNetworkGatewayModel>(wapvmNetworkGatewayModel),
 							httpEntityEnclosingRequest.getEntity());
-					assertPost(httpUriRequest, String.format(VM_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertPost(httpUriRequest, String.format(VM_NET_GATEWAYS, ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 3) {
 					
 					WAPNatConnectionModel wapNatConnectionModel = new WAPNatConnectionModel();
@@ -558,7 +574,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertReflectionEquals(
 							new DaseinObjectToJsonEntity<WAPNatConnectionModel>(wapNatConnectionModel),
 							httpEntityEnclosingRequest.getEntity());
-					assertPost(httpUriRequest, String.format(NET_NAT_CONNECTIONS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertPost(httpUriRequest, String.format(NET_NAT_CONNECTIONS, ENDPOINT, ACCOUNT_NO));
 				}
 			}
 			
@@ -599,7 +615,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+				assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 			}
             @Mock(invocations = 1)
             public Object execute() {
@@ -622,7 +638,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 4)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
 					
@@ -637,7 +653,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertReflectionEquals(
 							new DaseinObjectToJsonEntity<WAPVMNetworkGatewayModel>(wapvmNetworkGatewayModel),
 							httpEntityEnclosingRequest.getEntity());
-					assertPost(httpUriRequest, String.format(VM_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertPost(httpUriRequest, String.format(VM_NET_GATEWAYS, ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 3) {
 					
 					WAPNatConnectionModel wapNatConnectionModel = new WAPNatConnectionModel();
@@ -649,9 +665,9 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 					assertReflectionEquals(
 							new DaseinObjectToJsonEntity<WAPNatConnectionModel>(wapNatConnectionModel),
 							httpEntityEnclosingRequest.getEntity());
-					assertPost(httpUriRequest, String.format(NET_NAT_CONNECTIONS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertPost(httpUriRequest, String.format(NET_NAT_CONNECTIONS, ENDPOINT, ACCOUNT_NO));
 				} else if (inv.getInvocationCount() == 4) {
-					assertDelete(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
+					assertDelete(httpUriRequest, String.format(VM_NET_GATEWAY, ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 				}
 			}
 			
@@ -702,16 +718,16 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 5)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				} else if (inv.getInvocationCount() == 3) {
-					assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, VLAN_ENDPOINT, ACCOUNT_NO, DATACENTER_ID, INTERNET_GATEWAY_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(GATEWAY_NAT_CONNECTIONS, ENDPOINT, ACCOUNT_NO, DATACENTER_ID, INTERNET_GATEWAY_ID).replace(" ", "%20"));
 				} else if (inv.getInvocationCount() == 4) {
-					assertDelete(httpUriRequest, String.format(NET_NAT_CONNECTION, VLAN_ENDPOINT, ACCOUNT_NO, NAT_CONNECTION_ID, DATACENTER_ID));
+					assertDelete(httpUriRequest, String.format(NET_NAT_CONNECTION, ENDPOINT, ACCOUNT_NO, NAT_CONNECTION_ID, DATACENTER_ID));
 				} else if (inv.getInvocationCount() == 5) {
-					assertDelete(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
+					assertDelete(httpUriRequest, String.format(VM_NET_GATEWAY, ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 				}
 			}
 			
@@ -762,7 +778,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 			}
             @Mock(invocations = 1)
             public Object execute() {
@@ -784,10 +800,10 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -829,10 +845,10 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -876,10 +892,10 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -913,7 +929,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 			}
         	@Mock(invocations = 1)
             public Object execute() {
@@ -936,10 +952,10 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -981,7 +997,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+				assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 			}
         	@Mock(invocations = 1)
             public Object execute() {
@@ -1003,10 +1019,10 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 			@Mock(invocations = 2)
             public void $init(Invocation inv, CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
 				if (inv.getInvocationCount() == 1) {
-					assertGet(httpUriRequest, String.format(VM_NETWORKS, VLAN_ENDPOINT, ACCOUNT_NO));
+					assertGet(httpUriRequest, String.format(VM_NETWORKS, ENDPOINT, ACCOUNT_NO));
 					this.responseHandler = responseHandler;
 				} else if (inv.getInvocationCount() == 2) {
-					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, VLAN_ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
+					assertGet(httpUriRequest, String.format(LIST_NET_GATEWAYS, ENDPOINT, ACCOUNT_NO, TEST_VLAN_ID, DATACENTER_ID).replace(" ", "%20"));
 				}
 			}
 			
@@ -1044,7 +1060,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
+				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 			}
         	@Mock(invocations = 1)
             public Object execute() {
@@ -1078,7 +1094,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
+				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 			}
         	@Mock(invocations = 1)
             public Object execute() {
@@ -1096,7 +1112,7 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 		new MockUp<DaseinRequestExecutor>() {
 			@Mock(invocations = 1)
             public void $init(CloudProvider provider, HttpClientBuilder httpClientBuilder, HttpUriRequest httpUriRequest, ResponseHandler responseHandler) {
-				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, VLAN_ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
+				assertGet(httpUriRequest, String.format(VM_NET_GATEWAY, ENDPOINT, ACCOUNT_NO, INTERNET_GATEWAY_ID, DATACENTER_ID));
 			}
         	@Mock(invocations = 1)
             public Object execute() throws CloudException {
