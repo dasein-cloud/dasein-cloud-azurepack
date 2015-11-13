@@ -196,7 +196,7 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
                             ImageClass.MACHINE,
                             MachineImageState.ACTIVE,
                             templateModel.getName(),
-                            templateModel.getDescription(),
+                            templateModel.getDescription() != null ? templateModel.getDescription() : templateModel.getName(),
                             Architecture.I64,
                             templateModel.getOperatingSystemInstance().getOsType().toLowerCase().contains("windows") ? Platform.WINDOWS : Platform.UNIX);
                     image.setTag("type", "template");
@@ -228,7 +228,7 @@ public class AzurePackImageSupport extends AbstractImageSupport<AzurePackCloud> 
                             ImageClass.MACHINE,
                             MachineImageState.ACTIVE,
                             vhd.getName(),
-                            vhd.getDescription(),
+                            vhd.getDescription() != null ? vhd.getDescription() : vhd.getName(),
                             Architecture.I64,
                             vhd.getOperatingSystemInstance().getOsType().toLowerCase().contains("windows") ? Platform.WINDOWS : Platform.UNIX);
                     image.setTag("type", "vhd");
