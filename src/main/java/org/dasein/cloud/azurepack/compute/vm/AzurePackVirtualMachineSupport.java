@@ -80,6 +80,9 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         }
 
         String imageType = (String)image.getTag("type");
+        if (imageType.equalsIgnoreCase("vhd") && "default".equalsIgnoreCase(withLaunchOptions.getStandardProductId()))
+            throw new InternalException("Invalid product id for this type of image. Default product should be use only for templates");
+
         WAPVirtualMachineModel virtualMachineModel = new WAPVirtualMachineModel();
         virtualMachineModel.setName(withLaunchOptions.getFriendlyName());
         virtualMachineModel.setCloudId(provider.getContext().getRegionId());
@@ -208,7 +211,14 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
 
     @Override
     public @Nonnull Iterable<VirtualMachineProduct> listAllProducts() throws InternalException, CloudException{
-        return listProducts(VirtualMachineProductFilterOptions.getInstance());
+        List<VirtualMachineProduct> products = IteratorUtils.toList(listProducts(VirtualMachineProductFilterOptions.getInstance()).iterator());
+
+        VirtualMachineProduct defaultProduct = new VirtualMachineProduct();
+        defaultProduct.setName("Default");
+        defaultProduct.setProviderProductId("default");
+        defaultProduct.setDescription("Default");
+        products.add(defaultProduct);
+        return products;
     }
 
     @Override
