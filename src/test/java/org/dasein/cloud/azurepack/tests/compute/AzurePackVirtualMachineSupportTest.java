@@ -166,7 +166,23 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         new ListProductsRequestExecutorMockUp();
         List<VirtualMachineProduct> products = IteratorUtils
                 .toList(azurePackVirtualMachineSupport.listAllProducts().iterator());
-        assertHardwareProfileProducts(products);
+
+        //listAllProducts returns all available hardware profile plus default product
+        assertEquals("listProducts doesn't return correct result", 2, products.size());
+        VirtualMachineProduct virtualMachineProduct = products.get(0);
+        assertEquals("listProducts doesn't return correct result", HWP_1_NAME, virtualMachineProduct.getName());
+        assertEquals("listProducts doesn't return correct result", HWP_1_ID, virtualMachineProduct.getProviderProductId());
+        assertEquals("listProducts doesn't return correct result", Integer.parseInt(HWP_1_CPU_COUNT), virtualMachineProduct.getCpuCount());
+        assertEquals("listProducts doesn't return correct result", Double.parseDouble(HWP_1_MEMORY), virtualMachineProduct.getRamSize().getQuantity());
+        assertEquals("listProducts doesn't return correct result", Storage.MEGABYTE,
+                virtualMachineProduct.getRamSize().getUnitOfMeasure());
+
+        //assert default product
+        virtualMachineProduct = products.get(1);
+        assertEquals("listProducts doesn't return correct result", "default", virtualMachineProduct.getName().toLowerCase());
+        assertEquals("listProducts doesn't return correct result", "default", virtualMachineProduct.getProviderProductId().toLowerCase());
+        assertEquals("listProducts doesn't return correct result", "default", virtualMachineProduct.getDescription().toLowerCase());
+
     }
 
     private void assertHardwareProfileProducts(List<VirtualMachineProduct> products) {
@@ -396,6 +412,49 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
     public void lauchShouldThrowExceptionIfVlanIsNotExist() throws CloudException, InternalException {
         VMLaunchOptions vmLaunchOptions = VMLaunchOptions.getInstance(HWP_1_ID, VHD_1_ID, VM_1_NAME, VM_1_DESCRIPTION);
         vmLaunchOptions.inVlan(null, DATACENTER_ID, "not-exist-vlan-id");
+        azurePackVirtualMachineSupport.launch(vmLaunchOptions);
+    }
+
+    @Test(expected=InternalException.class)
+    public void lauchShouldThrowExceptionIfLaunchFromVHDWithDefaultProduct() throws CloudException, InternalException {
+        final AtomicInteger postCount = new AtomicInteger(0);
+        new StartOrStopVirtualMachinesRequestExecutorMockUp("Start") {
+            @Mock
+            public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request,
+                              ResponseHandler handler) {
+                String requestUri = request.getURI().toString();
+                if(request.getMethod().equals("POST") && requestUri.equals(String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
+                    requestResourceType = 21;
+                    WAPVirtualMachineModel wapVirtualMachineModel = new WAPVirtualMachineModel();
+                    wapVirtualMachineModel.setName(VM_1_NAME);
+                    wapVirtualMachineModel.setCloudId(REGION);
+                    wapVirtualMachineModel.setStampId(DATACENTER_ID);
+                    wapVirtualMachineModel.setVirtualHardDiskId(VHD_1_ID);
+                    wapVirtualMachineModel.setHardwareProfileId(HWP_1_ID);
+
+                    List<WAPNewAdapterModel> adapters = new ArrayList<>();
+                    WAPNewAdapterModel newAdapterModel = new WAPNewAdapterModel();
+                    newAdapterModel.setVmNetworkName(VM_1_NETWORK_NAME);
+                    adapters.add(newAdapterModel);
+                    wapVirtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
+                } else {
+                    super.$init(provider, clientBuilder, request, handler);
+                }
+                responseHandler = handler;
+            }
+            @Mock
+            public Object execute() {
+                if(requestResourceType == 21) {
+                    postCount.incrementAndGet();
+                    return mapFromModel(this.responseHandler, createWAPVirtualMachineModel());
+                } else {
+                    return super.execute();
+                }
+            }
+        };
+
+        VMLaunchOptions vmLaunchOptions = VMLaunchOptions.getInstance("default", VHD_1_ID, VM_1_NAME, VM_1_DESCRIPTION);
+        vmLaunchOptions.inVlan(null, DATACENTER_ID, VM_1_NETWORK_ID);
         azurePackVirtualMachineSupport.launch(vmLaunchOptions);
     }
 
