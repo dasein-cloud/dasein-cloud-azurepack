@@ -21,10 +21,7 @@
 
 package org.dasein.cloud.azurepack.tests.compute;
 
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.*;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.http.Header;
 import org.apache.http.client.ResponseHandler;
@@ -37,24 +34,9 @@ import org.dasein.cloud.azurepack.compute.image.AzurePackImageSupport;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplateModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
 import org.dasein.cloud.azurepack.compute.vm.AzurePackVirtualMachineSupport;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPHardwareProfileModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPHardwareProfilesModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPNewAdapterModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachinesModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapter;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapters;
+import org.dasein.cloud.azurepack.compute.vm.model.*;
 import org.dasein.cloud.azurepack.network.AzurePackNetworkSupport;
-import org.dasein.cloud.compute.Architecture;
-import org.dasein.cloud.compute.ImageClass;
-import org.dasein.cloud.compute.MachineImage;
-import org.dasein.cloud.compute.MachineImageState;
-import org.dasein.cloud.compute.Platform;
-import org.dasein.cloud.compute.VMLaunchOptions;
-import org.dasein.cloud.compute.VirtualMachine;
-import org.dasein.cloud.compute.VirtualMachineProduct;
-import org.dasein.cloud.compute.VirtualMachineProductFilterOptions;
-import org.dasein.cloud.compute.VmState;
+import org.dasein.cloud.compute.*;
 import org.dasein.cloud.network.VLAN;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.dasein.util.uom.storage.Storage;
@@ -514,5 +496,16 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         VirtualMachine virtualMachine = azurePackVirtualMachineSupport.launch(vmLaunchOptions);
         assertEquals("terminate doesn't send DELETE request", 1, postCount.get());
         assertVirtualMachine(virtualMachine);
+    }
+
+    @Test
+    public void testGetVmStateReturnsCorrectResults() {
+        assertEquals(VmState.ERROR, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Update Failed"));
+        assertEquals(VmState.ERROR, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Creation Failed"));
+        assertEquals(VmState.ERROR, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Customization Failed"));
+        assertEquals(VmState.ERROR, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Missing"));
+        assertEquals(VmState.PENDING, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Creating..."));
+        assertEquals(VmState.PENDING, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "UnrecognizableState"));
+        assertEquals(VmState.RUNNING, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "running"));
     }
 }
