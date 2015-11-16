@@ -381,10 +381,6 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
                 return VmState.ERROR;
             }
 
-            if("Update Failed".equalsIgnoreCase(state)) {
-                return VmState.ERROR;
-            }
-
             if("Missing".equalsIgnoreCase(state)) {
                 return VmState.ERROR;
             }
