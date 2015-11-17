@@ -21,10 +21,7 @@
 
 package org.dasein.cloud.azurepack.tests.compute;
 
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.*;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.http.Header;
 import org.apache.http.client.ResponseHandler;
@@ -37,24 +34,9 @@ import org.dasein.cloud.azurepack.compute.image.AzurePackImageSupport;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplateModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
 import org.dasein.cloud.azurepack.compute.vm.AzurePackVirtualMachineSupport;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPHardwareProfileModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPHardwareProfilesModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPNewAdapterModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachinesModel;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapter;
-import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapters;
+import org.dasein.cloud.azurepack.compute.vm.model.*;
 import org.dasein.cloud.azurepack.network.AzurePackNetworkSupport;
-import org.dasein.cloud.compute.Architecture;
-import org.dasein.cloud.compute.ImageClass;
-import org.dasein.cloud.compute.MachineImage;
-import org.dasein.cloud.compute.MachineImageState;
-import org.dasein.cloud.compute.Platform;
-import org.dasein.cloud.compute.VMLaunchOptions;
-import org.dasein.cloud.compute.VirtualMachine;
-import org.dasein.cloud.compute.VirtualMachineProduct;
-import org.dasein.cloud.compute.VirtualMachineProductFilterOptions;
-import org.dasein.cloud.compute.VmState;
+import org.dasein.cloud.compute.*;
 import org.dasein.cloud.network.VLAN;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.dasein.util.uom.storage.Storage;
@@ -184,7 +166,23 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         new ListProductsRequestExecutorMockUp();
         List<VirtualMachineProduct> products = IteratorUtils
                 .toList(azurePackVirtualMachineSupport.listAllProducts().iterator());
-        assertHardwareProfileProducts(products);
+
+        //listAllProducts returns all available hardware profile plus default product
+        assertEquals("listProducts doesn't return correct result", 2, products.size());
+        VirtualMachineProduct virtualMachineProduct = products.get(0);
+        assertEquals("listProducts doesn't return correct result", HWP_1_NAME, virtualMachineProduct.getName());
+        assertEquals("listProducts doesn't return correct result", HWP_1_ID, virtualMachineProduct.getProviderProductId());
+        assertEquals("listProducts doesn't return correct result", Integer.parseInt(HWP_1_CPU_COUNT), virtualMachineProduct.getCpuCount());
+        assertEquals("listProducts doesn't return correct result", Double.parseDouble(HWP_1_MEMORY), virtualMachineProduct.getRamSize().getQuantity());
+        assertEquals("listProducts doesn't return correct result", Storage.MEGABYTE,
+                virtualMachineProduct.getRamSize().getUnitOfMeasure());
+
+        //assert default product
+        virtualMachineProduct = products.get(1);
+        assertEquals("listProducts doesn't return correct result", "default", virtualMachineProduct.getName().toLowerCase());
+        assertEquals("listProducts doesn't return correct result", "default", virtualMachineProduct.getProviderProductId().toLowerCase());
+        assertEquals("listProducts doesn't return correct result", "default", virtualMachineProduct.getDescription().toLowerCase());
+
     }
 
     private void assertHardwareProfileProducts(List<VirtualMachineProduct> products) {
@@ -417,6 +415,49 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         azurePackVirtualMachineSupport.launch(vmLaunchOptions);
     }
 
+    @Test(expected=InternalException.class)
+    public void lauchShouldThrowExceptionIfLaunchFromVHDWithDefaultProduct() throws CloudException, InternalException {
+        final AtomicInteger postCount = new AtomicInteger(0);
+        new StartOrStopVirtualMachinesRequestExecutorMockUp("Start") {
+            @Mock
+            public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request,
+                              ResponseHandler handler) {
+                String requestUri = request.getURI().toString();
+                if(request.getMethod().equals("POST") && requestUri.equals(String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
+                    requestResourceType = 21;
+                    WAPVirtualMachineModel wapVirtualMachineModel = new WAPVirtualMachineModel();
+                    wapVirtualMachineModel.setName(VM_1_NAME);
+                    wapVirtualMachineModel.setCloudId(REGION);
+                    wapVirtualMachineModel.setStampId(DATACENTER_ID);
+                    wapVirtualMachineModel.setVirtualHardDiskId(VHD_1_ID);
+                    wapVirtualMachineModel.setHardwareProfileId(HWP_1_ID);
+
+                    List<WAPNewAdapterModel> adapters = new ArrayList<>();
+                    WAPNewAdapterModel newAdapterModel = new WAPNewAdapterModel();
+                    newAdapterModel.setVmNetworkName(VM_1_NETWORK_NAME);
+                    adapters.add(newAdapterModel);
+                    wapVirtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
+                } else {
+                    super.$init(provider, clientBuilder, request, handler);
+                }
+                responseHandler = handler;
+            }
+            @Mock
+            public Object execute() {
+                if(requestResourceType == 21) {
+                    postCount.incrementAndGet();
+                    return mapFromModel(this.responseHandler, createWAPVirtualMachineModel());
+                } else {
+                    return super.execute();
+                }
+            }
+        };
+
+        VMLaunchOptions vmLaunchOptions = VMLaunchOptions.getInstance("default", VHD_1_ID, VM_1_NAME, VM_1_DESCRIPTION);
+        vmLaunchOptions.inVlan(null, DATACENTER_ID, VM_1_NETWORK_ID);
+        azurePackVirtualMachineSupport.launch(vmLaunchOptions);
+    }
+
     @Test
     public void lauchVhdVMShouldSendCorrectRequest() throws CloudException, InternalException {
         final AtomicInteger postCount = new AtomicInteger(0);
@@ -514,5 +555,16 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         VirtualMachine virtualMachine = azurePackVirtualMachineSupport.launch(vmLaunchOptions);
         assertEquals("terminate doesn't send DELETE request", 1, postCount.get());
         assertVirtualMachine(virtualMachine);
+    }
+
+    @Test
+    public void testGetVmStateReturnsCorrectResults() {
+        assertEquals(VmState.ERROR, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Update Failed"));
+        assertEquals(VmState.ERROR, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Creation Failed"));
+        assertEquals(VmState.ERROR, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Customization Failed"));
+        assertEquals(VmState.ERROR, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Missing"));
+        assertEquals(VmState.PENDING, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "Creating..."));
+        assertEquals(VmState.PENDING, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "UnrecognizableState"));
+        assertEquals(VmState.RUNNING, Deencapsulation.invoke(azurePackVirtualMachineSupport, "getVmState", "running"));
     }
 }

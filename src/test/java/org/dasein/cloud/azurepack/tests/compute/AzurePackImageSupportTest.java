@@ -36,14 +36,7 @@ import org.dasein.cloud.azurepack.compute.image.model.WAPTemplateModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPTemplatesModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPVhdModel;
 import org.dasein.cloud.azurepack.compute.image.model.WAPVhdsModel;
-import org.dasein.cloud.azurepack.model.WAPOperatingSystemInstance;
-import org.dasein.cloud.azurepack.model.WAPUserModel;
-import org.dasein.cloud.azurepack.tests.AzurePackTestsBase;
-import org.dasein.cloud.compute.Architecture;
-import org.dasein.cloud.compute.ImageClass;
-import org.dasein.cloud.compute.ImageFilterOptions;
-import org.dasein.cloud.compute.MachineImage;
-import org.dasein.cloud.compute.Platform;
+import org.dasein.cloud.compute.*;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,6 +65,10 @@ public class AzurePackImageSupportTest extends AzurePackComputeTestsBase {
     private final String VHD_2_OWNER = null;
     private final String VHD_2_NAME = "the second vhd";
     private final String VHD_2_DESCRIPTION = "the second vhd description";
+    private final String VHD_3_ID = UUID.randomUUID().toString();
+    private final String VHD_3_OWNER = null;
+    private final String VHD_3_NAME = "the third vhd";
+
 
     private final String TPL_1_ID = UUID.randomUUID().toString();
     private final String TPL_1_OWNER = ACCOUNT_NO;
@@ -81,6 +78,9 @@ public class AzurePackImageSupportTest extends AzurePackComputeTestsBase {
     private final String TPL_2_OWNER = null;
     private final String TPL_2_NAME = "the second template";
     private final String TPL_2_DESCRIPTION = "the second template description";
+    private final String TPL_3_ID = UUID.randomUUID().toString();
+    private final String TPL_3_OWNER = null;
+    private final String TPL_3_NAME = "the third template";
 
     private AzurePackImageSupport azurePackImageSupport;
 
@@ -141,8 +141,12 @@ public class AzurePackImageSupportTest extends AzurePackComputeTestsBase {
         new GetAllImagesRequestExecutorMockUp();
         List<MachineImage> images;
         images = IteratorUtils.toList(azurePackImageSupport.searchPublicImages(ImageFilterOptions.getInstance(ImageClass.MACHINE)).iterator());
-        assertEquals("searchPublicImages doesn't return correct result", 2, images.size());
+        assertEquals("searchPublicImages doesn't return correct result", 4, images.size());
         images = IteratorUtils.toList(azurePackImageSupport.searchPublicImages(ImageFilterOptions.getInstance()).iterator());
+        assertEquals("searchPublicImages doesn't return correct result", 4, images.size());
+        images = IteratorUtils.toList(azurePackImageSupport.searchPublicImages(ImageFilterOptions.getInstance(".*\\bsomething\\b.*")).iterator());
+        assertEquals("searchPublicImages doesn't return correct result", 0, images.size());
+        images = IteratorUtils.toList(azurePackImageSupport.searchPublicImages(ImageFilterOptions.getInstance(".*\\bthird\\b.*")).iterator());
         assertEquals("searchPublicImages doesn't return correct result", 2, images.size());
     }
 
@@ -151,7 +155,7 @@ public class AzurePackImageSupportTest extends AzurePackComputeTestsBase {
         new GetAllImagesRequestExecutorMockUp();
         List<MachineImage> images;
         images = IteratorUtils.toList(azurePackImageSupport.searchImages(null, null, null, null).iterator());
-        assertEquals("searchImages doesn't return correct result", 4, images.size());
+        assertEquals("searchImages doesn't return correct result", 6, images.size());
 
         images = IteratorUtils.toList(azurePackImageSupport.searchImages(ACCOUNT_NO, null, null, null).iterator());
         assertEquals("searchImages doesn't return correct result", 2, images.size());
@@ -198,6 +202,7 @@ public class AzurePackImageSupportTest extends AzurePackComputeTestsBase {
 
                 vhds.add(createVhd(VHD_1_ID, VHD_1_NAME, VHD_1_OWNER, VHD_1_DESCRIPTION, "true", "windows"));
                 vhds.add(createVhd(VHD_2_ID, VHD_2_NAME, VHD_2_OWNER, VHD_2_DESCRIPTION, "true", "linux"));
+                vhds.add(createVhd(VHD_3_ID, VHD_3_NAME, VHD_3_OWNER, null, "true", "linux"));
                 vhds.add(createVhd(null, null, null, null, "false", "windows"));
 
                 vhdsModel.setVhds(vhds);
@@ -209,6 +214,7 @@ public class AzurePackImageSupportTest extends AzurePackComputeTestsBase {
 
                 templates.add(createTemplate(TPL_1_ID, TPL_1_NAME, TPL_1_OWNER, TPL_1_DESCRIPTION, "true", "windows"));
                 templates.add(createTemplate(TPL_2_ID, TPL_2_NAME, TPL_2_OWNER, TPL_2_DESCRIPTION, "true", "linux"));
+                templates.add(createTemplate(TPL_3_ID, TPL_3_NAME, TPL_3_OWNER, null, "true", "linux"));
                 templates.add(createTemplate(null, null, null, null, "false", "windows"));
 
                 templatesModel.setTemplates(templates);
