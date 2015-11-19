@@ -21,20 +21,11 @@
 
 package org.dasein.cloud.azurepack.tests.platform;
 
-import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
-import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import junit.framework.AssertionFailedError;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.NonStrictExpectations;
-
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -46,16 +37,22 @@ import org.dasein.cloud.azurepack.platform.AzurePackDatabaseCapabilities;
 import org.dasein.cloud.azurepack.platform.AzurePackDatabaseSupport;
 import org.dasein.cloud.azurepack.platform.model.WAPDatabaseModel;
 import org.dasein.cloud.azurepack.tests.AzurePackTestsBaseWithLocation;
-import org.dasein.cloud.platform.Database;
-import org.dasein.cloud.platform.DatabaseEngine;
-import org.dasein.cloud.platform.DatabaseLicenseModel;
-import org.dasein.cloud.platform.DatabaseProduct;
-import org.dasein.cloud.platform.RelationalDatabaseCapabilities;
+import org.dasein.cloud.platform.*;
 import org.dasein.cloud.util.requester.DaseinParallelRequestExecutor;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.dasein.cloud.util.requester.entities.DaseinObjectToJsonEntity;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
 
 /**
  * Created by Jane Wang on 11/03/2015.
@@ -441,6 +438,14 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
         };
         
 		support.removeDatabase(String.format("%s:%s", SQL_SERVER_ID, SQL_SERVER_NAME));
+	}
+
+	@Test
+	public void testGetSupportedVersionsReturnsCorrectValues() throws CloudException, InternalException {
+		//for now getSupportedVersions should return an empty list
+		final Iterable<String> supportedVersions = support.getSupportedVersions(null);
+		assertNotNull(supportedVersions);
+		assertEquals(0, IteratorUtils.toList(supportedVersions.iterator()).size());
 	}
 	
 	private Database generateDatabase(String id, String name, DatabaseEngine engine) {
