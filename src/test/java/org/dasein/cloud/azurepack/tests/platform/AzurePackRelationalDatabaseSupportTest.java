@@ -19,7 +19,7 @@
  *
  */
 
-package com.dasein.cloud.azurepack.tests.platform;
+package org.dasein.cloud.azurepack.tests.platform;
 
 import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
 import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
