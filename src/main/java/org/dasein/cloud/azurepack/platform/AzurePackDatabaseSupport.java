@@ -223,7 +223,7 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
     @Nonnull
     @Override
     public Iterable<String> getSupportedVersions(@Nonnull DatabaseEngine forEngine) throws CloudException, InternalException {
-        return null;
+        return Arrays.asList();
     }
 
     @Nonnull
