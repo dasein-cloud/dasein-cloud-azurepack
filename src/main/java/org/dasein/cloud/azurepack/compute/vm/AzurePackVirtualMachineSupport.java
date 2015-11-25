@@ -217,6 +217,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         defaultProduct.setName("Default");
         defaultProduct.setProviderProductId("default");
         defaultProduct.setDescription("Default");
+        defaultProduct.setArchitectures(Architecture.I64);
         products.add(defaultProduct);
         return products;
     }
@@ -253,6 +254,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         vmProduct.setDescription("Default");
         vmProduct.setCpuCount(Integer.parseInt(template.getCpuCount()));
         vmProduct.setRamSize(new Storage<Megabyte>(Integer.parseInt(template.getMemory()), Storage.MEGABYTE));
+        vmProduct.setArchitectures(Architecture.I64);
 
         if(options.matches(vmProduct))
             products.add(vmProduct);
@@ -277,6 +279,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
                 vmProduct.setRamSize(new Storage<Megabyte>(Integer.parseInt(hardwareProfileModel.getMemory()), Storage.MEGABYTE));
                 vmProduct.setProviderProductId(hardwareProfileModel.getId());
                 vmProduct.setDataCenterId(hardwareProfileModel.getStampId());
+                vmProduct.setArchitectures(Architecture.I64);
                 products.add(vmProduct);
             }
         });
