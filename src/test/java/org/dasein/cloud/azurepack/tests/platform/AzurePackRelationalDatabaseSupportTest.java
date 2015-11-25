@@ -41,6 +41,7 @@ import org.dasein.cloud.platform.*;
 import org.dasein.cloud.util.requester.DaseinParallelRequestExecutor;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.dasein.cloud.util.requester.entities.DaseinObjectToJsonEntity;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -197,7 +198,9 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
 		final String SQL_SERVER_NAME = "SQLSERVERNAME";
 		final String MYSQL_SERVER_ID = "lxbn7i";
 		final String MYSQL_SERVER_NAME = "MYSQLSERVERNAME";
-		
+		final String timeStamp = "2015-06-24T10:00:00.00+00:00";
+		final String connectionString = "CONNECTION_STRING";
+
 		new MockUp<DaseinParallelRequestExecutor>() {
             
 			private ResponseHandler responseHandler;
@@ -214,17 +217,21 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
         		WAPDatabaseModel resultMSDatabaseModel = new WAPDatabaseModel();
         		resultMSDatabaseModel.setSqlServerId(SQL_SERVER_ID);
         		resultMSDatabaseModel.setName(SQL_SERVER_NAME);
+				resultMSDatabaseModel.setCreationDate(timeStamp);
+				resultMSDatabaseModel.setConnectionString(connectionString);
             	List<Database> msDatabaseModels = mapFromModel(responseHandler, new WAPDatabaseModel[]{resultMSDatabaseModel});
             	WAPDatabaseModel resultMYSQLDatabaseModel = new WAPDatabaseModel();
         		resultMYSQLDatabaseModel.setMySqlServerId(MYSQL_SERVER_ID);
         		resultMYSQLDatabaseModel.setName(MYSQL_SERVER_NAME);
+				resultMYSQLDatabaseModel.setCreationDate(timeStamp);
+				resultMYSQLDatabaseModel.setConnectionString(connectionString);
         		List<Database> mysqlDatabaseModels = mapFromModel(responseHandler, new WAPDatabaseModel[]{resultMYSQLDatabaseModel});
         		return Arrays.asList(msDatabaseModels, mysqlDatabaseModels);
             }
         };
 		
 		assertReflectionEquals (
-				generateDatabase(SQL_SERVER_ID, SQL_SERVER_NAME, DatabaseEngine.SQLSERVER_EE),
+				generateDatabase(SQL_SERVER_ID, SQL_SERVER_NAME, DatabaseEngine.SQLSERVER_EE, connectionString, timeStamp),
 				support.getDatabase(String.format("%s:%s", SQL_SERVER_ID, SQL_SERVER_NAME)));
 	}
 	
@@ -276,7 +283,9 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
 		final String SQL_SERVER_NAME = "SQLSERVERNAME";
 		final String MYSQL_SERVER_ID = "lxbn7i";
 		final String MYSQL_SERVER_NAME = "MYSQLSERVERNAME";
-		
+		final String timeStamp = "2015-06-24T10:00:00.00+00:00";
+		final String connectionString = "CONNECTION_STRING";
+
 		new MockUp<DaseinParallelRequestExecutor>() {
             
 			private ResponseHandler responseHandler;
@@ -293,10 +302,14 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
         		WAPDatabaseModel resultMSDatabaseModel = new WAPDatabaseModel();
         		resultMSDatabaseModel.setSqlServerId(SQL_SERVER_ID);
         		resultMSDatabaseModel.setName(SQL_SERVER_NAME);
+				resultMSDatabaseModel.setCreationDate(timeStamp);
+				resultMSDatabaseModel.setConnectionString(connectionString);
             	List<Database> msDatabaseModels = mapFromModel(responseHandler, new WAPDatabaseModel[]{resultMSDatabaseModel});
             	WAPDatabaseModel resultMYSQLDatabaseModel = new WAPDatabaseModel();
         		resultMYSQLDatabaseModel.setMySqlServerId(MYSQL_SERVER_ID);
         		resultMYSQLDatabaseModel.setName(MYSQL_SERVER_NAME);
+				resultMYSQLDatabaseModel.setCreationDate(timeStamp);
+				resultMYSQLDatabaseModel.setConnectionString(connectionString);
         		List<Database> mysqlDatabaseModels = mapFromModel(responseHandler, new WAPDatabaseModel[]{resultMYSQLDatabaseModel});
         		return Arrays.asList(msDatabaseModels, mysqlDatabaseModels);
             }
@@ -304,8 +317,8 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
 		
         assertReflectionEquals(
         		Arrays.asList(
-        				generateDatabase(SQL_SERVER_ID, SQL_SERVER_NAME, DatabaseEngine.SQLSERVER_EE), 
-        				generateDatabase(MYSQL_SERVER_ID, MYSQL_SERVER_NAME, DatabaseEngine.MYSQL)),
+        				generateDatabase(SQL_SERVER_ID, SQL_SERVER_NAME, DatabaseEngine.SQLSERVER_EE, connectionString, timeStamp),
+        				generateDatabase(MYSQL_SERVER_ID, MYSQL_SERVER_NAME, DatabaseEngine.MYSQL, connectionString, timeStamp)),
         		support.listDatabases());
 	}
 	
@@ -448,11 +461,17 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
 		assertEquals(0, IteratorUtils.toList(supportedVersions.iterator()).size());
 	}
 	
-	private Database generateDatabase(String id, String name, DatabaseEngine engine) {
+	private Database generateDatabase(String id, String name, DatabaseEngine engine, String connectionString, String timeStamp) {
 		Database database = new Database();
 		database.setName(name);
 		database.setProviderDatabaseId(String.format("%s:%s", id, name));
 		database.setEngine(engine);
+		database.setProviderOwnerId(ACCOUNT_NO);
+		database.setProviderRegionId(REGION);
+		database.setProviderDataCenterId(DATACENTER_ID);
+		database.setCurrentState(DatabaseState.UNKNOWN);
+		database.setTag("ConnectionString", connectionString);
+		database.setCreationTimestamp(new DateTime(timeStamp).getMillis() );
 		return database;
 	}
 	
