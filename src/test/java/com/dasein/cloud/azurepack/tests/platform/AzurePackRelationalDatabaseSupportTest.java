@@ -471,6 +471,7 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
 		database.setProviderDataCenterId(DATACENTER_ID);
 		database.setCurrentState(DatabaseState.UNKNOWN);
 		database.setTag("ConnectionString", connectionString);
+		database.setProductSize("Default");
 		database.setCreationTimestamp(new DateTime(timeStamp).getMillis() );
 		return database;
 	}
