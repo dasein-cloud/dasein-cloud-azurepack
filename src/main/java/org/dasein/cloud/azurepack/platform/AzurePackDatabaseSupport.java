@@ -24,7 +24,6 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
 import org.dasein.cloud.*;
 import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.dasein.cloud.azurepack.platform.model.WAPDatabaseModel;
@@ -35,6 +34,7 @@ import org.dasein.cloud.platform.*;
 import org.dasein.cloud.util.requester.DriverToCoreMapper;
 import org.dasein.cloud.util.requester.fluent.DaseinParallelRequest;
 import org.dasein.cloud.util.requester.fluent.DaseinRequest;
+import org.joda.time.DateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -330,7 +330,37 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
         database.setName(wapDatabaseModel.getName());
         database.setProviderDatabaseId(providerDbId);
         database.setEngine(databaseEngine);
+        database.setProviderOwnerId(this.provider.getContext().getAccountNumber());
+        database.setProviderRegionId(this.provider.getContext().getRegionId());
+        database.setProviderDataCenterId(getDataCenterId(this.provider.getContext().getRegionId()));
+        database.setCreationTimestamp(new DateTime(wapDatabaseModel.getCreationDate()).getMillis());
+        database.setCurrentState(getDatabaseState(wapDatabaseModel.getStatus()));
+        database.setAdminUser(wapDatabaseModel.getAdminLogon());
+        database.setTag("ConnectionString", wapDatabaseModel.getConnectionString());
         return database;
+    }
+
+    private String getDataCenterId(String regionId) {
+        try {
+            List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(regionId).iterator()));
+            return dataCenters.get(0).getProviderDataCenterId();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private DatabaseState getDatabaseState(String wapDBStatus) {
+        if(wapDBStatus == null)
+            return DatabaseState.UNKNOWN;
+
+        switch (wapDBStatus) {
+            case "0": return DatabaseState.PENDING;
+            case "1": return DatabaseState.AVAILABLE;
+            case "2": return DatabaseState.DELETING;
+            case "3": return DatabaseState.DELETED;
+            case "4": return DatabaseState.MODIFYING;
+            default: return DatabaseState.UNKNOWN;
+        }
     }
 
     @Nonnull
