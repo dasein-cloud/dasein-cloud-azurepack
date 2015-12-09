@@ -336,6 +336,7 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
         database.setCreationTimestamp(new DateTime(wapDatabaseModel.getCreationDate()).getMillis());
         database.setCurrentState(getDatabaseState(wapDatabaseModel.getStatus()));
         database.setAdminUser(wapDatabaseModel.getAdminLogon());
+        database.setProductSize("Default");
         database.setTag("ConnectionString", wapDatabaseModel.getConnectionString());
         return database;
     }
