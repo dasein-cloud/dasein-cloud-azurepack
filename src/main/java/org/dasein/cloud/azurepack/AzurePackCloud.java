@@ -22,13 +22,13 @@ package org.dasein.cloud.azurepack;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.*;
+import org.dasein.cloud.AbstractCloud;
+import org.dasein.cloud.CloudException;
+import org.dasein.cloud.ContextRequirements;
 import org.dasein.cloud.azurepack.compute.AzurePackComputeService;
 import org.dasein.cloud.azurepack.model.WAPCloudsModel;
 import org.dasein.cloud.azurepack.network.AzurePackNetworkServices;
@@ -43,8 +43,6 @@ import org.dasein.cloud.platform.PlatformServices;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.net.ssl.*;
-import java.security.cert.X509Certificate;
 import java.util.Properties;
 
 /**
@@ -137,5 +135,17 @@ public class AzurePackCloud extends AbstractCloud {
         }
 
         return (System.getProperty("insecure") != null && System.getProperty("insecure").equalsIgnoreCase("true"));
+    }
+
+    public @Nonnull String getDBProductsResource() {
+        Properties p = getContext().getCustomProperties();
+
+        if(p != null && p.getProperty("dbproducts") != null)
+            return p.getProperty("dbproducts");
+
+        if(System.getProperty("azurepack.dbproducts") != null)
+            return System.getProperty("azurepack.dbproducts");
+
+        return "/org/dasein/cloud/azurepack/dbproducts.json";
     }
 }
