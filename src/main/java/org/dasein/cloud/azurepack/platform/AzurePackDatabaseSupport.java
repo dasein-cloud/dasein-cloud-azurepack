@@ -137,8 +137,12 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
     @Nonnull
     @Override
     public String createFromScratch(String dataSourceName, DatabaseProduct product, String databaseVersion, String withAdminUser, String withAdminPassword, int hostPort) throws CloudException, InternalException {
-        if(product == null || product.getName() == null){
+        if(product == null || product.getProductSize() == null ){
             throw new InternalException("Cannot create database. Database product or database product name cannot be empty");
+        }
+
+        if(!product.getProductSize().contains(String.format("%s:", product.getEngine().name().toString().toLowerCase()))) {
+            throw new InternalException("Invalid product id. Product id should be in the following format 'dbengine:dbsizeinmb'");
         }
 
         WAPDatabaseModel databaseModel = new WAPDatabaseModel();
@@ -146,7 +150,7 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
         databaseModel.setSubscriptionId(provider.getContext().getAccountNumber());
         databaseModel.setAdminLogon(withAdminUser);
         databaseModel.setPassword(withAdminPassword);
-        databaseModel.setMaxSizeMB(product.getProductSize());
+        databaseModel.setMaxSizeMB(product.getProductSize().split(":")[1]);
 
         HttpUriRequest requestBuilder = null;
         if(product.getEngine() == DatabaseEngine.MYSQL) {
@@ -256,7 +260,7 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
             public void execute(Object input) {
                 WAPDatabaseProducts.WAPDatabaseProduct wapDatabaseProduct = (WAPDatabaseProducts.WAPDatabaseProduct)input;
                 if(forEngine.name().equalsIgnoreCase(wapDatabaseProduct.getEngine())) {
-                    DatabaseProduct product = new DatabaseProduct(wapDatabaseProduct.getMaxStorage(), wapDatabaseProduct.getName());
+                    DatabaseProduct product = new DatabaseProduct(String.format("%s:%s", forEngine.name().toString().toLowerCase(), wapDatabaseProduct.getMaxStorage()), "default");
                     product.setEngine(forEngine);
                     product.setProviderDataCenterId(dataCenterId);
                     product.setLicenseModel(getLicenseModel(wapDatabaseProduct.getLicense()));
@@ -392,7 +396,7 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
         database.setCreationTimestamp(new DateTime(wapDatabaseModel.getCreationDate()).getMillis());
         database.setCurrentState(getDatabaseState(wapDatabaseModel.getStatus()));
         database.setAdminUser(wapDatabaseModel.getAdminLogon());
-        database.setProductSize("Default");
+        database.setProductSize(String.format("%s:%s", databaseEngine.name().toString().toLowerCase(), wapDatabaseModel.getMaxSizeMB()));
         database.setTag("ConnectionString", wapDatabaseModel.getConnectionString());
         return database;
     }
