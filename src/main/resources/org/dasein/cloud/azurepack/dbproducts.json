@@ -4,14 +4,12 @@
     "provider": "AzurePack",
     "products": [
       {
-        "name" : "default",
         "highAvailability" : false,
         "license" : "license_included",
         "engine" : "mysql",
         "maxStorage" : "10"
       },
       {
-        "name" : "default",
         "highAvailability" : false,
         "license" : "license_included",
         "engine" : "sqlserver_ee",

@@ -41,8 +41,6 @@ public class WAPDatabaseProducts {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class WAPDatabaseProduct {
-        @JsonProperty("name")
-        private String name = null;
         @JsonProperty("highAvailability")
         private String highAvailability = null;
         @JsonProperty("license")
@@ -51,14 +49,6 @@ public class WAPDatabaseProducts {
         private String engine = null;
         @JsonProperty("maxStorage")
         private String maxStorage = null;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
 
         public String getHighAvailability() {
             return highAvailability;
