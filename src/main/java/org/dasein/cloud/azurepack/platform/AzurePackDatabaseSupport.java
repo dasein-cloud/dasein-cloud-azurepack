@@ -281,13 +281,17 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
     }
 
     private List<WAPDatabaseProducts.WAPDatabaseProduct> getDBProductsFromFile() throws InternalException {
-        List<WAPDatabaseProducts> dbProducts = null;
+        List<WAPDatabaseProducts> dbProducts = new ArrayList<>();
         try {
             InputStream inputStream = getDBProductFileStream(this.provider.getDBProductsResource());
-            dbProducts = Arrays.asList(new JsonStreamToObjectProcessor<WAPDatabaseProducts[]>().read(inputStream, WAPDatabaseProducts[].class));
+            dbProducts.addAll(Arrays.asList(new JsonStreamToObjectProcessor<WAPDatabaseProducts[]>().read(inputStream, WAPDatabaseProducts[].class)));
         } catch (Exception ex) {
             throw new InternalException("Cannot load products from dbproducts.json file");
         }
+
+        //if there is only one cloud provider in the json file, return all the products as default
+        if(dbProducts.size() == 1)
+            return Arrays.asList(dbProducts.get(0).getProducts());
 
         CollectionUtils.filter(dbProducts, new Predicate() {
             @Override
