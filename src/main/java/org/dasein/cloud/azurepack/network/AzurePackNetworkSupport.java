@@ -230,19 +230,19 @@ public class AzurePackNetworkSupport extends AbstractVLANSupport<AzurePackCloud>
     @Nonnull
     @Override
     public String getProviderTermForNetworkInterface(Locale locale) {
-        return null;
+        return "Netwrok Adapter";
     }
 
     @Nonnull
     @Override
     public String getProviderTermForSubnet(@Nonnull Locale locale) {
-        return null;
+        return "Subnet";
     }
 
     @Nonnull
     @Override
     public String getProviderTermForVlan(@Nonnull Locale locale) {
-        return null;
+        return "Virtual Machine Network";
     }
 
     @Override

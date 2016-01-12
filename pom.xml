@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.dasein</groupId>
             <artifactId>dasein-cloud-core</artifactId>
-            <version>2015.10.1</version>
+            <version>2016.02.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>false</optional>
         </dependency>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.dasein</groupId>
             <artifactId>dasein-cloud-test</artifactId>
-            <version>2015.10.2</version>
+            <version>2016.02.1-SNAPSHOT</version>
             <scope>test</scope>
             <optional>false</optional>
         </dependency>
@@ -233,6 +233,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
+                    <systemPropertyVariables>
+                        <jacoco-agent.destfile>${project.build.directory}/jacoco.exec</jacoco-agent.destfile>
+                    </systemPropertyVariables>
                     <skipTests>${skip.unit.tests}</skipTests>
                     <excludes>
                         <exclude>**/TestSuite.class</exclude>

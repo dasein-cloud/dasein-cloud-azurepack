@@ -21,6 +21,7 @@
 
 package org.dasein.cloud.azurepack.tests;
 
+import java.lang.reflect.Field;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.apache.http.client.ResponseHandler;
