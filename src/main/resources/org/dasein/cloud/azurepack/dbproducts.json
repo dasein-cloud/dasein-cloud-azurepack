@@ -1,0 +1,20 @@
+[
+  {
+    "cloud": "AzurePackCloud",
+    "provider": "AzurePack",
+    "products": [
+      {
+        "highAvailability" : false,
+        "license" : "license_included",
+        "engine" : "mysql",
+        "maxStorage" : "10"
+      },
+      {
+        "highAvailability" : false,
+        "license" : "license_included",
+        "engine" : "sqlserver_ee",
+        "maxStorage" : "10"
+      }
+    ]
+  }
+]
