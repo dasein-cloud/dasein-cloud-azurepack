@@ -233,6 +233,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
+                    <systemPropertyVariables>
+                        <jacoco-agent.destfile>${project.build.directory}/jacoco.exec</jacoco-agent.destfile>
+                    </systemPropertyVariables>
                     <skipTests>${skip.unit.tests}</skipTests>
                     <excludes>
                         <exclude>**/TestSuite.class</exclude>
@@ -336,9 +339,6 @@
                             <value>${proxyPort}</value>
                         </property>
                     </systemProperties>
-                    <systemPropertyVariables>
-                        <jacoco-agent.destfile>${project.build.directory}/jacoco.exec</jacoco-agent.destfile>
-                    </systemPropertyVariables>
                     <includes>
                         <include>**/TestSuite.class</include>
                     </includes>
