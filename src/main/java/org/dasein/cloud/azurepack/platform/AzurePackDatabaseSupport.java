@@ -19,6 +19,7 @@
 
 package org.dasein.cloud.azurepack.platform;
 
+import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
@@ -27,6 +28,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.dasein.cloud.*;
 import org.dasein.cloud.azurepack.AzurePackCloud;
 import org.dasein.cloud.azurepack.platform.model.WAPDatabaseModel;
+import org.dasein.cloud.azurepack.platform.model.WAPDatabaseProducts;
 import org.dasein.cloud.azurepack.utils.AzurePackRequester;
 import org.dasein.cloud.dc.DataCenter;
 import org.dasein.cloud.identity.ServiceAction;
@@ -34,10 +36,15 @@ import org.dasein.cloud.platform.*;
 import org.dasein.cloud.util.requester.DriverToCoreMapper;
 import org.dasein.cloud.util.requester.fluent.DaseinParallelRequest;
 import org.dasein.cloud.util.requester.fluent.DaseinRequest;
+import org.dasein.cloud.util.requester.streamprocessors.JsonStreamToObjectProcessor;
 import org.joda.time.DateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -130,8 +137,12 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
     @Nonnull
     @Override
     public String createFromScratch(String dataSourceName, DatabaseProduct product, String databaseVersion, String withAdminUser, String withAdminPassword, int hostPort) throws CloudException, InternalException {
-        if(product == null || product.getName() == null){
+        if(product == null || product.getProductSize() == null ){
             throw new InternalException("Cannot create database. Database product or database product name cannot be empty");
+        }
+
+        if(!product.getProductSize().contains(String.format("%s:", product.getEngine().name().toString().toLowerCase()))) {
+            throw new InternalException("Invalid product id. Product id should be in the following format 'dbengine:dbsizeinmb'");
         }
 
         WAPDatabaseModel databaseModel = new WAPDatabaseModel();
@@ -139,17 +150,16 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
         databaseModel.setSubscriptionId(provider.getContext().getAccountNumber());
         databaseModel.setAdminLogon(withAdminUser);
         databaseModel.setPassword(withAdminPassword);
+        databaseModel.setMaxSizeMB(product.getProductSize().split(":")[1]);
 
         HttpUriRequest requestBuilder = null;
         if(product.getEngine() == DatabaseEngine.MYSQL) {
             databaseModel.setCollation("latin1_swedish_ci");
-            databaseModel.setMaxSizeMB("1024");
             requestBuilder = new AzurePackDatabaseRequests(provider).createMYSQLDb(databaseModel).build();
         } else {
             databaseModel.setCollation("SQL_Latin1_General_CP1_CI_AS");
             databaseModel.setIsContained("false");
             databaseModel.setBaseSizeMB("10");
-            databaseModel.setMaxSizeMB("10");
             requestBuilder = new AzurePackDatabaseRequests(provider).createMSSQLDb(databaseModel).build();
         }
 
@@ -228,7 +238,7 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
 
     @Nonnull
     @Override
-    public Iterable<DatabaseProduct> listDatabaseProducts(@Nonnull DatabaseEngine forEngine) throws CloudException, InternalException {
+    public Iterable<DatabaseProduct> listDatabaseProducts(@Nonnull final DatabaseEngine forEngine) throws CloudException, InternalException {
         if(forEngine == null)
             throw new InternalException("Please specify the DatabaseEngine for which you want to retrieve the products.");
 
@@ -242,13 +252,67 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
             return Arrays.asList();
 
         List<DataCenter> dataCenters = new ArrayList(IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator()));
-        String dataCenterId = dataCenters.get(0).getProviderDataCenterId();
+        final String dataCenterId = dataCenters.get(0).getProviderDataCenterId();
 
-        DatabaseProduct product = new DatabaseProduct("Default", "Default");
-        product.setLicenseModel(DatabaseLicenseModel.LICENSE_INCLUDED);
-        product.setEngine(forEngine);
-        product.setProviderDataCenterId(dataCenterId);
-        return Arrays.asList(product);
+        final ArrayList<DatabaseProduct> databaseProducts = new ArrayList<>();
+        CollectionUtils.forAllDo(getDBProductsFromFile(), new Closure() {
+            @Override
+            public void execute(Object input) {
+                WAPDatabaseProducts.WAPDatabaseProduct wapDatabaseProduct = (WAPDatabaseProducts.WAPDatabaseProduct)input;
+                if(forEngine.name().equalsIgnoreCase(wapDatabaseProduct.getEngine())) {
+                    DatabaseProduct product = new DatabaseProduct(String.format("%s:%s", forEngine.name().toString().toLowerCase(), wapDatabaseProduct.getMaxStorage()), "default");
+                    product.setEngine(forEngine);
+                    product.setProviderDataCenterId(dataCenterId);
+                    product.setLicenseModel(getLicenseModel(wapDatabaseProduct.getLicense()));
+                    databaseProducts.add(product);
+                }
+            }
+        });
+
+        return databaseProducts;
+    }
+
+    private DatabaseLicenseModel getLicenseModel(String fromString) {
+        try {
+            return DatabaseLicenseModel.valueOf(fromString.toUpperCase());
+        } catch (Exception e) {
+            return DatabaseLicenseModel.GENERAL_PUBLIC_LICENSE;
+        }
+    }
+
+    private List<WAPDatabaseProducts.WAPDatabaseProduct> getDBProductsFromFile() throws InternalException {
+        List<WAPDatabaseProducts> dbProducts = new ArrayList<>();
+        try {
+            InputStream inputStream = getDBProductFileStream(this.provider.getDBProductsResource());
+            dbProducts.addAll(Arrays.asList(new JsonStreamToObjectProcessor<WAPDatabaseProducts[]>().read(inputStream, WAPDatabaseProducts[].class)));
+        } catch (Exception ex) {
+            throw new InternalException("Cannot load products from dbproducts.json file");
+        }
+
+        //if there is only one cloud provider in the json file, return all the products as default
+        if(dbProducts.size() == 1)
+            return Arrays.asList(dbProducts.get(0).getProducts());
+
+        CollectionUtils.filter(dbProducts, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                WAPDatabaseProducts products = (WAPDatabaseProducts)object;
+                return provider.getContext().getCloud().getCloudName().equalsIgnoreCase(products.getCloud()) && provider.getContext().getCloud().getProviderName().equalsIgnoreCase(products.getProvider());
+            }
+        });
+
+        if(dbProducts.size() != 1)
+            return Arrays.asList();
+
+        return Arrays.asList(dbProducts.get(0).getProducts());
+    }
+
+    private InputStream getDBProductFileStream(String path) throws FileNotFoundException {
+        File inputFile = new File(path);
+        if(inputFile.exists())
+            return new FileInputStream(inputFile);
+
+        return AzurePackCloud.class.getResourceAsStream(path);
     }
 
     @Nullable
@@ -336,6 +400,7 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
         database.setCreationTimestamp(new DateTime(wapDatabaseModel.getCreationDate()).getMillis());
         database.setCurrentState(getDatabaseState(wapDatabaseModel.getStatus()));
         database.setAdminUser(wapDatabaseModel.getAdminLogon());
+        database.setProductSize(String.format("%s:%s", databaseEngine.name().toString().toLowerCase(), wapDatabaseModel.getMaxSizeMB()));
         database.setTag("ConnectionString", wapDatabaseModel.getConnectionString());
         return database;
     }

@@ -4,7 +4,7 @@
 
     <groupId>org.dasein</groupId>
     <artifactId>dasein-cloud-azurepack</artifactId>
-    <version>2015.10.7</version>
+    <version>2015.10.8</version>
     <packaging>jar</packaging>
 
     <name>dasein-cloud-azurepack</name>
@@ -33,8 +33,28 @@
         <connection>scm:git:git://github.com/dasein-cloud/dasein-cloud-azurepack.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/dasein-cloud/dasein-cloud-azurepack.git</developerConnection>
         <url>http://github.com/dasein-cloud/dasein-cloud-azurepack</url>
-      <tag>dasein-cloud-azurepack-2015.10.7</tag>
+      <tag>dasein-cloud-azurepack-2015.10.8</tag>
   </scm>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skip.unit.tests>false</skip.unit.tests>
+                <skip.int.tests>true</skip.int.tests>
+            </properties>
+        </profile>
+        <profile>
+            <id>integration</id>
+            <properties>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.int.tests>false</skip.int.tests>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- Compile -->
@@ -206,9 +226,28 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
             </plugin>
+            
+            <!-- unit tests-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <skipTests>${skip.unit.tests}</skipTests>
+                    <excludes>
+                        <exclude>**/TestSuite.class</exclude>
+                    </excludes>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <!-- integration tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
                     <systemProperties>
@@ -301,15 +340,20 @@
                         <jacoco-agent.destfile>${project.build.directory}/jacoco.exec</jacoco-agent.destfile>
                     </systemPropertyVariables>
                     <includes>
-                        <include>**/*Test.java</include>
-                        <include>**/*Tests.java</include>
+                        <include>**/TestSuite.class</include>
                     </includes>
-                    <excludes>
-                        <exclude>**/DummyTest.java</exclude>
-                    </excludes>
                     <jvm>${env.JAVA_HOME}/bin/java</jvm>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>

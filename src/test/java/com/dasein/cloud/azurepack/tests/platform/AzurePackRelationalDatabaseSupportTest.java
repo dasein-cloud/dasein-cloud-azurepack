@@ -36,6 +36,7 @@ import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.platform.AzurePackDatabaseCapabilities;
 import org.dasein.cloud.azurepack.platform.AzurePackDatabaseSupport;
 import org.dasein.cloud.azurepack.platform.model.WAPDatabaseModel;
+import org.dasein.cloud.azurepack.platform.model.WAPDatabaseProducts;
 import org.dasein.cloud.azurepack.tests.AzurePackTestsBaseWithLocation;
 import org.dasein.cloud.platform.*;
 import org.dasein.cloud.util.requester.DaseinParallelRequestExecutor;
@@ -50,6 +51,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static mockit.Deencapsulation.invoke;
 import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -101,7 +103,7 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
         		expectedDatabaseModel.setAdminLogon(ADMIN_NAME);
         		expectedDatabaseModel.setPassword(ADMIN_PASSWORD);
         		expectedDatabaseModel.setCollation("latin1_swedish_ci");
-        		expectedDatabaseModel.setMaxSizeMB("1024");
+        		expectedDatabaseModel.setMaxSizeMB("10");
         		
         		HttpEntityEnclosingRequest httpEntityEnclosingRequest = (HttpEntityEnclosingRequest) httpUriRequest;
         		assertReflectionEquals(
@@ -119,8 +121,7 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
             }
         };
         
-        DatabaseProduct product = new DatabaseProduct("10G");
-		product.setName(DatabaseEngine.MYSQL.name());
+        DatabaseProduct product = new DatabaseProduct(String.format("%s:%s", DatabaseEngine.MYSQL.name().toLowerCase(), 10), "default");
 		product.setEngine(DatabaseEngine.MYSQL);
 		
         String expectedProviderDatabaseId = String.format("%s:%s", MYSQL_SERVER_ID, MYSQL_SERVER_NAME);
@@ -168,7 +169,7 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
             }
         };
         
-        DatabaseProduct product = new DatabaseProduct("10G");
+        DatabaseProduct product = new DatabaseProduct(String.format("%s:%s", DatabaseEngine.SQLSERVER_EE.name().toLowerCase(), 10), "default");
 		product.setName(DatabaseEngine.SQLSERVER_EE.name());
 		product.setEngine(DatabaseEngine.SQLSERVER_EE);
         String expectedResult = String.format("%s:%s", SQL_SERVER_ID, SQL_SERVER_NAME);
@@ -218,12 +219,14 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
         		resultMSDatabaseModel.setSqlServerId(SQL_SERVER_ID);
         		resultMSDatabaseModel.setName(SQL_SERVER_NAME);
 				resultMSDatabaseModel.setCreationDate(timeStamp);
+				resultMSDatabaseModel.setMaxSizeMB("10");
 				resultMSDatabaseModel.setConnectionString(connectionString);
             	List<Database> msDatabaseModels = mapFromModel(responseHandler, new WAPDatabaseModel[]{resultMSDatabaseModel});
             	WAPDatabaseModel resultMYSQLDatabaseModel = new WAPDatabaseModel();
         		resultMYSQLDatabaseModel.setMySqlServerId(MYSQL_SERVER_ID);
         		resultMYSQLDatabaseModel.setName(MYSQL_SERVER_NAME);
 				resultMYSQLDatabaseModel.setCreationDate(timeStamp);
+				resultMYSQLDatabaseModel.setMaxSizeMB("10");
 				resultMYSQLDatabaseModel.setConnectionString(connectionString);
         		List<Database> mysqlDatabaseModels = mapFromModel(responseHandler, new WAPDatabaseModel[]{resultMYSQLDatabaseModel});
         		return Arrays.asList(msDatabaseModels, mysqlDatabaseModels);
@@ -244,10 +247,15 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
 	
 	@Test
 	public void listDatabaseProductsForMYSqlShouldReturnCorrectResult() throws CloudException, InternalException {
-		DatabaseProduct product = new DatabaseProduct("Default", "Default");
+		DatabaseProduct product = new DatabaseProduct(String.format("%s:%s", DatabaseEngine.MYSQL.name().toLowerCase(), 100), "default");
         product.setLicenseModel(DatabaseLicenseModel.LICENSE_INCLUDED);
         product.setEngine(DatabaseEngine.MYSQL);
         product.setProviderDataCenterId(DATACENTER_ID);
+
+		new NonStrictExpectations() {
+			{ invoke(support, "getDBProductsFromFile"); result =  getWAPDBProducts(); }
+		};
+
         assertReflectionEquals(
         		Arrays.asList(product),
         		support.listDatabaseProducts(DatabaseEngine.MYSQL));
@@ -255,15 +263,41 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
 	
 	@Test
 	public void listDatabaseProductsForMSSqlShouldReturnCorrectResult() throws CloudException, InternalException {
-		DatabaseProduct product = new DatabaseProduct("Default", "Default");
+		DatabaseProduct product = new DatabaseProduct(String.format("%s:%s", DatabaseEngine.SQLSERVER_EE.name().toString().toLowerCase(), 100), "default");
         product.setLicenseModel(DatabaseLicenseModel.LICENSE_INCLUDED);
         product.setEngine(DatabaseEngine.SQLSERVER_EE);
         product.setProviderDataCenterId(DATACENTER_ID);
+
+		new NonStrictExpectations() {
+			{ invoke(support, "getDBProductsFromFile"); result =  getWAPDBProducts(); }
+		};
+
         assertReflectionEquals(
         		Arrays.asList(product),
         		support.listDatabaseProducts(DatabaseEngine.SQLSERVER_EE));
 	}
-	
+
+	private List<WAPDatabaseProducts.WAPDatabaseProduct> getWAPDBProducts() {
+		final List<WAPDatabaseProducts.WAPDatabaseProduct> wapDBProducts = new ArrayList<>();
+		WAPDatabaseProducts.WAPDatabaseProduct sqlProduct = new WAPDatabaseProducts.WAPDatabaseProduct();
+		//sqlProduct.setName("Default");
+		sqlProduct.setEngine(DatabaseEngine.SQLSERVER_EE.name().toString());
+		sqlProduct.setHighAvailability("false");
+		sqlProduct.setLicense(DatabaseLicenseModel.LICENSE_INCLUDED.toString());
+		sqlProduct.setMaxStorage("100");
+		wapDBProducts.add(sqlProduct);
+
+		WAPDatabaseProducts.WAPDatabaseProduct mysqlProduct = new WAPDatabaseProducts.WAPDatabaseProduct();
+		//mysqlProduct.setName("Default");
+		mysqlProduct.setEngine(DatabaseEngine.MYSQL.name().toString());
+		mysqlProduct.setHighAvailability("false");
+		mysqlProduct.setLicense(DatabaseLicenseModel.LICENSE_INCLUDED.toString());
+		mysqlProduct.setMaxStorage("100");
+		wapDBProducts.add(mysqlProduct);
+
+		return wapDBProducts;
+	}
+
 	@Test
 	public void listDatabaseProductsForNotSupportedEngineShouldReturnCorrectResult() throws AssertionFailedError, CloudException, InternalException {
 		assertReflectionEquals(
@@ -303,12 +337,14 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
         		resultMSDatabaseModel.setSqlServerId(SQL_SERVER_ID);
         		resultMSDatabaseModel.setName(SQL_SERVER_NAME);
 				resultMSDatabaseModel.setCreationDate(timeStamp);
+				resultMSDatabaseModel.setMaxSizeMB("10");
 				resultMSDatabaseModel.setConnectionString(connectionString);
             	List<Database> msDatabaseModels = mapFromModel(responseHandler, new WAPDatabaseModel[]{resultMSDatabaseModel});
             	WAPDatabaseModel resultMYSQLDatabaseModel = new WAPDatabaseModel();
         		resultMYSQLDatabaseModel.setMySqlServerId(MYSQL_SERVER_ID);
         		resultMYSQLDatabaseModel.setName(MYSQL_SERVER_NAME);
 				resultMYSQLDatabaseModel.setCreationDate(timeStamp);
+				resultMYSQLDatabaseModel.setMaxSizeMB("10");
 				resultMYSQLDatabaseModel.setConnectionString(connectionString);
         		List<Database> mysqlDatabaseModels = mapFromModel(responseHandler, new WAPDatabaseModel[]{resultMYSQLDatabaseModel});
         		return Arrays.asList(msDatabaseModels, mysqlDatabaseModels);
@@ -471,6 +507,7 @@ public class AzurePackRelationalDatabaseSupportTest extends AzurePackTestsBaseWi
 		database.setProviderDataCenterId(DATACENTER_ID);
 		database.setCurrentState(DatabaseState.UNKNOWN);
 		database.setTag("ConnectionString", connectionString);
+		database.setProductSize(String.format("%s:%s", engine.name().toString().toLowerCase(), 10));
 		database.setCreationTimestamp(new DateTime(timeStamp).getMillis() );
 		return database;
 	}
