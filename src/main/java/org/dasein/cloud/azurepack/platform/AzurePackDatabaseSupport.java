@@ -381,18 +381,22 @@ public class AzurePackDatabaseSupport implements RelationalDatabaseSupport {
             return null;
 
         String providerDbId = null;
+        String hostName = null;
         DatabaseEngine databaseEngine = null;
         if(wapDatabaseModel.getMySqlServerId() != null) {
             databaseEngine = DatabaseEngine.MYSQL;
             providerDbId = String.format("%s:%s", wapDatabaseModel.getMySqlServerId(), wapDatabaseModel.getName());
+            hostName = wapDatabaseModel.getMySqlServerName();
         } else if (wapDatabaseModel.getSqlServerId() != null) {
             databaseEngine = DatabaseEngine.SQLSERVER_EE;
             providerDbId = String.format("%s:%s", wapDatabaseModel.getSqlServerId(), wapDatabaseModel.getName());
+            hostName = wapDatabaseModel.getSqlServerName();
         }
 
         Database database = new Database();
         database.setName(wapDatabaseModel.getName());
         database.setProviderDatabaseId(providerDbId);
+        database.setHostName(hostName);
         database.setEngine(databaseEngine);
         database.setProviderOwnerId(this.provider.getContext().getAccountNumber());
         database.setProviderRegionId(this.provider.getContext().getRegionId());
