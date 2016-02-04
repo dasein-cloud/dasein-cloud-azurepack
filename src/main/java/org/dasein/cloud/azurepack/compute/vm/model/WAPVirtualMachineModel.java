@@ -299,6 +299,8 @@ public class WAPVirtualMachineModel {
     private List<WAPNewAdapterModel> newVirtualNetworkAdapterInput = new ArrayList<WAPNewAdapterModel>();
     @JsonProperty("IsRecoveryVM")
     private String isRecoveryVM = null;
+    @JsonProperty("VirtualDiskDrives")
+    private List<WAPDiskDriveModel> virtualDiskDrives = new ArrayList<WAPDiskDriveModel>();
 
     public String getOdataType() {
         return odataType;
@@ -1362,5 +1364,13 @@ public class WAPVirtualMachineModel {
 
     public void setGrantedToListOdataType(String grantedToListOdataType) {
         this.grantedToListOdataType = grantedToListOdataType;
+    }
+
+    public List<WAPDiskDriveModel> getVirtualDiskDrives() {
+        return virtualDiskDrives;
+    }
+
+    public void setVirtualDiskDrives(List<WAPDiskDriveModel> virtualDiskDrives) {
+        this.virtualDiskDrives = virtualDiskDrives;
     }
 }

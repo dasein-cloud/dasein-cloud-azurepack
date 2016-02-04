@@ -34,8 +34,8 @@ import java.net.URL;
  */
 public class AzurePackVMRequests {
 
-    private final String LIST_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines";
-    private final String VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s') ";
+    private final String LIST_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines?$expand=VirtualDiskDrives";
+    private final String VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s')?$expand=VirtualDiskDrives";
     private final String HARDWARE_PROFILES = "%s/%s/services/systemcenter/vmm/HardwareProfiles";
     private final String VIRTUAL_NETWORK_ADAPTERS = "%s/%s/services/systemcenter/vmm/VirtualNetworkAdapters";
     private final String VIRTUAL_NETWORK_ADAPTER = "%s/%s/services/systemcenter/vmm/VirtualNetworkAdapters(StampId=guid'%s',ID=guid'%s')";
