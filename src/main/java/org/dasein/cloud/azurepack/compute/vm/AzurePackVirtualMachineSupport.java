@@ -36,6 +36,7 @@ import org.dasein.cloud.network.VLAN;
 import org.dasein.cloud.util.requester.DriverToCoreMapper;
 import org.dasein.util.uom.storage.Megabyte;
 import org.dasein.util.uom.storage.Storage;
+import org.joda.time.DateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -328,7 +329,27 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         if(productId != null)
             virtualMachine.setProductId(productId);
 
+        if(virtualMachineModel.getVirtualDiskDrives() != null) {
+            ArrayList<Volume> volumes = new ArrayList<>();
+            for (WAPDiskDriveModel wapDiskDriveModel : virtualMachineModel.getVirtualDiskDrives()) {
+                volumes.add(volumeFrom(wapDiskDriveModel, virtualMachineModel.getId()));
+            }
+            virtualMachine.setVolumes(volumes.toArray(new Volume[volumes.size()]));
+        }
+
         return virtualMachine;
+    }
+
+    private Volume volumeFrom(WAPDiskDriveModel wapDiskDriveModel, String vmId) {
+        Volume volume = new Volume();
+        volume.setName(wapDiskDriveModel.getName());
+        volume.setProviderRegionId(this.getProvider().getContext().getRegionId());
+        volume.setProviderDataCenterId(wapDiskDriveModel.getStampId());
+        volume.setProviderVolumeId(wapDiskDriveModel.getId());
+        volume.setProviderVirtualMachineId(vmId);
+        volume.setCreationTimestamp(new DateTime(wapDiskDriveModel.getAddedTime()).getMillis());
+        volume.setCurrentState(VolumeState.AVAILABLE);
+        return volume;
     }
 
     public VirtualMachineNetworkData tryGetVMNetworkId(String virtualMachineId, String stampId) {
