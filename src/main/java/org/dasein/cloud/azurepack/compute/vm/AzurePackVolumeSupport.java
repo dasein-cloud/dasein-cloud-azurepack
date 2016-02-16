@@ -16,6 +16,8 @@ import org.dasein.cloud.compute.AbstractVolumeSupport;
 import org.dasein.cloud.compute.Volume;
 import org.dasein.cloud.compute.VolumeCapabilities;
 import org.dasein.cloud.compute.VolumeState;
+import org.dasein.util.uom.storage.Megabyte;
+import org.dasein.util.uom.storage.Storage;
 import org.joda.time.DateTime;
 
 import javax.annotation.Nonnull;
@@ -157,15 +159,17 @@ public class AzurePackVolumeSupport extends AbstractVolumeSupport<AzurePackCloud
     private Volume volumeFrom(WAPVhdModel wapVhdModel) {
         Volume volume = new Volume();
         volume.setName(wapVhdModel.getName());
-        volume.setProviderRegionId(wapVhdModel.getCloudId());
+        volume.setProviderRegionId(this.getProvider().getContext().getRegionId());
         volume.setProviderDataCenterId(wapVhdModel.getStampId());
         volume.setProviderVolumeId(wapVhdModel.getId());
+        volume.setCurrentState(VolumeState.AVAILABLE);
+        volume.setSize(new Storage<Megabyte>(Integer.parseInt(wapVhdModel.getSize()), Storage.MEGABYTE));
         return volume;
     }
 
     @Override
     public boolean isSubscribed() throws CloudException, InternalException {
-        return false;
+        return true;
     }
 
     @Override
