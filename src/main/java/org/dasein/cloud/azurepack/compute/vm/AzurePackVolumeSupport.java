@@ -165,7 +165,7 @@ public class AzurePackVolumeSupport extends AbstractVolumeSupport<AzurePackCloud
 
     @Override
     public boolean isSubscribed() throws CloudException, InternalException {
-        return false;
+        return true;
     }
 
     @Override
