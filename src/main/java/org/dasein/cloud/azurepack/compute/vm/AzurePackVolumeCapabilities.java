@@ -105,7 +105,7 @@ public class AzurePackVolumeCapabilities implements VolumeCapabilities {
     @Nonnull
     @Override
     public Requirement requiresVMOnCreate() throws InternalException, CloudException {
-        return null;
+        return Requirement.NONE;
     }
 
     @Override
