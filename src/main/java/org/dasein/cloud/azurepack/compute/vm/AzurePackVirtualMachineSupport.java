@@ -433,7 +433,7 @@ public class AzurePackVirtualMachineSupport extends AbstractVMSupport<AzurePackC
         List<DataCenter> dataCenters = IteratorUtils.toList(this.provider.getDataCenterServices().listDataCenters(this.provider.getContext().getRegionId()).iterator());
         String dataCenterId = dataCenters.get(0).getProviderDataCenterId();
 
-        HttpUriRequest getVMRequest = new AzurePackVMRequests(provider).getVirtualMachine(vmId, dataCenterId).build();
+        HttpUriRequest getVMRequest = new AzurePackVMRequests(provider).getVirtualMachineForUpdate(vmId, dataCenterId).build();
 
         WAPVirtualMachineModel virtualMachineModel = new AzurePackRequester(this.provider, getVMRequest).withJsonProcessor(WAPVirtualMachineModel.class).execute();
         virtualMachineModel.setOperation(operation);
