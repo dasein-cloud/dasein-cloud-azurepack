@@ -66,12 +66,12 @@ public class AzurePackDataCenterService implements DataCenterServices {
 
     @Override
     public String getProviderTermForDataCenter(Locale locale) {
-        return null;
+        return "Stamp";
     }
 
     @Override
     public String getProviderTermForRegion(Locale locale) {
-        return null;
+        return "Cloud";
     }
 
     @Override
