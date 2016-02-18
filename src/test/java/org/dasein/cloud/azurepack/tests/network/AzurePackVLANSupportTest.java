@@ -21,11 +21,6 @@
 
 package org.dasein.cloud.azurepack.tests.network;
 
-import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
-import static org.junit.Assert.*;
-import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
-import java.util.Arrays;
-import java.util.UUID;
 import mockit.Invocation;
 import mockit.Mock;
 import mockit.MockUp;
@@ -40,29 +35,21 @@ import org.dasein.cloud.InternalException;
 import org.dasein.cloud.azurepack.model.WAPUserModel;
 import org.dasein.cloud.azurepack.network.AzurePackNetworkCapabilities;
 import org.dasein.cloud.azurepack.network.AzurePackNetworkServices;
-import org.dasein.cloud.azurepack.network.model.WAPLogicalNetModel;
-import org.dasein.cloud.azurepack.network.model.WAPLogicalNetsModel;
-import org.dasein.cloud.azurepack.network.model.WAPNatConnectionModel;
-import org.dasein.cloud.azurepack.network.model.WAPNatConnectionsModel;
-import org.dasein.cloud.azurepack.network.model.WAPSubnetModel;
-import org.dasein.cloud.azurepack.network.model.WAPSubnetsModel;
-import org.dasein.cloud.azurepack.network.model.WAPVMNetworkGatewayModel;
-import org.dasein.cloud.azurepack.network.model.WAPVMNetworkGatewaysModel;
-import org.dasein.cloud.azurepack.network.model.WAPVMNetworkModel;
-import org.dasein.cloud.azurepack.network.model.WAPVMNetworksModel;
+import org.dasein.cloud.azurepack.network.model.*;
 import org.dasein.cloud.azurepack.tests.AzurePackTestsBaseWithLocation;
-import org.dasein.cloud.network.InternetGateway;
-import org.dasein.cloud.network.Subnet;
-import org.dasein.cloud.network.SubnetCreateOptions;
-import org.dasein.cloud.network.SubnetState;
-import org.dasein.cloud.network.VLAN;
-import org.dasein.cloud.network.VLANState;
-import org.dasein.cloud.network.VLANSupport;
-import org.dasein.cloud.network.VlanCreateOptions;
+import org.dasein.cloud.network.*;
 import org.dasein.cloud.util.requester.DaseinRequestExecutor;
 import org.dasein.cloud.util.requester.entities.DaseinObjectToJsonEntity;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.UUID;
+
+import static org.dasein.cloud.azurepack.tests.HttpMethodAsserts.*;
+import static org.junit.Assert.*;
+import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
 
 /**
  * Created by Jane Wang on 10/20/2015.
@@ -1123,16 +1110,19 @@ public class AzurePackVLANSupportTest extends AzurePackTestsBaseWithLocation {
 	}
 	
 	@Test
+	@Ignore("getProviderTermForNetwrokInterface deprecated")
 	public void getProviderTermForNetworkInterfaceShouldReturnCorrectResult() {
 		assertEquals("Netwrok Adapter", azurePackNetworkSupport.getProviderTermForNetworkInterface(null));
 	}
 	
 	@Test
+	@Ignore("getProviderTermForSubnet deprecated")
 	public void getProviderTermForSubnetShouldReturnCorrectResult() {
 		assertEquals("Subnet", azurePackNetworkSupport.getProviderTermForSubnet(null));
 	}
 	
 	@Test
+	@Ignore("getProviderTermForVlan deprecated")
 	public void getProviderTermForVlanShouldReturnCorrectResult() {
 		assertEquals("Virtual Machine Network", azurePackNetworkSupport.getProviderTermForVlan(null));
 	}
