@@ -33,7 +33,6 @@ import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualMachineModel;
 import org.dasein.cloud.azurepack.compute.vm.model.WAPVirtualNetworkAdapter;
 import org.dasein.cloud.azurepack.model.WAPOperatingSystemInstance;
 import org.dasein.cloud.azurepack.model.WAPUserModel;
-import org.dasein.cloud.azurepack.tests.AzurePackTestsBase;
 import org.dasein.cloud.azurepack.tests.AzurePackTestsBaseWithLocation;
 import org.junit.Before;
 
@@ -47,8 +46,9 @@ import java.util.List;
  */
 public class AzurePackComputeTestsBase extends AzurePackTestsBaseWithLocation {
 
-    protected final String LIST_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines";
+    protected final String LIST_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines?$expand=VirtualDiskDrives";
     protected final String VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s')";
+    protected final String GET_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s')?$expand=VirtualDiskDrives";
     protected final String VHD_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualHardDisks";
     protected final String VMTEMPLATES_RESOURCES = "%s/%s/services/systemcenter/vmm/VMTemplates";
     protected final String HARDWARE_PROFILES = "%s/%s/services/systemcenter/vmm/HardwareProfiles";
@@ -62,6 +62,9 @@ public class AzurePackComputeTestsBase extends AzurePackTestsBaseWithLocation {
     @Before
     public void setUp() throws CloudException, InternalException {
         super.setUp();
+        NonStrictExpectations nse = new NonStrictExpectations() {
+            { }
+        };
         new NonStrictExpectations() {{
             azurePackCloudMock.getComputeServices(); result = computeServices;
         }};
