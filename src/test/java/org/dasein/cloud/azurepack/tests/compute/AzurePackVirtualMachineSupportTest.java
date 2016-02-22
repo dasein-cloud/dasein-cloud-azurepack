@@ -272,7 +272,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request,
                 ResponseHandler handler) {
             String requestUri = request.getURI().toString();
-            if(request.getMethod().equals("GET") && requestUri.equals(String.format(VM_RESOURCES, ENDPOINT, ACCOUNT_NO, DATACENTER_ID, VM_1_ID))) {
+            if(request.getMethod().equals("GET") && requestUri.equals(String.format(GET_VM_RESOURCES, ENDPOINT, ACCOUNT_NO, DATACENTER_ID, VM_1_ID))) {
                 requestResourceType = 1;
             }
             if (request.getMethod().equals("GET") && requestUri.equals(String.format(VM_NETWORK_ADAPTERS, ENDPOINT, ACCOUNT_NO, DATACENTER_ID, VM_1_ID))) {
@@ -347,7 +347,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request,
                 ResponseHandler handler) {
             String requestUri = request.getURI().toString();
-            if(request.getMethod().equals("GET") && requestUri.equals(String.format(VM_RESOURCES, ENDPOINT, ACCOUNT_NO, DATACENTER_ID, VM_1_ID))) {
+            if(request.getMethod().equals("GET") && ( requestUri.equals(String.format(GET_VM_RESOURCES, ENDPOINT, ACCOUNT_NO, DATACENTER_ID, VM_1_ID)) || request.getMethod().equals("GET") && requestUri.equals(String.format(VM_RESOURCES, ENDPOINT, ACCOUNT_NO, DATACENTER_ID, VM_1_ID)))) {
                 requestResourceType = 11;
             } else if (request.getMethod().equals("PUT") && requestUri
                     .equals(String.format(VM_RESOURCES, ENDPOINT, ACCOUNT_NO, DATACENTER_ID, VM_1_ID))) {
@@ -362,7 +362,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
         }
         @Mock
         public Object execute() {
-            if(requestResourceType == 11) {
+            if(requestResourceType == 11 ) {
                 return createWAPVirtualMachineModel();
             } else if(requestResourceType == 12) {
                 putCount++;

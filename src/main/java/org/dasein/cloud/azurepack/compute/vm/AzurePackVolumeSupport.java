@@ -77,6 +77,9 @@ public class AzurePackVolumeSupport extends AbstractVolumeSupport<AzurePackCloud
             usedLun.add(Integer.parseInt(wapDiskDriveModel.getLun()));
         }
 
+        if(usedLun.isEmpty())
+            return 0;
+
         return Collections.max(usedLun);
     }
 

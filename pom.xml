@@ -4,7 +4,7 @@
 
     <groupId>org.dasein</groupId>
     <artifactId>dasein-cloud-azurepack</artifactId>
-    <version>2015.10.12</version>
+    <version>2015.10.13</version>
     <packaging>jar</packaging>
 
     <name>dasein-cloud-azurepack</name>
@@ -33,7 +33,7 @@
         <connection>scm:git:git://github.com/dasein-cloud/dasein-cloud-azurepack.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/dasein-cloud/dasein-cloud-azurepack.git</developerConnection>
         <url>http://github.com/dasein-cloud/dasein-cloud-azurepack</url>
-      <tag>dasein-cloud-azurepack-2015.10.12</tag>
+      <tag>dasein-cloud-azurepack-2015.10.13</tag>
   </scm>
 
     <profiles>
