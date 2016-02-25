@@ -35,6 +35,7 @@ import java.net.URL;
 public class AzurePackVMRequests {
 
     private final String LIST_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines?$expand=VirtualDiskDrives";
+    private final String CREATE_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines";
     private final String VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s')";
     private final String GET_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s')?$expand=VirtualDiskDrives";
     private final String HARDWARE_PROFILES = "%s/%s/services/systemcenter/vmm/HardwareProfiles";
@@ -58,7 +59,7 @@ public class AzurePackVMRequests {
     public RequestBuilder createVirtualMachine(WAPVirtualMachineModel virtualMachineModel) {
         RequestBuilder requestBuilder = RequestBuilder.post();
         addCommonHeaders(requestBuilder);
-        requestBuilder.setUri(String.format(LIST_VM_RESOURCES, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
+        requestBuilder.setUri(String.format(CREATE_VM_RESOURCES, this.provider.getContext().getEndpoint(), this.provider.getContext().getAccountNumber()));
         requestBuilder.setEntity(new DaseinObjectToJsonEntity<WAPVirtualMachineModel>(virtualMachineModel));
         return requestBuilder;
     }
