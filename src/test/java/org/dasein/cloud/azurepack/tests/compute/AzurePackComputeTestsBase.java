@@ -47,6 +47,7 @@ import java.util.List;
 public class AzurePackComputeTestsBase extends AzurePackTestsBaseWithLocation {
 
     protected final String LIST_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines?$expand=VirtualDiskDrives";
+    protected final String CREATE_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines";
     protected final String VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s')";
     protected final String GET_VM_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualMachines(StampId=guid'%s',ID=guid'%s')?$expand=VirtualDiskDrives";
     protected final String VHD_RESOURCES = "%s/%s/services/systemcenter/vmm/VirtualHardDisks";
