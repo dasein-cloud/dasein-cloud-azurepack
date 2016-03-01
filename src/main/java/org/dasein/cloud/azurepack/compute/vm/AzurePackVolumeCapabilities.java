@@ -105,12 +105,12 @@ public class AzurePackVolumeCapabilities implements VolumeCapabilities {
     @Nonnull
     @Override
     public Requirement requiresVMOnCreate() throws InternalException, CloudException {
-        return Requirement.NONE;
+        return Requirement.REQUIRED;
     }
 
     @Override
     public boolean supportsAttach() {
-        return true;
+        return false;
     }
 
     @Override
