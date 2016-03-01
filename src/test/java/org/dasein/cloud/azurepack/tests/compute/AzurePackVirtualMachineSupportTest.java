@@ -466,7 +466,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
             public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request,
                     ResponseHandler handler) {
                 String requestUri = request.getURI().toString();
-                if(request.getMethod().equals("POST") && requestUri.equals(String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
+                if(request.getMethod().equals("POST") && requestUri.equals(String.format(CREATE_VM_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
                     requestResourceType = 21;
                     WAPVirtualMachineModel wapVirtualMachineModel = new WAPVirtualMachineModel();
                     wapVirtualMachineModel.setName(VM_1_NAME);
@@ -481,7 +481,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
                     adapters.add(newAdapterModel);
                     wapVirtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
 
-                    assertPost(request, String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO), new Header[0],
+                    assertPost(request, String.format(CREATE_VM_RESOURCES, ENDPOINT, ACCOUNT_NO), new Header[0],
                             wapVirtualMachineModel);
                 } else {
                     super.$init(provider, clientBuilder, request, handler);
@@ -514,7 +514,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
             public void $init(CloudProvider provider, HttpClientBuilder clientBuilder, HttpUriRequest request,
                     ResponseHandler handler) {
                 String requestUri = request.getURI().toString();
-                if(request.getMethod().equals("POST") && requestUri.equals(String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
+                if(request.getMethod().equals("POST") && requestUri.equals(String.format(CREATE_VM_RESOURCES, ENDPOINT, ACCOUNT_NO))) {
                     requestResourceType = 21;
                     WAPVirtualMachineModel wapVirtualMachineModel = new WAPVirtualMachineModel();
                     wapVirtualMachineModel.setName(VM_1_NAME);
@@ -530,7 +530,7 @@ public class AzurePackVirtualMachineSupportTest extends AzurePackComputeTestsBas
                     adapters.add(newAdapterModel);
                     wapVirtualMachineModel.setNewVirtualNetworkAdapterInput(adapters);
 
-                    assertPost(request, String.format(LIST_VM_RESOURCES, ENDPOINT, ACCOUNT_NO), new Header[0],
+                    assertPost(request, String.format(CREATE_VM_RESOURCES, ENDPOINT, ACCOUNT_NO), new Header[0],
                             wapVirtualMachineModel);
                 } else {
                     super.$init(provider, clientBuilder, request, handler);
