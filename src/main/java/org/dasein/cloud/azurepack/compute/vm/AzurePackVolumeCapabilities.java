@@ -71,7 +71,7 @@ public class AzurePackVolumeCapabilities implements VolumeCapabilities {
     @Nonnull
     @Override
     public Requirement getVolumeProductRequirement() throws InternalException, CloudException {
-        return Requirement.NONE;
+        return Requirement.REQUIRED;
     }
 
     @Nonnull
@@ -87,7 +87,7 @@ public class AzurePackVolumeCapabilities implements VolumeCapabilities {
 
     @Override
     public boolean isVolumeSizeDeterminedByProduct() throws InternalException, CloudException {
-        return false;
+        return true;
     }
 
     @Nonnull
